@@ -20,7 +20,9 @@
 #include "derivative.h"      /* derivative-specific definitions */
 
 #include "l3g4200d_definitions.h"
+#include <math.h>
 
+#define GRAV_ACC 9.81
 
 // structure containing the config parameters for the accelerometer
 typedef struct ACCELEROMETER_CFG_STRUCT {
@@ -55,7 +57,7 @@ MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
 IIC_ERRORS accel_init(void);
 IIC_ERRORS magnet_init(void);
 IIC_ERRORS gyro_init(void);
-    
+
 
 // Get the raw magnetic data from the sensor
 IIC_ERRORS getRawDataMagnet(MagRaw *raw_data)
@@ -127,4 +129,25 @@ IIC_ERRORS gyro_init(void)
 IIC_ERRORS magnet_init(void)
 {
   return iic_send_data(magnet_wr, (uint8_t*)&mag_cfg, sizeof(MAG_CFG_STRUCT));
+}
+
+
+// calculate 2 Euler angles from an initial accelerometer reading taken while stationary
+void findRollPitch(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data) {
+  float norm = sqrtf((mag_data->x)*(mag_data->x) + (mag_data->y)*(mag_data->y) + (mag_data->z)*(mag_data->z));
+  float norm_x = (mag_data->x) / norm;
+  float norm_y = (mag_data->y) / norm;
+  float norm_z = (mag_data->z) / norm;
+  
+  if (scaled_data->x > 1) {
+    orientations->p = 0;
+  } else if (scaled_data->z < 0) {
+    orientations->p = asinf(scaled_data->x) - acosf(-1)/2;
+  } else {
+    orientations->p = acosf(-1)/2 - asinf(scaled_data->x);
+  }
+  orientations->r = atanf((scaled_data->y)/(scaled_data->z));
+  //orientations->r = 0;
+  orientations->y = atan2f(-norm_y*cosf(orientations->r) + norm_z*sinf(orientations->r), norm_x*cosf(orientations->p)+norm_y*sinf(orientations->p)*sinf(orientations->r)+norm_z*sinf(orientations->p)*cosf(orientations->r));
+  return;     
 }
