@@ -8,6 +8,7 @@
 #include "pll.h"
 #include "simple_serial.h"
 #include "l3g4200d.h"
+#include "servo.h"
 
 void main(void) {
 
@@ -41,40 +42,20 @@ void main(void) {
     SCI1_OutString(buffer);    
   }
   
+  PWMConfig();
 	EnableInterrupts;
   
-  
+  getRawDataMagnet(&read_magnet);
+  getRawDataAccel(&read_accel);
+  convertUnits(&read_accel, &scaled_accel);
+  findInitOrientation(&orientations, &scaled_accel, &read_magnet);
+  sprintf(buffer, "Angles (deg) Elevation: %.2f, Azimuth: %.2f\n", orientations.e*conversion, orientations.a*conversion);
+  SCI1_OutString(buffer);
   //sprintf(buffer, "Read in x: %.2f, y: %.2f, z: %.2f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
   //SCI1_OutString(buffer);	
   
   for(;;) {
-    /*
-    // read the raw values
-    getRawDataGyro(&read_gyro);
-    getRawDataAccel(&read_accel);
-    getRawDataMagnet(&read_magnet);
-    
-    // convert the acceleration to a scaled value
-    convertUnits(&read_accel, &scaled_accel);    
-    
-    
-    */
-    sprintf(buffer, "\nStay still! Getting initial orientation...\n");
-    SCI1_OutString(buffer);
-    getRawDataMagnet(&read_magnet);
-    getRawDataAccel(&read_accel);
-    convertUnits(&read_accel, &scaled_accel);
-    // format the string of the sensor data to go the the serial
-    sprintf(buffer, "ax: %.2f, ay: %.2f, az: %.2f, mx: %d, my: %d, mz: %d\n", scaled_accel.x, scaled_accel.y, scaled_accel.z, read_magnet.x, read_magnet.y, read_magnet.z);
-    
-    // send to serial
-    SCI1_OutString(buffer);
-    findRollPitch(&orientations, &scaled_accel, &read_magnet);
-    sprintf(buffer, "Euler Angles (deg) r: %.2f, p: %.2f y: %.2f\n", orientations.r*conversion, orientations.p*conversion, orientations.y*conversion);
-    SCI1_OutString(buffer);
-    
-    for(i = 0; i < 999999; ++i);
-    i = 0;
+    PWMConfig();  
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   

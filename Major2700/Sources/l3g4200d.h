@@ -29,9 +29,10 @@ typedef struct MagRaw {
 // data structure containing orientation in terms of Euler angles (radians)
 
 typedef struct Orientation {
-  float r;
-  float p;
+  float e;
+  float a;
   float y;
+  float x;
 } Orientation;
 
 
@@ -49,7 +50,7 @@ IIC_ERRORS getRawDataMagnet(MagRaw *raw_data);
 // Get the raw gyro data from the sensor
 IIC_ERRORS getRawDataGyro(GyroRaw *raw_data);
 
-// Calculate initial roll and pitch from accelerometer reading, yaw from magnetometer
-void findRollPitch(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data);
+// Calculate elevation from accelerometer reading, yaw from magnetometer
+void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data);
 
 #endif

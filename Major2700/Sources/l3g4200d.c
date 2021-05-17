@@ -22,7 +22,6 @@
 #include "l3g4200d_definitions.h"
 #include <math.h>
 
-#define GRAV_ACC 9.81
 
 // structure containing the config parameters for the accelerometer
 typedef struct ACCELEROMETER_CFG_STRUCT {
@@ -132,22 +131,23 @@ IIC_ERRORS magnet_init(void)
 }
 
 
-// calculate 2 Euler angles from an initial accelerometer reading taken while stationary
-void findRollPitch(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data) {
+// calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
+void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data) {
+  float x, y;
   float norm = sqrtf((mag_data->x)*(mag_data->x) + (mag_data->y)*(mag_data->y) + (mag_data->z)*(mag_data->z));
   float norm_x = (mag_data->x) / norm;
   float norm_y = (mag_data->y) / norm;
   float norm_z = (mag_data->z) / norm;
+  float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x))); 
   
-  if (scaled_data->x > 1) {
-    orientations->p = 0;
-  } else if (scaled_data->z < 0) {
-    orientations->p = asinf(scaled_data->x) - acosf(-1)/2;
-  } else {
-    orientations->p = acosf(-1)/2 - asinf(scaled_data->x);
-  }
-  orientations->r = atanf((scaled_data->y)/(scaled_data->z));
-  //orientations->r = 0;
-  orientations->y = atan2f(-norm_y*cosf(orientations->r) + norm_z*sinf(orientations->r), norm_x*cosf(orientations->p)+norm_y*sinf(orientations->p)*sinf(orientations->r)+norm_z*sinf(orientations->p)*cosf(orientations->r));
+  orientations->e = atanf((scaled_data->z)/((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x)));
+  
+  //z = (mag_data->z)*cosf(orientations->e) + (mag_data->y)*sinf(orientations->e)*sinf(a_rolling) + (mag_data->x)*cosf(a_rolling)*sinf(orientations->e);
+  //y = (mag_data->y)*cosf(a_rolling) - (mag_data->x)*sinf(a_rolling);
+  x = (mag_data->z)*cosf(orientations->e);
+  y = (mag_data->y);
+  orientations->y = y;
+  orientations->x = x;
+  orientations->a = atan2f(y, x);
   return;     
 }
