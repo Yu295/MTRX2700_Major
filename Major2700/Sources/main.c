@@ -43,6 +43,28 @@ void main(void) {
   }
   
   PWMConfig();
+  
+  sprintf(buffer, "PWMCTL: %x\n", PWMCTL);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMCLK: %x\n", PWMCLK);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMPOL: %x\n", PWMPOL);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMCAE: %x\n", PWMCAE);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMPRCLK: %x\n", PWMPRCLK);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMPER5: %d\n", PWMPER5);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMPER7: %d\n", PWMPER7);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMDTY5: %d\n", PWMDTY5);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWMDTY7: %d\n", PWMDTY7);
+  SCI1_OutString(buffer);
+  sprintf(buffer, "PWME: %x\n", PWME);
+  SCI1_OutString(buffer);
+  
 	EnableInterrupts;
   
   getRawDataMagnet(&read_magnet);
