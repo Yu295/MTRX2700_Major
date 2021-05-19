@@ -22,12 +22,15 @@ void main(void) {
   int error_code = NO_ERROR;
   unsigned char buffer[64];
 
+  #ifndef SIMULATION_TESTING
   // make sure the board is set to 24MHz
   PLL_Init();
+  #endif
   
   // initialise the simple serial
   SCI1_Init(BAUD_9600);
   
+  #ifndef SIMULATION_TESTING
   // initialise the sensor suite
   error_code = iicSensorInit();
   
@@ -39,6 +42,7 @@ void main(void) {
     sprintf(buffer, "ERROR %d");
     SCI1_OutString(buffer);    
   }
+  #endif
   
   // configure timer for lidar operation
   timer_config();
@@ -60,7 +64,7 @@ void main(void) {
     read_magnet.x = 125; read_magnet.y = 521;read_magnet.z = 3002;
     
     #endif 
-    
+    /*
     // convert the acceleration to a scaled value
     convertUnits(&read_accel, &scaled_accel);    
     
@@ -69,8 +73,8 @@ void main(void) {
     
     // output the data to serial
     SCI1_OutString(buffer);
-    
-    /*if (time_flag) {
+    */
+    if (time_flag) {
       
       sprintf(buffer, "\ndistance: %lu, time_1: %u, time_2: %u, overflow: %u \n" ,distance, time_1, time_2, overflow);
     } else {
@@ -79,7 +83,7 @@ void main(void) {
     
     SCI1_OutString(buffer);
     for(i = 0; i < 99999; ++i);
-    i = 0;*/
+    i = 0;
     
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */

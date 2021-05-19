@@ -6,12 +6,5 @@
 /* Include the derivative-specific header file */
 #include <mc9s12dg256.h>
 
-#ifdef SIMULATION_TESTING
-
-#pragma LINK_INFO DERIVATIVE "mc9s12dg256b"
-
-#else
-
 #pragma LINK_INFO DERIVATIVE "mc9s12dg256"
 
-#endif

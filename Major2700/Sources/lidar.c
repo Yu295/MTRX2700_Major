@@ -17,7 +17,7 @@ void timer_config(void){
    TSCR1_TFFCA = 1;  //Enable timer, fast flag clear bit enabled
    TSCR2_TOI = 1;  //Enable timer overflow interrupt, and a prescaler of 1
    TIOS_IOS1 = 0; // Input capture enabled at TC1
-   TIE_C1I = 1; // Enable the input capture interrupt at channel zero
+   TIE_C1I |= TIE_C1I_MASK; // Enable the input capture interrupt at channel zero
    
    TCTL4 = 0x04; //Capture on rising edge, then condigure to capture on falling edge
    TFLG1 = 0x02; //Clear C1F

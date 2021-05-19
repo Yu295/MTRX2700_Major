@@ -20,6 +20,7 @@
 #include "derivative.h"      /* derivative-specific definitions */
 
 #include "l3g4200d_definitions.h"
+#include <math.h>
 
 
 // structure containing the config parameters for the accelerometer
@@ -55,7 +56,7 @@ MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
 IIC_ERRORS accel_init(void);
 IIC_ERRORS magnet_init(void);
 IIC_ERRORS gyro_init(void);
-    
+
 
 // Get the raw magnetic data from the sensor
 IIC_ERRORS getRawDataMagnet(MagRaw *raw_data)
@@ -127,4 +128,26 @@ IIC_ERRORS gyro_init(void)
 IIC_ERRORS magnet_init(void)
 {
   return iic_send_data(magnet_wr, (uint8_t*)&mag_cfg, sizeof(MAG_CFG_STRUCT));
+}
+
+
+// calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
+void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data) {
+  float x, y;
+  float norm = sqrtf((mag_data->x)*(mag_data->x) + (mag_data->y)*(mag_data->y) + (mag_data->z)*(mag_data->z));
+  float norm_x = (mag_data->x) / norm;
+  float norm_y = (mag_data->y) / norm;
+  float norm_z = (mag_data->z) / norm;
+  float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x))); 
+  
+  orientations->e = atanf((scaled_data->z)/((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x)));
+  
+  //z = (mag_data->z)*cosf(orientations->e) + (mag_data->y)*sinf(orientations->e)*sinf(a_rolling) + (mag_data->x)*cosf(a_rolling)*sinf(orientations->e);
+  //y = (mag_data->y)*cosf(a_rolling) - (mag_data->x)*sinf(a_rolling);
+  x = (mag_data->z)*cosf(orientations->e);
+  y = (mag_data->y);
+  orientations->y = y;
+  orientations->x = x;
+  orientations->a = atan2f(y, x);
+  return;     
 }
