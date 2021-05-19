@@ -68,13 +68,14 @@ void main(void) {
   SCI1_OutString(buffer);
   
 	EnableInterrupts;
-  
+  /*
   getRawDataMagnet(&read_magnet);
   getRawDataAccel(&read_accel);
   convertUnits(&read_accel, &scaled_accel);
   findInitOrientation(&orientations, &scaled_accel, &read_magnet);
   sprintf(buffer, "Angles (deg) Elevation: %.2f, Azimuth: %.2f\n", orientations.e*conversion, orientations.a*conversion);
   SCI1_OutString(buffer);
+  */
   //sprintf(buffer, "Read in x: %.2f, y: %.2f, z: %.2f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
   //SCI1_OutString(buffer);	
   PWMConfig();
@@ -89,14 +90,7 @@ void main(void) {
       for (i = 0; i < 99999; ++i);
     }*/  
     
-    turnToElevationAzimuth(0, -90);
-    for (i = 0; i < 999999; ++i);
-    turnToElevationAzimuth(0, 0);
-    for (i = 0; i < 999999; ++i);
-    turnToElevationAzimuth(0, 90);
-    for (i = 0; i < 999999; ++i);
-    turnToElevationAzimuth(0, 0);
-    for (i = 0; i < 999999; ++i);
+    panServo();
     
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
