@@ -3,7 +3,7 @@
 
 // need this for string functions
 #include <stdio.h>
-
+#include "lidar.h"
 #include "pll.h"
 #include "simple_serial.h"
 #include "l3g4200d.h"
@@ -18,6 +18,7 @@ void main(void) {
   
   MagRaw read_magnet;
   
+  long i;
   int error_code = NO_ERROR;
   unsigned char buffer[64];
 
@@ -39,14 +40,26 @@ void main(void) {
     SCI1_OutString(buffer);    
   }
   
-	EnableInterrupts;
-
-  for(;;) {
+  // configure timer for lidar operation
+  timer_config();
   
+	EnableInterrupts;
+  
+  for(;;) {
+    
+    #ifndef SIMULATION_TESTING
+    
     // read the raw values
     getRawDataGyro(&read_gyro);
     getRawDataAccel(&read_accel);
     getRawDataMagnet(&read_magnet);
+    
+    #else
+    read_gyro.x = 123; read_gyro.y = 321; read_gyro.z = 3000;
+    read_accel.x = 124; read_accel.y = 421; read_accel.z = 3001;
+    read_magnet.x = 125; read_magnet.y = 521;read_magnet.z = 3002;
+    
+    #endif 
     
     // convert the acceleration to a scaled value
     convertUnits(&read_accel, &scaled_accel);    
@@ -56,6 +69,17 @@ void main(void) {
     
     // output the data to serial
     SCI1_OutString(buffer);
+    
+    /*if (time_flag) {
+      
+      sprintf(buffer, "\ndistance: %lu, time_1: %u, time_2: %u, overflow: %u \n" ,distance, time_1, time_2, overflow);
+    } else {
+      sprintf(buffer, "\nToo far! Object should be within 2.73m!\n");
+    }
+    
+    SCI1_OutString(buffer);
+    for(i = 0; i < 99999; ++i);
+    i = 0;*/
     
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
