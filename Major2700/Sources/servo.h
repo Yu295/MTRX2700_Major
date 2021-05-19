@@ -2,5 +2,6 @@
 #define SERVO_HEADER
 
 void PWMConfig(void);
+void turnToElevationAzimuth(char elevation, char azimuth);
 
 #endif

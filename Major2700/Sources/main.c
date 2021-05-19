@@ -20,7 +20,9 @@ void main(void) {
   MagRaw read_magnet;
   Orientation orientations;
   
-  unsigned long i = 0;
+  unsigned long i;
+  char j;
+  
   int error_code = NO_ERROR;
   unsigned char buffer[100];
   float conversion = 180.0/(float)acos(-1);
@@ -75,9 +77,27 @@ void main(void) {
   SCI1_OutString(buffer);
   //sprintf(buffer, "Read in x: %.2f, y: %.2f, z: %.2f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
   //SCI1_OutString(buffer);	
+  PWMConfig();
   
   for(;;) {
-    PWMConfig();  
+    /*
+    for(j = -90; j < 90; ++j) {
+      turnToElevationAzimuth(0, j);
+      sprintf(buffer, "Azimuth (deg): %d\n", j);
+      SCI1_OutString(buffer);
+      // delay
+      for (i = 0; i < 99999; ++i);
+    }*/  
+    
+    turnToElevationAzimuth(0, -90);
+    for (i = 0; i < 999999; ++i);
+    turnToElevationAzimuth(0, 0);
+    for (i = 0; i < 999999; ++i);
+    turnToElevationAzimuth(0, 90);
+    for (i = 0; i < 999999; ++i);
+    turnToElevationAzimuth(0, 0);
+    for (i = 0; i < 999999; ++i);
+    
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
