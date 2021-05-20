@@ -79,9 +79,11 @@ void panServo(void) {
     
     if (result == SUCCESSFUL_TURN) {
       delay(400);
-      read_flag = 1;
+      lidar_capture();
+      /*read_flag = 1;
       delay(1000);
       read_flag = 0;
+      */
       sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, distance);
       SCI1_OutString(buf); 
     } else if (result == DUPLICATE_CONFIG) {
@@ -95,9 +97,11 @@ void panServo(void) {
       
       if (result == SUCCESSFUL_TURN) {
         delay(400);
-        read_flag = 1;
+        lidar_capture();
+        /*read_flag = 1;
         delay(1000);
         read_flag = 0;
+        */
         sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, distance);
         SCI1_OutString(buf); 
       } else if (result == DUPLICATE_CONFIG) {
