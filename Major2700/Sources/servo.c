@@ -1,11 +1,14 @@
 #include "servo.h"
 #include "iic.h"
 #include "derivative.h"
+#include "lidar.h"
 #include "simple_serial.h"
-#include <string.h>
+#include <stdio.h>
+
 
 // configure PWM7 and PWM5 (connected to PTU)
 void PWMConfig(void) {
+  
   PWMCTL = 0; // all separate PWM channels
   PWMCLK = (PWMCLK_PCLK5_MASK | PWMCLK_PCLK7_MASK); // select scaled PWM clocks
   PWMPOL = (PWMPOL_PPOL5_MASK | PWMPOL_PPOL7_MASK); // PWM outputs start at HIGH
@@ -75,7 +78,12 @@ void panServo(void) {
     result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
     
     if (result == SUCCESSFUL_TURN) {
-      delay(500);
+      delay(400);
+      read_flag = 1;
+      delay(1000);
+      read_flag = 0;
+      sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, distance);
+      SCI1_OutString(buf); 
     } else if (result == DUPLICATE_CONFIG) {
       continue;
     }
@@ -86,7 +94,12 @@ void panServo(void) {
       result = turnToElevationAzimuth(elevation, azimuth, &prevDutyE, &prevDutyA, AZIMUTH);
       
       if (result == SUCCESSFUL_TURN) {
-        delay(500);
+        delay(400);
+        read_flag = 1;
+        delay(1000);
+        read_flag = 0;
+        sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, distance);
+        SCI1_OutString(buf); 
       } else if (result == DUPLICATE_CONFIG) {
         continue;
       }
@@ -94,7 +107,7 @@ void panServo(void) {
   }
   
   // return to default configuration after done panning
-  //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
+  //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, &prevDutyE, &prevDutyA, NONE);
   //delay(1000);
   
   return;

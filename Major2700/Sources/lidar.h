@@ -1,12 +1,8 @@
 #ifndef LIDAR_HEADER
 #define LIDAR_HEADER
 
-
 extern volatile unsigned long distance;
-extern volatile unsigned int time_1;
-extern volatile unsigned int time_2;
-extern volatile char time_flag;
-extern volatile unsigned int overflow;
+extern volatile char read_flag; // whether the LIDAR value should be used
 
 void timer_config(void);
 //void LCD_setup(void);

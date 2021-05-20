@@ -9,6 +9,7 @@
 #include "simple_serial.h"
 #include "l3g4200d.h"
 #include "servo.h"
+#include "lidar.h"
 
 void main(void) {
 
@@ -26,6 +27,7 @@ void main(void) {
   int error_code = NO_ERROR;
   unsigned char buffer[100];
   float conversion = 180.0/(float)acos(-1);
+  TIE = 0;
   // make sure the board is set to 24MHz
   PLL_Init();
   
@@ -44,28 +46,8 @@ void main(void) {
     SCI1_OutString(buffer);    
   }
   
+  timer_config();
   PWMConfig();
-  
-  sprintf(buffer, "PWMCTL: %x\n", PWMCTL);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMCLK: %x\n", PWMCLK);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMPOL: %x\n", PWMPOL);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMCAE: %x\n", PWMCAE);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMPRCLK: %x\n", PWMPRCLK);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMPER5: %d\n", PWMPER5);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMPER7: %d\n", PWMPER7);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMDTY5: %d\n", PWMDTY5);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWMDTY7: %d\n", PWMDTY7);
-  SCI1_OutString(buffer);
-  sprintf(buffer, "PWME: %x\n", PWME);
-  SCI1_OutString(buffer);
   
 	EnableInterrupts;
   /*
@@ -78,7 +60,6 @@ void main(void) {
   */
   //sprintf(buffer, "Read in x: %.2f, y: %.2f, z: %.2f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
   //SCI1_OutString(buffer);	
-  PWMConfig();
   
   for(;;) {
     /*
