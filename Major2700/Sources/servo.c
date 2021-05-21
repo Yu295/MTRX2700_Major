@@ -65,54 +65,23 @@ SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *
   return SUCCESSFUL_TURN;
 }
 
-// pans in small increments by increasing elevation then increasing azimuth angle
-void panServo(void) {
-  char elevation, azimuth; 
+void calibrateDist(void) {
   unsigned char buf[50];
-  SERVO_STATE result;
-  unsigned char prevDutyE = 0, prevDutyA = 0;
+  long dt;
+  int ovB, ovC;
   
-  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation++) {
-    
-    // keep increasing elevation angle until the servo actually moves
-    result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
-    
-    if (result == SUCCESSFUL_TURN) {
-      delay(400);
-      lidar_capture();
-      /*read_flag = 1;
-      delay(1000);
-      read_flag = 0;
-      */
-      sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, distance);
-      SCI1_OutString(buf); 
-    } else if (result == DUPLICATE_CONFIG) {
-      continue;
-    }
-    
-    // pan across the range of azimuth angles at a fixed elevation
-    for (azimuth = MIN_PAN_AZIMUTH; azimuth <= MAX_PAN_AZIMUTH; azimuth++) {
-      
-      result = turnToElevationAzimuth(elevation, azimuth, &prevDutyE, &prevDutyA, AZIMUTH);
-      
-      if (result == SUCCESSFUL_TURN) {
-        delay(400);
-        lidar_capture();
-        /*read_flag = 1;
-        delay(1000);
-        read_flag = 0;
-        */
-        sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, distance);
-        SCI1_OutString(buf); 
-      } else if (result == DUPLICATE_CONFIG) {
-        continue;
-      }
-    }
-  }
+  turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
   
-  // return to default configuration after done panning
-  //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, &prevDutyE, &prevDutyA, NONE);
-  //delay(1000);
+  delay(400);
+  //lidar_capture(&dt, &ovB, &ovC);
+  do {
+    TIE |= TIE_C1I_MASK;
+    delay(100);
+    TIE &= ~TIE_C1I_MASK;
+  } while (distance > 2730);
   
+  //sprintf(buf, "0,0,%u,%u,%ld,%u,%u,%lu\n", time_1, time_2, dt, ovB, ovC, distance);
+  sprintf(buf, "0,0,%u,%u,%lu\n", time_1, time_2, distance); 
+  SCI1_OutString(buf);
   return;
 }

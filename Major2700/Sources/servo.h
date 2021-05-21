@@ -20,7 +20,7 @@ typedef enum {
 #define MAX_PAN_AZIMUTH 90
 
 void PWMConfig(void);
+void calibrateDist(void);
 SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate);
-void panServo(void);
 
 #endif
