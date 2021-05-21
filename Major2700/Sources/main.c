@@ -89,7 +89,7 @@ void panServo(void) {
       int i;
       unsigned long minDist = MAX_RANGE;
         
-        delay(400);
+        delay(1000); // give it enough time to move to the left
         
         for (i = 0; i < 5; ++i) {
           TIE |= TIE_C1I_MASK;

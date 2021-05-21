@@ -64,24 +64,3 @@ SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *
                 
   return SUCCESSFUL_TURN;
 }
-
-void calibrateDist(void) {
-  unsigned char buf[50];
-  long dt;
-  int ovB, ovC;
-  
-  turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
-  
-  delay(400);
-  //lidar_capture(&dt, &ovB, &ovC);
-  do {
-    TIE |= TIE_C1I_MASK;
-    delay(100);
-    TIE &= ~TIE_C1I_MASK;
-  } while (distance > 2730);
-  
-  //sprintf(buf, "0,0,%u,%u,%ld,%u,%u,%lu\n", time_1, time_2, dt, ovB, ovC, distance);
-  sprintf(buf, "0,0,%u,%u,%lu\n", time_1, time_2, distance); 
-  SCI1_OutString(buf);
-  return;
-}

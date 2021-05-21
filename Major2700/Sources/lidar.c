@@ -30,69 +30,6 @@ void timer_config(void){
 
 }
 
-/*
-void lidar_capture(long *a, unsigned int *b, unsigned int *c){
-   unsigned long i = 0;
-   _asm SEI;
-   
-   TCTL4 = 0x04; // set up next interrupt for rising edge
-   TSCR2 = 0x80;  // Enable timer overflow interrupt, and a prescaler of 1
-   TFLG1_C1F = 0;
-   while(!(TFLG1_C1F & 1));    // Wait for the first rising edge.   
-   
-    
-   time_1 = TC1; // time captured on rising edge
-   
-   TCTL4 = 0x08; // set up next interrupt for falling edge
-   
-   _asm CLI;    
-   
-   //TSCR2_TOI = 1;  //Enable timer overflow interrupt, and a prescaler of 1
-   
-  
-   //edge_flag = 0;
-  
-   //time_flag = 1;
-   overflow = 0;
-   
-   while(!(TFLG1_C1F & 1));
-   
-   *c = overflow;         
-   TSCR2 &= ~0x80; 
-   time_2 = TC1; // time captured on falling edge
-   
-       
-   
-        
-   //edge_flag = 1;
-        
-   //time_flag = 0;
-  
-   if (time_2 < time_1) {
-       overflow -= 1;
-   } else {
-    
-       overflow -= 0;
-   }
-   time_diff = (long)time_2 - (long)time_1;
-  
-  
-   distance = ((long)overflow * 65536 + time_diff)/24;
- 
-   //distance = ((long)time_diff)/24-100;
- 
-   if (distance > 2730){
-   
-    time_flag = 0;
-
-   } 
-   
-   *a = time_diff;
-   *b = overflow;     
-   //}
-
-} */
-
 
 
 /********change it to interrupt, to calculate pulse width  *********/
