@@ -18,30 +18,21 @@ void timer_config(void){
    TSCR1_TFFCA = 1;  //Enable timer, fast flag clear bit enabled
    TIOS_IOS1 = 0; // Input capture enabled at TC1
    TIE &= ~TIE_C1I_MASK; // disable the input capture interrupt at channel one (change to |= TIE_C1I_MASK to enable)
-   TSCR2_TOI = 0;  //Disable timer overflow interrupt, and a prescaler of 1
+   TSCR2_TOI = 1;  //Enable timer overflow interrupt, and a prescaler of 1
    TCTL4 = 0x04; //Capture on rising edge, then condigure to capture on falling edge
    TFLG1 = 0x02; //Clear C1F
-   read_flag = 0;
-   //ICOVW = 0x01; //Prohibit overwrite at TC0
+   //read_flag = 0;  
    //DLYCT
    return; 
 
 }
 
 
-
-/********change it to interrupt, to calculate pulse width  *********/
-
-#pragma CODE_SEG __NEAR_SEG NON_BANKED
-
-__interrupt void TC1_ISR(void) { 
-  
-  
-   //TFLG1 = TFLG1_C1F; //Clears TFLG1 if fast flag clear is not working
+void lidar_capture(void){
+ 
+   while(!(TFLG1_C1F & 1));    //Wait for the first rising edge.   
    
-   if (read_flag) {
-    
-     while(!(TFLG1_C1F & 1));    //Wait for the first rising edge.  
+   //if (read_flag) {
      
      if (edge_flag) {
         
@@ -81,13 +72,21 @@ __interrupt void TC1_ISR(void) {
          
          time_flag = 0;
      
-        }
+        } 
         
-        
-     }
-   }
+      }
+   //}
+
 }
 
+/*
+
+__interrupt void TC1_ISR(void) { 
+    
+  
+} */
+
+#pragma CODE_SEG __NEAR_SEG NON_BANKED
 
 __interrupt void TOF_ISR(void) { 
   
