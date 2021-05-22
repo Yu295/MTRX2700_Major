@@ -21,6 +21,9 @@ void main(void) {
   GyroRaw read_gyro;
   
   MagRaw read_magnet;
+  MagScaled norm_magnet;
+  MagScaled magnet_average;
+  
   Orientation orientations;
   
   unsigned long i;
@@ -44,7 +47,7 @@ void main(void) {
     sprintf(buffer, "NO_ERROR\n");
     SCI1_OutString(buffer);
   } else {
-    sprintf(buffer, "ERROR %d\n");
+    sprintf(buffer, "ERROR %d\n", error_code);
     SCI1_OutString(buffer);    
   }
   
@@ -54,17 +57,25 @@ void main(void) {
 	EnableInterrupts;
   
   for(;;) {
-    /*
-    for(j = -90; j < 90; ++j) {
-      turnToElevationAzimuth(0, j);
-      sprintf(buffer, "Azimuth (deg): %d\n", j);
-      SCI1_OutString(buffer);
-      // delay
-      for (i = 0; i < 99999; ++i);
-    }*/  
     
-    panServo();
-    //calibrateDist();
+    turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
+    magnet_average.x = 0;
+    magnet_average.y = 0;
+    magnet_average.z = 0;
+    for (j = 0; j < 10; ++j) {
+      getRawDataMagnet(&read_magnet);
+      normaliseMagnet(&norm_magnet, &read_magnet);
+      magnet_average.x += 0.1*(float)read_magnet.x;
+      magnet_average.y += 0.1*(float)read_magnet.y;
+      magnet_average.z += 0.1*(float)read_magnet.z;  
+    }
+    getRawDataAccel(&read_accel);    convertUnits(&read_accel, &scaled_accel);
+    findInitOrientation(&orientations, &scaled_accel, &magnet_average);
+    
+    sprintf(buffer, "mx: %.2f my: %.2f mz:%.2f e:%.2f a:%.2f\n", magnet_average.x, magnet_average.y, magnet_average.z, orientations.e*conversion, orientations.a*conversion);
+    SCI1_OutString(buffer);
+    //panServo();
+    
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   

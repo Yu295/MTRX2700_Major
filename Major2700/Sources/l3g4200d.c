@@ -50,7 +50,7 @@ typedef struct MAG_CFG_STRUCT {
 } MAG_CFG_STRUCT;
 
 MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
-
+MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xE0};  
 
 // initialise functions for each sensor
 IIC_ERRORS accel_init(void);
@@ -127,27 +127,48 @@ IIC_ERRORS gyro_init(void)
 // initialise the magnetometers
 IIC_ERRORS magnet_init(void)
 {
-  return iic_send_data(magnet_wr, (uint8_t*)&mag_cfg, sizeof(MAG_CFG_STRUCT));
+  iic_send_data(magnet_wr, (uint8_t*)&mag_cfg, sizeof(MAG_CFG_STRUCT));
+  return iic_send_data(magnet_wr, (uint8_t*)&mag_cfg_b, sizeof(MAG_CFG_STRUCT));
 }
 
+void normaliseMagnet(MagScaled *norm_mag, MagRaw *raw_mag) {
+  float norm = sqrtf((float)(raw_mag->x)*(float)(raw_mag->x) + (float)(raw_mag->y)*(float)(raw_mag->y) + (float)(raw_mag->z)*(float)(raw_mag->z));
+  norm_mag->x = (float)(raw_mag->x) / norm;
+  norm_mag->y = (float)(raw_mag->y) / norm;
+  norm_mag->z = (float)(raw_mag->z) / norm;
+  
+  return;
+}
 
 // calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
-void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagRaw *mag_data) {
-  float x, y;
-  float norm = sqrtf((mag_data->x)*(mag_data->x) + (mag_data->y)*(mag_data->y) + (mag_data->z)*(mag_data->z));
-  float norm_x = (mag_data->x) / norm;
-  float norm_y = (mag_data->y) / norm;
-  float norm_z = (mag_data->z) / norm;
-  float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x))); 
+void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data) {
+  float z, y;
+  float eps = 0.0001;
+  float conversion = acosf(-1) / 180.0;
+  //float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x))); 
   
-  orientations->e = atanf((scaled_data->z)/((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x)));
+  orientations->e = atanf((scaled_data->z)/(sqrt((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x))));
   
-  //z = (mag_data->z)*cosf(orientations->e) + (mag_data->y)*sinf(orientations->e)*sinf(a_rolling) + (mag_data->x)*cosf(a_rolling)*sinf(orientations->e);
-  //y = (mag_data->y)*cosf(a_rolling) - (mag_data->x)*sinf(a_rolling);
-  x = (mag_data->z)*cosf(orientations->e);
+  z = (mag_data->z)*cosf(orientations->e) - (mag_data->x)*sinf(orientations->e);
   y = (mag_data->y);
+  //z = (mag_data->z);
+  //y = (mag_data->y) - (mag_data->x)*sinf(orientations->e);
   orientations->y = y;
-  orientations->x = x;
-  orientations->a = atan2f(y, x);
+  orientations->z = z;
+  if (fabs(z) < eps) {
+    if (y > 0) {
+      orientations->a = 270.0 * conversion;
+    } else {
+      orientations->a = 90.0 * conversion;
+    }
+  } else if (z < 0) {
+    orientations->a = 180.0 * conversion - atanf(y/z);  
+  } else {
+    if (y > 0) {
+      orientations->a = 360.0 * conversion - atanf(y/z);
+    } else {
+      orientations->a = -atanf(y/z);
+    }
+  }
   return;     
 }

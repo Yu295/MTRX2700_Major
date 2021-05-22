@@ -26,6 +26,7 @@
 #define magnet_wr  0x3C
 #define magnet_rd  0x3D
 
+#define HM5883_CFG_REG_B 0x01
 #define HM5883_MODE_REG 0x02
 #define HM5883_DATAX0 0x03
 

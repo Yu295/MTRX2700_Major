@@ -1,9 +1,5 @@
 #include "servo.h"
-#include "iic.h"
 #include "derivative.h"
-#include "lidar.h"
-#include "simple_serial.h"
-#include <stdio.h>
 
 
 // configure PWM7 and PWM5 (connected to PTU)
@@ -38,8 +34,8 @@ SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *
     return INVALID_AZIMUTH;
   }
   
-  // angle of -90: 0.9, 0: 1.5, +90: 2.1
-  ratioE = (double)elevation / 150 + 1.5;
+  // angle of -60: 0.9, 0: 1.5, +60: 2.1
+  ratioE = (double)elevation / 102 + 1.5;
   dutyE = (unsigned char)(ratioE * 12.75);
   
   
