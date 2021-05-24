@@ -24,6 +24,9 @@ void main(void) {
   
   int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
   int DEFAULT_AZIMUTH = 0;
+  float displacement = 0, velocity = 0;
+  AccelRaw read_accel;
+  AccelScaled scaled_accel;
   
   // make sure the board is set to 24MHz
   PLL_Init();
@@ -49,12 +52,21 @@ void main(void) {
 	EnableInterrupts;
   
   for(;;) {
+    
     // stay here until an obstacle is detected in front
     // return to default configuration after done panning
-    turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
-    delay(3000);
+    //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
+    
+    turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
+    getDisplacement(&displacement, &velocity);
+    sprintf(buffer, "v: %.5f, d: %.5f\n", velocity, displacement);
+    //getRawDataAccel(&read_accel);
+    //convertUnits(&read_accel, &scaled_accel);
+    //sprintf(buffer, "ax: %.5f, ay: %.5f, az: %.5f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
+    SCI1_OutString(buffer); 
+    delay(25);
   
-    panServo(buffer);
+    //panServo(buffer);
     
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
@@ -74,6 +86,7 @@ void panServo(char *buffer) {
     result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
     
     if (result == SUCCESSFUL_TURN) { 
+        delay(1500);
         getMeasurements(buffer, MIN_PAN_AZIMUTH);
         SCI1_OutString(buffer); 
     
@@ -87,6 +100,7 @@ void panServo(char *buffer) {
       result = turnToElevationAzimuth(elevation, azimuth, &prevDutyE, &prevDutyA, AZIMUTH);
       
       if (result == SUCCESSFUL_TURN) {
+        delay(400);
         getMeasurements(buffer, azimuth);         
         SCI1_OutString(buffer);     
       } else if (result == DUPLICATE_CONFIG) {
@@ -129,13 +143,12 @@ void getMeasurements(char *buffer, char azimuth) {
           
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
     minDist = groundDist + 1; // initialise minimum distance to be greater than expected ground distance
-    delay(400);
     
     // take 5 LIDAR readings and record the minimum. If the minimum is still greater than groundDist,
     // then chances are there are no objects in that direction
     for (i = 0; i < 5; ++i) {
       TIE |= TIE_C1I_MASK;
-      delay(100);
+      delay(50);
       TIE &= ~TIE_C1I_MASK;
       
       if (distance < minDist) {

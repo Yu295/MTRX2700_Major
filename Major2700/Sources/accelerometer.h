@@ -18,5 +18,6 @@ typedef struct AccelScaled {
 } AccelScaled;
 
 void convertUnits(AccelRaw *raw_data, AccelScaled *scaled_data);
+void getDisplacement(float *prevVel, float *prevDisp);
 
 #endif
