@@ -50,7 +50,7 @@ _startupData is allocated at 0xC015 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x2000     41
-  _Copy    *toCopyDownBeg 0xCED5
+  _Copy    *toCopyDownBeg 0xCEBE
 } _startupData;
 
 *********************************************************************************************
@@ -60,10 +60,10 @@ Section Name                    Size  Type     From       To       Segment
 .init                             21     R     0xC000     0xC014   ROM_C000
 .startData                        10     R     0xC015     0xC01E   ROM_C000
 .rodata                          332     R     0xC01F     0xC16A   ROM_C000
-.rodata1                          61     R     0xC16B     0xC1A7   ROM_C000
-NON_BANKED                      3373     R     0xC1A8     0xCED4   ROM_C000
-.copy                             16     R     0xCED5     0xCEE4   ROM_C000
-.text                          12152     R   0x308000   0x30AF77   PAGE_30
+.rodata1                          35     R     0xC16B     0xC18D   ROM_C000
+NON_BANKED                      3376     R     0xC18E     0xCEBD   ROM_C000
+.copy                             16     R     0xCEBE     0xCECD   ROM_C000
+.text                          12192     R   0x308000   0x30AF9F   PAGE_30
 .stack                          4096   R/W     0x1000     0x1FFF   RAM
 .data                             10   R/W     0x2000     0x2009   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -413,7 +413,7 @@ NON_BANKED                      3373     R     0xC1A8     0xCED4   ROM_C000
 .vectSeg342_vect                   2     R     0xFFFE     0xFFFF   .vectSeg342
 
 Summary of section sizes per section type:
-READ_ONLY (R):        3EDD (dec:    16093)
+READ_ONLY (R):        3EEE (dec:    16110)
 READ_WRITE (R/W):     1029 (dec:     4137)
 NO_INIT (N/I):         190 (dec:      400)
 
@@ -477,7 +477,7 @@ MODULE:                 -- mc9s12dg256.c.o --
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       3   .abs_section_4b
-     _TIE                                        4C       1       1       1   .abs_section_4c
+     _TIE                                        4C       1       1       3   .abs_section_4c
      _TSCR2                                      4D       1       1       3   .abs_section_4d
      _TFLG1                                      4E       1       1       3   .abs_section_4e
      _TFLG2                                      4F       1       1       1   .abs_section_4f
@@ -715,7 +715,7 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PORTAB                                      0       2       2       0   .abs_section_0
      _DDRAB                                       2       2       2       0   .abs_section_2
      _PARTID                                     1A       2       2       0   .abs_section_1a
-     _TCNT                                       44       2       2       1   .abs_section_44
+     _TCNT                                       44       2       2       2   .abs_section_44
      _TC0                                        50       2       2       0   .abs_section_50
      _TC1                                        52       2       2       2   .abs_section_52
      _TC2                                        54       2       2       0   .abs_section_54
@@ -723,7 +723,7 @@ MODULE:                 -- mc9s12dg256.c.o --
      _TC4                                        58       2       2       0   .abs_section_58
      _TC5                                        5A       2       2       0   .abs_section_5a
      _TC6                                        5C       2       2       0   .abs_section_5c
-     _TC7                                        5E       2       2       1   .abs_section_5e
+     _TC7                                        5E       2       2       2   .abs_section_5e
      _PACN32                                     62       2       2       0   .abs_section_62
      _PACN10                                     64       2       2       0   .abs_section_64
      _PA32H                                      72       2       2       0   .abs_section_72
@@ -773,14 +773,16 @@ MODULE:                 -- mc9s12dg256.c.o --
      _CAN4TXTSR                                 2BE       2       2       0   .abs_section_2be
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     main                                    308000     1FC     508       6   .text       
+     main                                    308000      5E      94       2   .text       
+     panServo                                30805E      8F     143       2   .text       
+     getMeasurements                         3080ED     188     392       7   .text       
 - VARIABLES:
      STRING.NO_ERROR..1                        C16B       A      10       1   .rodata1    
      STRING.ERROR..d..2                        C175       A      10       1   .rodata1    
-     STRING.mx....2f.my....2f.mz.3             C17F      29      41       1   .rodata1    
+     STRING..d..d..lu..lu..3                   C17F       F      15       1   .rodata1    
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
-     Init                                    3081FC      29      41       2   .text       
+     Init                                    308275      29      41       2   .text       
      _Startup                                  C000      15      21       0   .init       
 - VARIABLES:
      _startupData                              C015       6       6       3   .startData  
@@ -788,41 +790,41 @@ MODULE:                 -- Start12.c.o --
      __SEG_END_SSTACK                          2000       0       0       1               
 MODULE:                 -- MATH.C.o (ansibf.lib) --
 - PROCEDURES:
-     logb                                    308225      20      32       4   .text       
-     fabs                                    308245      2C      44      10   .text       
-     is_special                              308271      59      89      10   .text       
-     sqrt_r                                  3082CA     1F0     496      14   .text       
-     sqrt                                    3084BA      A2     162       5   .text       
-     SetSign                                 30855C      4C      76      14   .text       
-     atan2                                   3085A8     B0F    2831     120   .text       
-     acos                                    3090B7     184     388       5   .text       
+     logb                                    30829E      20      32       4   .text       
+     fabs                                    3082BE      2C      44      10   .text       
+     is_special                              3082EA      59      89      10   .text       
+     sqrt_r                                  308343     1F0     496      14   .text       
+     sqrt                                    308533      A2     162       5   .text       
+     SetSign                                 3085D5      4C      76      14   .text       
+     atan2                                   308621     B0F    2831     120   .text       
+     acos                                    309130     184     388       5   .text       
 - VARIABLES:
      infinity                                  C01F       8       8       9   .rodata     
      nan_union                                 C027       8       8       8   .rodata     
 MODULE:                 -- MATHF.C.o (ansibf.lib) --
 - PROCEDURES:
-     copysignf                               30923B      18      24      12   .text       
-     logbf                                   309253       E      14       4   .text       
-     fabsf                                   309261      10      16       6   .text       
-     is_special                              309271      3C      60      12   .text       
-     sincosf                                 3092AD     1C2     450       7   .text       
-     sinf                                    30946F      62      98       2   .text       
-     cosf                                    3094D1      4C      76       2   .text       
-     sqrtf_r                                 30951D      C8     200       3   .text       
-     sqrtf                                   3095E5      42      66       4   .text       
-     atan2f                                  309627     509    1289      31   .text       
-     acosf                                   309B30      A8     168       2   .text       
-     atanf                                   309BD8       E      14       6   .text       
+     copysignf                               3092B4      18      24      12   .text       
+     logbf                                   3092CC       E      14       4   .text       
+     fabsf                                   3092DA      10      16       6   .text       
+     is_special                              3092EA      3C      60      12   .text       
+     sincosf                                 309326     1C2     450       7   .text       
+     sinf                                    3094E8      62      98       4   .text       
+     cosf                                    30954A      4C      76       2   .text       
+     sqrtf_r                                 309596      C8     200       3   .text       
+     sqrtf                                   30965E      42      66       2   .text       
+     atan2f                                  3096A0     509    1289      31   .text       
+     acosf                                   309BA9      A8     168       2   .text       
+     atanf                                   309C51       E      14       6   .text       
 - VARIABLES:
      infinityf                                 C02F       4       4       2   .rodata     
      nan_unionf                                C033       4       4       4   .rodata     
 MODULE:                 -- PRINTF.C.o (ansibf.lib) --
 - PROCEDURES:
-     Ten                                     309BE6      F6     246      14   .text       
-     vprintf                                 309CDC     AB4    2740     155   .text       
-     _out                                    30A790       C      12       2   .text       
-     deposit_char                            30A79C       F      15       3   .text       
-     sprintf                                 30A7AB      2F      47       6   .text       
+     Ten                                     309C5F      F6     246      14   .text       
+     vprintf                                 309D55     AB4    2740     155   .text       
+     _out                                    30A809       C      12       2   .text       
+     deposit_char                            30A815       F      15       3   .text       
+     sprintf                                 30A824      2F      47       6   .text       
 - VARIABLES:
      pow10                                     C037      28      40       6   .rodata     
      pow16                                     C05F      20      32       4   .rodata     
@@ -832,178 +834,179 @@ MODULE:                 -- PRINTF.C.o (ansibf.lib) --
      pbuf                                      200A       7       7      16   .bss        
 MODULE:                 -- DADD.C.o (ansibf.lib) --
 - PROCEDURES:
-     D_ADDKL                                   C1A8      BC     188       1   NON_BANKED  
-     _DADD                                     C264      11      17      43   NON_BANKED  
-     _DSUB                                     C275      19      25       9   NON_BANKED  
-     _DNEG                                     C28E      17      23       3   NON_BANKED  
+     D_ADDKL                                   C18E      BC     188       1   NON_BANKED  
+     _DADD                                     C24A      11      17      43   NON_BANKED  
+     _DSUB                                     C25B      19      25       9   NON_BANKED  
+     _DNEG                                     C274      17      23       3   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- DANSI.C.o (ansibf.lib) --
 - PROCEDURES:
-     D_FREXP                                   C2A5      20      32       1   NON_BANKED  
-     D_LDEXP                                   C2C5      18      24       1   NON_BANKED  
-     frexp                                     C2DD      1F      31       3   NON_BANKED  
-     RetErrDom                                 C2FC      1F      31       1   NON_BANKED  
-     ldexp                                     C31B      27      39       5   NON_BANKED  
+     D_FREXP                                   C28B      20      32       1   NON_BANKED  
+     D_LDEXP                                   C2AB      18      24       1   NON_BANKED  
+     frexp                                     C2C3      1F      31       3   NON_BANKED  
+     RetErrDom                                 C2E2      1F      31       1   NON_BANKED  
+     ldexp                                     C301      27      39       5   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- DCMP.C.o (ansibf.lib) --
 - PROCEDURES:
-     _DCMP                                     C342      30      48       8   NON_BANKED  
+     _DCMP                                     C328      30      48       8   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- DCONV.C.o (ansibf.lib) --
 - PROCEDURES:
-     D_TOLONGK                                 C372      33      51       1   NON_BANKED  
-     D_FRLONGK                                 C3A5      19      25       2   NON_BANKED  
-     _DSFLOAT                                  C3BE      14      20       2   NON_BANKED  
-     _DUFLOAT                                  C3D2      14      20       2   NON_BANKED  
-     _DSTRUNC                                  C3E6      19      25       2   NON_BANKED  
-     _DUTRUNC                                  C3FF       3       3       6   NON_BANKED  
-     D_PSHK_UNARY                              C402      1E      30       3   NON_BANKED  
-     D_CLRK_UNARY                              C420       D      13       2   NON_BANKED  
-     D_MAXK_UNARY                              C42D       A      10       1   NON_BANKED  
-     D_NORMK_UNARY                             C437      5C      92       2   NON_BANKED  
+     D_TOLONGK                                 C358      33      51       1   NON_BANKED  
+     D_FRLONGK                                 C38B      19      25       2   NON_BANKED  
+     _DSFLOAT                                  C3A4      14      20       2   NON_BANKED  
+     _DUFLOAT                                  C3B8      14      20       2   NON_BANKED  
+     _DSTRUNC                                  C3CC      19      25       2   NON_BANKED  
+     _DUTRUNC                                  C3E5       3       3       6   NON_BANKED  
+     D_PSHK_UNARY                              C3E8      1E      30       3   NON_BANKED  
+     D_CLRK_UNARY                              C406       D      13       2   NON_BANKED  
+     D_MAXK_UNARY                              C413       A      10       1   NON_BANKED  
+     D_NORMK_UNARY                             C41D      5C      92       2   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- DFCONV.C.o (ansibf.lib) --
 - PROCEDURES:
-     D_TOFK                                    C493      3C      60       1   NON_BANKED  
-     D_FRFK                                    C4CF      10      16       1   NON_BANKED  
-     _DLONG                                    C4DF      17      23       9   NON_BANKED  
-     _DSHORT                                   C4F6      15      21       3   NON_BANKED  
+     D_TOFK                                    C479      3C      60       1   NON_BANKED  
+     D_FRFK                                    C4B5      10      16       1   NON_BANKED  
+     _DLONG                                    C4C5      17      23       4   NON_BANKED  
+     _DSHORT                                   C4DC      15      21       3   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- DMUL.C.o (ansibf.lib) --
 - PROCEDURES:
-     D_DIVKL                                   C50B      F5     245       2   NON_BANKED  
-     D_MULKL                                   C600      90     144       1   NON_BANKED  
-     _DMUL                                     C690      11      17      15   NON_BANKED  
-     _DDIV                                     C6A1      11      17      10   NON_BANKED  
+     D_DIVKL                                   C4F1      F5     245       2   NON_BANKED  
+     D_MULKL                                   C5E6      90     144       1   NON_BANKED  
+     _DMUL                                     C676      11      17      15   NON_BANKED  
+     _DDIV                                     C687      11      17      10   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- DREGS.C.o (ansibf.lib) --
 - PROCEDURES:
-     D_PULK                                    C6B2      29      41       5   NON_BANKED  
-     D_PULL                                    C6DB      25      37       5   NON_BANKED  
-     D_PSHK                                    C700      23      35       3   NON_BANKED  
-     D_STAL                                    C723      2A      42       2   NON_BANKED  
-     D_XGKL                                    C74D      39      57       2   NON_BANKED  
-     D_CLRK                                    C786      13      19       3   NON_BANKED  
-     D_MAXK                                    C799       A      10       2   NON_BANKED  
-     D_NORMK                                   C7A3      8F     143       5   NON_BANKED  
+     D_PULK                                    C698      29      41       5   NON_BANKED  
+     D_PULL                                    C6C1      25      37       5   NON_BANKED  
+     D_PSHK                                    C6E6      23      35       3   NON_BANKED  
+     D_STAL                                    C709      2A      42       2   NON_BANKED  
+     D_XGKL                                    C733      39      57       2   NON_BANKED  
+     D_CLRK                                    C76C      13      19       3   NON_BANKED  
+     D_MAXK                                    C77F       A      10       2   NON_BANKED  
+     D_NORMK                                   C789      8F     143       5   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FADD.C.o (ansibf.lib) --
 - PROCEDURES:
-     F_ADDKL                                   C832      67     103       1   NON_BANKED  
-     _FADD                                     C899      15      21      39   NON_BANKED  
-     _FSUB                                     C8AE      13      19       9   NON_BANKED  
-     _FNEG                                     C8C1       B      11       4   NON_BANKED  
+     F_ADDKL                                   C818      67     103       1   NON_BANKED  
+     _FADD                                     C87F      15      21      38   NON_BANKED  
+     _FSUB                                     C894      13      19       9   NON_BANKED  
+     _FNEG                                     C8A7       B      11       5   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FANSI.C.o (ansibf.lib) --
 - PROCEDURES:
-     F_MODF                                    C8CC      38      56       1   NON_BANKED  
-     F_FREXP                                   C904      1F      31       1   NON_BANKED  
-     F_LDEXP                                   C923      15      21       1   NON_BANKED  
-     modff                                     C938      18      24       1   NON_BANKED  
-     frexpf                                    C950      19      25       2   NON_BANKED  
-     RetErrDom                                 C969      14      20       1   NON_BANKED  
-     ldexpf                                    C97D      1E      30       5   NON_BANKED  
+     F_MODF                                    C8B2      38      56       1   NON_BANKED  
+     F_FREXP                                   C8EA      1F      31       1   NON_BANKED  
+     F_LDEXP                                   C909      15      21       1   NON_BANKED  
+     modff                                     C91E      18      24       1   NON_BANKED  
+     frexpf                                    C936      19      25       2   NON_BANKED  
+     RetErrDom                                 C94F      14      20       1   NON_BANKED  
+     ldexpf                                    C963      1E      30       5   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FCMP.C.o (ansibf.lib) --
 - PROCEDURES:
-     _FCMP                                     C99B      26      38       7   NON_BANKED  
+     _FCMP                                     C981      26      38       7   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FCONV.C.o (ansibf.lib) --
 - PROCEDURES:
-     F_TOLONGK                                 C9C1      33      51       1   NON_BANKED  
-     F_FRLONGK                                 C9F4      1F      31       1   NON_BANKED  
-     _FSFLOAT                                  CA13      12      18       4   NON_BANKED  
-     _FSTRUNC                                  CA25      11      17       2   NON_BANKED  
+     F_TOLONGK                                 C9A7      33      51       1   NON_BANKED  
+     F_FRLONGK                                 C9DA      1F      31       1   NON_BANKED  
+     _FSFLOAT                                  C9F9      12      18       3   NON_BANKED  
+     _FSTRUNC                                  CA0B      11      17       4   NON_BANKED  
+     _FUTRUNC                                  CA1C       3       3       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FMUL.C.o (ansibf.lib) --
 - PROCEDURES:
-     F_DIVKL                                   CA36      8E     142       1   NON_BANKED  
-     F_MULKL                                   CAC4      58      88       1   NON_BANKED  
-     _FMUL                                     CB1C      14      20      28   NON_BANKED  
-     _FDIV                                     CB30      1E      30      17   NON_BANKED  
+     F_DIVKL                                   CA1F      8E     142       1   NON_BANKED  
+     F_MULKL                                   CAAD      58      88       1   NON_BANKED  
+     _FMUL                                     CB05      14      20      26   NON_BANKED  
+     _FDIV                                     CB19      1E      30      15   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FREGS.C.o (ansibf.lib) --
 - PROCEDURES:
-     F_PULK                                    CB4E      15      21       5   NON_BANKED  
-     F_PULL                                    CB63      15      21       6   NON_BANKED  
-     F_PSHK                                    CB78      13      19       8   NON_BANKED  
-     F_STAL                                    CB8B      17      23       1   NON_BANKED  
-     F_TLK                                     CBA2       D      13       3   NON_BANKED  
-     F_XGKL                                    CBAF      21      33       2   NON_BANKED  
-     F_CLRK                                    CBD0       B      11       4   NON_BANKED  
-     F_CLRL                                    CBDB       C      12       1   NON_BANKED  
-     F_MAXK                                    CBE7       9       9       3   NON_BANKED  
-     F_NORMK                                   CBF0      3E      62       5   NON_BANKED  
+     F_PULK                                    CB37      15      21       5   NON_BANKED  
+     F_PULL                                    CB4C      15      21       6   NON_BANKED  
+     F_PSHK                                    CB61      13      19       8   NON_BANKED  
+     F_STAL                                    CB74      17      23       1   NON_BANKED  
+     F_TLK                                     CB8B       D      13       3   NON_BANKED  
+     F_XGKL                                    CB98      21      33       2   NON_BANKED  
+     F_CLRK                                    CBB9       B      11       4   NON_BANKED  
+     F_CLRL                                    CBC4       C      12       1   NON_BANKED  
+     F_MAXK                                    CBD0       9       9       3   NON_BANKED  
+     F_NORMK                                   CBD9      3E      62       5   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- rtshc12.c.o (ansibf.lib) --
 - PROCEDURES:
-     _LCMP                                     CC2E      19      25       2   NON_BANKED  
-     _LCMP_P                                   CC47      15      21       3   NON_BANKED  
-     _LNEG                                     CC5C       D      13       1   NON_BANKED  
-     _LINC                                     CC69       5       5       1   NON_BANKED  
-     _lDivMod                                  CC6E      BE     190       4   NON_BANKED  
-     _LDIVU                                    CD2C       E      14       1   NON_BANKED  
-     _NEG_P                                    CD3A       F      15       5   NON_BANKED  
-     _LDIVS                                    CD49      35      53       1   NON_BANKED  
-     _LMODU                                    CD7E      11      17       1   NON_BANKED  
-     _ILSEXT                                   CD8F       7       7       7   NON_BANKED  
-     _COPY                                     CD96       8       8      23   NON_BANKED  
-     _CASE_DIRECT_BYTE                         CD9E       5       5       1   NON_BANKED  
-     _CASE_CHECKED                             CDA3       B      11       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        CDAE      14      20      12   NON_BANKED  
-     _CASE_SEARCH_8                            CDC2      17      23       1   NON_BANKED  
-     _CASE_SEARCH_8_BYTE                       CDD9      1A      26       1   NON_BANKED  
+     _LCMP                                     CC17      19      25       2   NON_BANKED  
+     _LCMP_P                                   CC30      15      21       4   NON_BANKED  
+     _LNEG                                     CC45       D      13       1   NON_BANKED  
+     _LINC                                     CC52       5       5       2   NON_BANKED  
+     _lDivMod                                  CC57      BE     190       4   NON_BANKED  
+     _LDIVU                                    CD15       E      14       1   NON_BANKED  
+     _NEG_P                                    CD23       F      15       5   NON_BANKED  
+     _LDIVS                                    CD32      35      53       1   NON_BANKED  
+     _LMODU                                    CD67      11      17       1   NON_BANKED  
+     _ILSEXT                                   CD78       7       7       6   NON_BANKED  
+     _COPY                                     CD7F       8       8      23   NON_BANKED  
+     _CASE_DIRECT_BYTE                         CD87       5       5       1   NON_BANKED  
+     _CASE_CHECKED                             CD8C       B      11       1   NON_BANKED  
+     _CASE_CHECKED_BYTE                        CD97      14      20      12   NON_BANKED  
+     _CASE_SEARCH_8                            CDAB      17      23       1   NON_BANKED  
+     _CASE_SEARCH_8_BYTE                       CDC2      1A      26       1   NON_BANKED  
 - VARIABLES:
      errno                                     201F       2       2       8   .common     
 MODULE:                 -- VREGS.C.o (ansibf.lib) --
 - PROCEDURES:
-     L_NEGK                                    CDF3       7       7       2   NON_BANKED  
-     L_PSHK                                    CDFA       8       8       2   NON_BANKED  
-     UL_PULK                                   CE02       3       3       1   NON_BANKED  
-     SL_PULK                                   CE05       A      10       2   NON_BANKED  
+     L_NEGK                                    CDDC       7       7       2   NON_BANKED  
+     L_PSHK                                    CDE3       8       8       2   NON_BANKED  
+     UL_PULK                                   CDEB       3       3       1   NON_BANKED  
+     SL_PULK                                   CDEE       A      10       2   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- accelerometer.c.o --
 - PROCEDURES:
-     convertUnits                            30A7DA      5E      94       2   .text       
+     convertUnits                            30A853      5E      94       2   .text       
 - VARIABLES:
 MODULE:                 -- iic.c.o --
 - PROCEDURES:
-     iicinit                                 30A838      1C      28       2   .text       
-     iic_request_data                        30A854      1B      27       4   .text       
-     iic_read_data                           30A86F      62      98       4   .text       
-     iic_send_data                           30A8D1      2E      46       8   .text       
-     iicresponse                             30A8FF      2E      46       6   .text       
-     iicstart                                30A92D      42      66       4   .text       
-     iicstop                                 30A96F       4       4       8   .text       
-     iicrestart                              30A973       E      14       2   .text       
-     iictransmit                             30A981       B      11       4   .text       
-     iicswrcv                                30A98C       6       6       2   .text       
-     iicreceive                              30A992      27      39       2   .text       
-     iicreceivem1                            30A9B9      2A      42       2   .text       
-     iicreceivelast                          30A9E3      30      48       2   .text       
-     setAlarm                                30AA13      12      18      12   .text       
-     Init_TC7                                30AA25      15      21       2   .text       
-     TC7_ISR                                   CE0F      27      39       1   NON_BANKED  
+     iicinit                                 30A8B1      1C      28       2   .text       
+     iic_request_data                        30A8CD      1B      27       4   .text       
+     iic_read_data                           30A8E8      62      98       4   .text       
+     iic_send_data                           30A94A      2E      46       8   .text       
+     iicresponse                             30A978      2E      46       6   .text       
+     iicstart                                30A9A6      42      66       4   .text       
+     iicstop                                 30A9E8       4       4       8   .text       
+     iicrestart                              30A9EC       E      14       2   .text       
+     iictransmit                             30A9FA       B      11       4   .text       
+     iicswrcv                                30AA05       6       6       2   .text       
+     iicreceive                              30AA0B      27      39       2   .text       
+     iicreceivem1                            30AA32      2A      42       2   .text       
+     iicreceivelast                          30AA5C      30      48       2   .text       
+     setAlarm                                30AA8C      12      18      14   .text       
+     delay                                   30AA9E      15      21       6   .text       
+     Init_TC7                                30AAB3      15      21       2   .text       
+     TC7_ISR                                   CDF8      27      39       1   NON_BANKED  
 - VARIABLES:
-     alarmSignaled                             2011       1       1      14   .bss        
+     alarmSignaled                             2011       1       1      15   .bss        
      currentTime                               2012       2       2       4   .bss        
      alarmTime                                 2014       2       2       2   .bss        
      alarmSet                                  2016       1       1       3   .bss        
 MODULE:                 -- isr_vectors.c.o --
 - PROCEDURES:
-     UnimplementedISR                          CE36       2       2      60   NON_BANKED  
+     UnimplementedISR                          CE1F       2       2      60   NON_BANKED  
 - VARIABLES:
      _vect                                     FF80      7E     126       0   .abs_section_ff80
 MODULE:                 -- l3g4200d.c.o --
 - PROCEDURES:
-     getRawDataMagnet                        30AA3A      1B      27       2   .text       
-     getRawDataAccel                         30AA55      1B      27       2   .text       
-     iicSensorInit                           30AA70      2A      42       4   .text       
-     accel_init                              30AA9A      10      16       2   .text       
-     gyro_init                               30AAAA      10      16       2   .text       
-     magnet_init                             30AABA      1E      30       2   .text       
-     normaliseMagnet                         30AAD8      93     147       2   .text       
-     findInitOrientation                     30AB6B     1F5     501       5   .text       
+     getRawDataMagnet                        30AAC8      1B      27       2   .text       
+     getRawDataAccel                         30AAE3      1B      27       2   .text       
+     iicSensorInit                           30AAFE      2A      42       4   .text       
+     accel_init                              30AB28      10      16       2   .text       
+     gyro_init                               30AB38      10      16       2   .text       
+     magnet_init                             30AB48      1E      30       2   .text       
+     findOrientation                         30AB66     1F5     501       5   .text       
 - VARIABLES:
      accelerometer_cfg                         2000       4       4       1   .data       
      gyro_cfg                                  2004       2       2       1   .data       
@@ -1011,19 +1014,20 @@ MODULE:                 -- l3g4200d.c.o --
      mag_cfg_b                                 2008       2       2       1   .data       
 MODULE:                 -- pll.c.o --
 - PROCEDURES:
-     PLL_Init                                30AD60      15      21       2   .text       
+     PLL_Init                                30AD5B      15      21       2   .text       
 - VARIABLES:
 MODULE:                 -- simple_serial.c.o --
 - PROCEDURES:
-     SCI1_Init                               30AD75      5A      90       2   .text       
-     SCI1_OutChar                            30ADCF       9       9       2   .text       
-     SCI1_OutString                          30ADD8      10      16       4   .text       
+     SCI1_Init                               30AD70      5A      90       2   .text       
+     SCI1_OutChar                            30ADCA       9       9       2   .text       
+     SCI1_OutString                          30ADD3      10      16       6   .text       
 - VARIABLES:
 MODULE:                 -- lidar.c.o --
 - PROCEDURES:
-     timer_config                            30ADE8      1B      27       2   .text       
-     TC1_ISR                                   CE38      91     145       1   NON_BANKED  
-     TOF_ISR                                   CEC9       C      12       1   NON_BANKED  
+     getGroundDistance                       30ADE3      2D      45       2   .text       
+     timer_config                            30AE10      1B      27       2   .text       
+     TC1_ISR                                   CE21      91     145       1   NON_BANKED  
+     TOF_ISR                                   CEB2       C      12       1   NON_BANKED  
 - VARIABLES:
      overflow                                  2021       2       2       6   .common     
      time_diff                                 2023       4       4       5   .common     
@@ -1031,11 +1035,11 @@ MODULE:                 -- lidar.c.o --
      edge_flag                                 2028       1       1       3   .common     
      time_1                                    2017       2       2       3   .bss        
      time_2                                    2019       2       2       3   .bss        
-     distance                                  201B       4       4       2   .bss        
+     distance                                  201B       4       4       6   .bss        
 MODULE:                 -- servo.c.o --
 - PROCEDURES:
-     PWMConfig                               30AE03      27      39       2   .text       
-     turnToElevationAzimuth                  30AE2A     14E     334       4   .text       
+     PWMConfig                               30AE2B      27      39       2   .text       
+     turnToElevationAzimuth                  30AE52     14E     334       8   .text       
 - VARIABLES:
 
 *********************************************************************************************
@@ -1043,7 +1047,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   mc9s12dg256.c.o                            400      0      0
-  main.c.o                                     0    508     61
+  main.c.o                                     0    629     35
   Start12.c.o                                  0     62      0
   MATH.C.o (ansibf.lib)                        0   4118     16
   MATHF.C.o (ansibf.lib)                       0   2475      8
@@ -1058,18 +1062,18 @@ MODULE STATISTIC
   FADD.C.o (ansibf.lib)                        0    154      0
   FANSI.C.o (ansibf.lib)                       0    207      0
   FCMP.C.o (ansibf.lib)                        0     38      0
-  FCONV.C.o (ansibf.lib)                       0    117      0
+  FCONV.C.o (ansibf.lib)                       0    120      0
   FMUL.C.o (ansibf.lib)                        0    280      0
   FREGS.C.o (ansibf.lib)                       0    224      0
   rtshc12.c.o (ansibf.lib)                     2    453      0
   VREGS.C.o (ansibf.lib)                       0     28      0
   accelerometer.c.o                            0     94      0
-  iic.c.o                                      6    553      0
+  iic.c.o                                      6    574      0
   isr_vectors.c.o                              0      2    126
-  l3g4200d.c.o                                10    806      0
+  l3g4200d.c.o                                10    659      0
   pll.c.o                                      0     21      0
   simple_serial.c.o                            0    115      0
-  lidar.c.o                                   16    184      0
+  lidar.c.o                                   16    229      0
   servo.c.o                                    0    373      0
   other                                     4096     12     16
 
@@ -1077,14 +1081,15 @@ MODULE STATISTIC
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  main Init logb fabs is_special sqrt_r sqrt SetSign atan2 acos copysignf 
-  logbf fabsf is_special sincosf sinf cosf sqrtf_r sqrtf atan2f acosf atanf Ten 
-  vprintf _out deposit_char sprintf convertUnits iicinit iic_request_data 
-  iic_read_data iic_send_data iicresponse iicstart iicstop iicrestart 
-  iictransmit iicswrcv iicreceive iicreceivem1 iicreceivelast setAlarm Init_TC7 
-  getRawDataMagnet getRawDataAccel iicSensorInit accel_init gyro_init 
-  magnet_init normaliseMagnet findInitOrientation PLL_Init SCI1_Init 
-  SCI1_OutChar SCI1_OutString timer_config PWMConfig turnToElevationAzimuth 
+  main panServo getMeasurements Init logb fabs is_special sqrt_r sqrt SetSign 
+  atan2 acos copysignf logbf fabsf is_special sincosf sinf cosf sqrtf_r sqrtf 
+  atan2f acosf atanf Ten vprintf _out deposit_char sprintf convertUnits iicinit 
+  iic_request_data iic_read_data iic_send_data iicresponse iicstart iicstop 
+  iicrestart iictransmit iicswrcv iicreceive iicreceivem1 iicreceivelast 
+  setAlarm delay Init_TC7 getRawDataMagnet getRawDataAccel iicSensorInit 
+  accel_init gyro_init magnet_init findOrientation PLL_Init SCI1_Init 
+  SCI1_OutChar SCI1_OutString getGroundDistance timer_config PWMConfig 
+  turnToElevationAzimuth 
 SECTION: ".data"
   accelerometer_cfg gyro_cfg mag_cfg mag_cfg_b 
 SECTION: ".bss"
@@ -1094,19 +1099,19 @@ SECTION: ".init"
 SECTION: ".rodata"
   infinity nan_union infinityf nan_unionf pow10 pow16 pow8 fpow10 fpow_10 
 SECTION: ".rodata1"
-  STRING.NO_ERROR..1 STRING.ERROR..d..2 STRING.mx....2f.my....2f.mz.3 
+  STRING.NO_ERROR..1 STRING.ERROR..d..2 STRING..d..d..lu..lu..3 
 SECTION: "NON_BANKED"
   D_ADDKL _DADD _DSUB _DNEG D_FREXP D_LDEXP frexp RetErrDom ldexp _DCMP 
   D_TOLONGK D_FRLONGK _DSFLOAT _DUFLOAT _DSTRUNC _DUTRUNC D_PSHK_UNARY 
   D_CLRK_UNARY D_MAXK_UNARY D_NORMK_UNARY D_TOFK D_FRFK _DLONG _DSHORT D_DIVKL 
   D_MULKL _DMUL _DDIV D_PULK D_PULL D_PSHK D_STAL D_XGKL D_CLRK D_MAXK D_NORMK 
   F_ADDKL _FADD _FSUB _FNEG F_MODF F_FREXP F_LDEXP modff frexpf RetErrDom 
-  ldexpf _FCMP F_TOLONGK F_FRLONGK _FSFLOAT _FSTRUNC F_DIVKL F_MULKL _FMUL 
-  _FDIV F_PULK F_PULL F_PSHK F_STAL F_TLK F_XGKL F_CLRK F_CLRL F_MAXK F_NORMK 
-  _LCMP _LCMP_P _LNEG _LINC _lDivMod _LDIVU _NEG_P _LDIVS _LMODU _ILSEXT _COPY 
-  _CASE_DIRECT_BYTE _CASE_CHECKED _CASE_CHECKED_BYTE _CASE_SEARCH_8 
-  _CASE_SEARCH_8_BYTE L_NEGK L_PSHK UL_PULK SL_PULK TC7_ISR UnimplementedISR 
-  TC1_ISR TOF_ISR 
+  ldexpf _FCMP F_TOLONGK F_FRLONGK _FSFLOAT _FSTRUNC _FUTRUNC F_DIVKL F_MULKL 
+  _FMUL _FDIV F_PULK F_PULL F_PSHK F_STAL F_TLK F_XGKL F_CLRK F_CLRL F_MAXK 
+  F_NORMK _LCMP _LCMP_P _LNEG _LINC _lDivMod _LDIVU _NEG_P _LDIVS _LMODU 
+  _ILSEXT _COPY _CASE_DIRECT_BYTE _CASE_CHECKED _CASE_CHECKED_BYTE 
+  _CASE_SEARCH_8 _CASE_SEARCH_8_BYTE L_NEGK L_PSHK UL_PULK SL_PULK TC7_ISR 
+  UnimplementedISR TC1_ISR TOF_ISR 
 SECTION: ".abs_section_8"
   _PORTE 
 SECTION: ".abs_section_9"
@@ -1842,14 +1847,14 @@ OBJECT LIST SORTED BY ADDRESS
      _CFORC                                      41       1       1       0   .abs_section_41
      _OC7M                                       42       1       1       0   .abs_section_42
      _OC7D                                       43       1       1       0   .abs_section_43
-     _TCNT                                       44       2       2       1   .abs_section_44
+     _TCNT                                       44       2       2       2   .abs_section_44
      _TSCR1                                      46       1       1       2   .abs_section_46
      _TTOV                                       47       1       1       0   .abs_section_47
      _TCTL1                                      48       1       1       1   .abs_section_48
      _TCTL2                                      49       1       1       0   .abs_section_49
      _TCTL3                                      4A       1       1       0   .abs_section_4a
      _TCTL4                                      4B       1       1       3   .abs_section_4b
-     _TIE                                        4C       1       1       1   .abs_section_4c
+     _TIE                                        4C       1       1       3   .abs_section_4c
      _TSCR2                                      4D       1       1       3   .abs_section_4d
      _TFLG1                                      4E       1       1       3   .abs_section_4e
      _TFLG2                                      4F       1       1       1   .abs_section_4f
@@ -1860,7 +1865,7 @@ OBJECT LIST SORTED BY ADDRESS
      _TC4                                        58       2       2       0   .abs_section_58
      _TC5                                        5A       2       2       0   .abs_section_5a
      _TC6                                        5C       2       2       0   .abs_section_5c
-     _TC7                                        5E       2       2       1   .abs_section_5e
+     _TC7                                        5E       2       2       2   .abs_section_5e
      _PACTL                                      60       1       1       0   .abs_section_60
      _PAFLG                                      61       1       1       0   .abs_section_61
      _PACN32                                     62       2       2       0   .abs_section_62
@@ -2144,13 +2149,13 @@ OBJECT LIST SORTED BY ADDRESS
      mag_cfg                                   2006       2       2       1   .data       
      mag_cfg_b                                 2008       2       2       1   .data       
      pbuf                                      200A       7       7      16   .bss        
-     alarmSignaled                             2011       1       1      14   .bss        
+     alarmSignaled                             2011       1       1      15   .bss        
      currentTime                               2012       2       2       4   .bss        
      alarmTime                                 2014       2       2       2   .bss        
      alarmSet                                  2016       1       1       3   .bss        
      time_1                                    2017       2       2       3   .bss        
      time_2                                    2019       2       2       3   .bss        
-     distance                                  201B       4       4       2   .bss        
+     distance                                  201B       4       4       6   .bss        
      errno                                     201F       2       2       8   .common     
      overflow                                  2021       2       2       6   .common     
      time_diff                                 2023       4       4       5   .common     
@@ -2168,163 +2173,165 @@ OBJECT LIST SORTED BY ADDRESS
      fpow_10                                   C10B      60      96       1   .rodata     
      STRING.NO_ERROR..1                        C16B       A      10       1   .rodata1    
      STRING.ERROR..d..2                        C175       A      10       1   .rodata1    
-     STRING.mx....2f.my....2f.mz.3             C17F      29      41       1   .rodata1    
-     D_ADDKL                                   C1A8      BC     188       1   NON_BANKED  
-     _DADD                                     C264      11      17      43   NON_BANKED  
-     _DSUB                                     C275      19      25       9   NON_BANKED  
-     _DNEG                                     C28E      17      23       3   NON_BANKED  
-     D_FREXP                                   C2A5      20      32       1   NON_BANKED  
-     D_LDEXP                                   C2C5      18      24       1   NON_BANKED  
-     frexp                                     C2DD      1F      31       3   NON_BANKED  
-     RetErrDom                                 C2FC      1F      31       1   NON_BANKED  
-     ldexp                                     C31B      27      39       5   NON_BANKED  
-     _DCMP                                     C342      30      48       8   NON_BANKED  
-     D_TOLONGK                                 C372      33      51       1   NON_BANKED  
-     D_FRLONGK                                 C3A5      19      25       2   NON_BANKED  
-     _DSFLOAT                                  C3BE      14      20       2   NON_BANKED  
-     _DUFLOAT                                  C3D2      14      20       2   NON_BANKED  
-     _DSTRUNC                                  C3E6      19      25       2   NON_BANKED  
-     _DUTRUNC                                  C3FF       3       3       6   NON_BANKED  
-     D_PSHK_UNARY                              C402      1E      30       3   NON_BANKED  
-     D_CLRK_UNARY                              C420       D      13       2   NON_BANKED  
-     D_MAXK_UNARY                              C42D       A      10       1   NON_BANKED  
-     D_NORMK_UNARY                             C437      5C      92       2   NON_BANKED  
-     D_TOFK                                    C493      3C      60       1   NON_BANKED  
-     D_FRFK                                    C4CF      10      16       1   NON_BANKED  
-     _DLONG                                    C4DF      17      23       9   NON_BANKED  
-     _DSHORT                                   C4F6      15      21       3   NON_BANKED  
-     D_DIVKL                                   C50B      F5     245       2   NON_BANKED  
-     D_MULKL                                   C600      90     144       1   NON_BANKED  
-     _DMUL                                     C690      11      17      15   NON_BANKED  
-     _DDIV                                     C6A1      11      17      10   NON_BANKED  
-     D_PULK                                    C6B2      29      41       5   NON_BANKED  
-     D_PULL                                    C6DB      25      37       5   NON_BANKED  
-     D_PSHK                                    C700      23      35       3   NON_BANKED  
-     D_STAL                                    C723      2A      42       2   NON_BANKED  
-     D_XGKL                                    C74D      39      57       2   NON_BANKED  
-     D_CLRK                                    C786      13      19       3   NON_BANKED  
-     D_MAXK                                    C799       A      10       2   NON_BANKED  
-     D_NORMK                                   C7A3      8F     143       5   NON_BANKED  
-     F_ADDKL                                   C832      67     103       1   NON_BANKED  
-     _FADD                                     C899      15      21      39   NON_BANKED  
-     _FSUB                                     C8AE      13      19       9   NON_BANKED  
-     _FNEG                                     C8C1       B      11       4   NON_BANKED  
-     F_MODF                                    C8CC      38      56       1   NON_BANKED  
-     F_FREXP                                   C904      1F      31       1   NON_BANKED  
-     F_LDEXP                                   C923      15      21       1   NON_BANKED  
-     modff                                     C938      18      24       1   NON_BANKED  
-     frexpf                                    C950      19      25       2   NON_BANKED  
-     RetErrDom                                 C969      14      20       1   NON_BANKED  
-     ldexpf                                    C97D      1E      30       5   NON_BANKED  
-     _FCMP                                     C99B      26      38       7   NON_BANKED  
-     F_TOLONGK                                 C9C1      33      51       1   NON_BANKED  
-     F_FRLONGK                                 C9F4      1F      31       1   NON_BANKED  
-     _FSFLOAT                                  CA13      12      18       4   NON_BANKED  
-     _FSTRUNC                                  CA25      11      17       2   NON_BANKED  
-     F_DIVKL                                   CA36      8E     142       1   NON_BANKED  
-     F_MULKL                                   CAC4      58      88       1   NON_BANKED  
-     _FMUL                                     CB1C      14      20      28   NON_BANKED  
-     _FDIV                                     CB30      1E      30      17   NON_BANKED  
-     F_PULK                                    CB4E      15      21       5   NON_BANKED  
-     F_PULL                                    CB63      15      21       6   NON_BANKED  
-     F_PSHK                                    CB78      13      19       8   NON_BANKED  
-     F_STAL                                    CB8B      17      23       1   NON_BANKED  
-     F_TLK                                     CBA2       D      13       3   NON_BANKED  
-     F_XGKL                                    CBAF      21      33       2   NON_BANKED  
-     F_CLRK                                    CBD0       B      11       4   NON_BANKED  
-     F_CLRL                                    CBDB       C      12       1   NON_BANKED  
-     F_MAXK                                    CBE7       9       9       3   NON_BANKED  
-     F_NORMK                                   CBF0      3E      62       5   NON_BANKED  
-     _LCMP                                     CC2E      19      25       2   NON_BANKED  
-     _LCMP_P                                   CC47      15      21       3   NON_BANKED  
-     _LNEG                                     CC5C       D      13       1   NON_BANKED  
-     _LINC                                     CC69       5       5       1   NON_BANKED  
-     _lDivMod                                  CC6E      BE     190       4   NON_BANKED  
-     _LDIVU                                    CD2C       E      14       1   NON_BANKED  
-     _NEG_P                                    CD3A       F      15       5   NON_BANKED  
-     _LDIVS                                    CD49      35      53       1   NON_BANKED  
-     _LMODU                                    CD7E      11      17       1   NON_BANKED  
-     _ILSEXT                                   CD8F       7       7       7   NON_BANKED  
-     _COPY                                     CD96       8       8      23   NON_BANKED  
-     _CASE_DIRECT_BYTE                         CD9E       5       5       1   NON_BANKED  
-     _CASE_CHECKED                             CDA3       B      11       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        CDAE      14      20      12   NON_BANKED  
-     _CASE_SEARCH_8                            CDC2      17      23       1   NON_BANKED  
-     _CASE_SEARCH_8_BYTE                       CDD9      1A      26       1   NON_BANKED  
-     L_NEGK                                    CDF3       7       7       2   NON_BANKED  
-     L_PSHK                                    CDFA       8       8       2   NON_BANKED  
-     UL_PULK                                   CE02       3       3       1   NON_BANKED  
-     SL_PULK                                   CE05       A      10       2   NON_BANKED  
-     TC7_ISR                                   CE0F      27      39       1   NON_BANKED  
-     UnimplementedISR                          CE36       2       2      60   NON_BANKED  
-     TC1_ISR                                   CE38      91     145       1   NON_BANKED  
-     TOF_ISR                                   CEC9       C      12       1   NON_BANKED  
+     STRING..d..d..lu..lu..3                   C17F       F      15       1   .rodata1    
+     D_ADDKL                                   C18E      BC     188       1   NON_BANKED  
+     _DADD                                     C24A      11      17      43   NON_BANKED  
+     _DSUB                                     C25B      19      25       9   NON_BANKED  
+     _DNEG                                     C274      17      23       3   NON_BANKED  
+     D_FREXP                                   C28B      20      32       1   NON_BANKED  
+     D_LDEXP                                   C2AB      18      24       1   NON_BANKED  
+     frexp                                     C2C3      1F      31       3   NON_BANKED  
+     RetErrDom                                 C2E2      1F      31       1   NON_BANKED  
+     ldexp                                     C301      27      39       5   NON_BANKED  
+     _DCMP                                     C328      30      48       8   NON_BANKED  
+     D_TOLONGK                                 C358      33      51       1   NON_BANKED  
+     D_FRLONGK                                 C38B      19      25       2   NON_BANKED  
+     _DSFLOAT                                  C3A4      14      20       2   NON_BANKED  
+     _DUFLOAT                                  C3B8      14      20       2   NON_BANKED  
+     _DSTRUNC                                  C3CC      19      25       2   NON_BANKED  
+     _DUTRUNC                                  C3E5       3       3       6   NON_BANKED  
+     D_PSHK_UNARY                              C3E8      1E      30       3   NON_BANKED  
+     D_CLRK_UNARY                              C406       D      13       2   NON_BANKED  
+     D_MAXK_UNARY                              C413       A      10       1   NON_BANKED  
+     D_NORMK_UNARY                             C41D      5C      92       2   NON_BANKED  
+     D_TOFK                                    C479      3C      60       1   NON_BANKED  
+     D_FRFK                                    C4B5      10      16       1   NON_BANKED  
+     _DLONG                                    C4C5      17      23       4   NON_BANKED  
+     _DSHORT                                   C4DC      15      21       3   NON_BANKED  
+     D_DIVKL                                   C4F1      F5     245       2   NON_BANKED  
+     D_MULKL                                   C5E6      90     144       1   NON_BANKED  
+     _DMUL                                     C676      11      17      15   NON_BANKED  
+     _DDIV                                     C687      11      17      10   NON_BANKED  
+     D_PULK                                    C698      29      41       5   NON_BANKED  
+     D_PULL                                    C6C1      25      37       5   NON_BANKED  
+     D_PSHK                                    C6E6      23      35       3   NON_BANKED  
+     D_STAL                                    C709      2A      42       2   NON_BANKED  
+     D_XGKL                                    C733      39      57       2   NON_BANKED  
+     D_CLRK                                    C76C      13      19       3   NON_BANKED  
+     D_MAXK                                    C77F       A      10       2   NON_BANKED  
+     D_NORMK                                   C789      8F     143       5   NON_BANKED  
+     F_ADDKL                                   C818      67     103       1   NON_BANKED  
+     _FADD                                     C87F      15      21      38   NON_BANKED  
+     _FSUB                                     C894      13      19       9   NON_BANKED  
+     _FNEG                                     C8A7       B      11       5   NON_BANKED  
+     F_MODF                                    C8B2      38      56       1   NON_BANKED  
+     F_FREXP                                   C8EA      1F      31       1   NON_BANKED  
+     F_LDEXP                                   C909      15      21       1   NON_BANKED  
+     modff                                     C91E      18      24       1   NON_BANKED  
+     frexpf                                    C936      19      25       2   NON_BANKED  
+     RetErrDom                                 C94F      14      20       1   NON_BANKED  
+     ldexpf                                    C963      1E      30       5   NON_BANKED  
+     _FCMP                                     C981      26      38       7   NON_BANKED  
+     F_TOLONGK                                 C9A7      33      51       1   NON_BANKED  
+     F_FRLONGK                                 C9DA      1F      31       1   NON_BANKED  
+     _FSFLOAT                                  C9F9      12      18       3   NON_BANKED  
+     _FSTRUNC                                  CA0B      11      17       4   NON_BANKED  
+     _FUTRUNC                                  CA1C       3       3       1   NON_BANKED  
+     F_DIVKL                                   CA1F      8E     142       1   NON_BANKED  
+     F_MULKL                                   CAAD      58      88       1   NON_BANKED  
+     _FMUL                                     CB05      14      20      26   NON_BANKED  
+     _FDIV                                     CB19      1E      30      15   NON_BANKED  
+     F_PULK                                    CB37      15      21       5   NON_BANKED  
+     F_PULL                                    CB4C      15      21       6   NON_BANKED  
+     F_PSHK                                    CB61      13      19       8   NON_BANKED  
+     F_STAL                                    CB74      17      23       1   NON_BANKED  
+     F_TLK                                     CB8B       D      13       3   NON_BANKED  
+     F_XGKL                                    CB98      21      33       2   NON_BANKED  
+     F_CLRK                                    CBB9       B      11       4   NON_BANKED  
+     F_CLRL                                    CBC4       C      12       1   NON_BANKED  
+     F_MAXK                                    CBD0       9       9       3   NON_BANKED  
+     F_NORMK                                   CBD9      3E      62       5   NON_BANKED  
+     _LCMP                                     CC17      19      25       2   NON_BANKED  
+     _LCMP_P                                   CC30      15      21       4   NON_BANKED  
+     _LNEG                                     CC45       D      13       1   NON_BANKED  
+     _LINC                                     CC52       5       5       2   NON_BANKED  
+     _lDivMod                                  CC57      BE     190       4   NON_BANKED  
+     _LDIVU                                    CD15       E      14       1   NON_BANKED  
+     _NEG_P                                    CD23       F      15       5   NON_BANKED  
+     _LDIVS                                    CD32      35      53       1   NON_BANKED  
+     _LMODU                                    CD67      11      17       1   NON_BANKED  
+     _ILSEXT                                   CD78       7       7       6   NON_BANKED  
+     _COPY                                     CD7F       8       8      23   NON_BANKED  
+     _CASE_DIRECT_BYTE                         CD87       5       5       1   NON_BANKED  
+     _CASE_CHECKED                             CD8C       B      11       1   NON_BANKED  
+     _CASE_CHECKED_BYTE                        CD97      14      20      12   NON_BANKED  
+     _CASE_SEARCH_8                            CDAB      17      23       1   NON_BANKED  
+     _CASE_SEARCH_8_BYTE                       CDC2      1A      26       1   NON_BANKED  
+     L_NEGK                                    CDDC       7       7       2   NON_BANKED  
+     L_PSHK                                    CDE3       8       8       2   NON_BANKED  
+     UL_PULK                                   CDEB       3       3       1   NON_BANKED  
+     SL_PULK                                   CDEE       A      10       2   NON_BANKED  
+     TC7_ISR                                   CDF8      27      39       1   NON_BANKED  
+     UnimplementedISR                          CE1F       2       2      60   NON_BANKED  
+     TC1_ISR                                   CE21      91     145       1   NON_BANKED  
+     TOF_ISR                                   CEB2       C      12       1   NON_BANKED  
      _vect                                     FF80      7E     126       0   .abs_section_ff80
-     main                                    308000     1FC     508       6   .text       
-     Init                                    3081FC      29      41       2   .text       
-     logb                                    308225      20      32       4   .text       
-     fabs                                    308245      2C      44      10   .text       
-     is_special                              308271      59      89      10   .text       
-     sqrt_r                                  3082CA     1F0     496      14   .text       
-     sqrt                                    3084BA      A2     162       5   .text       
-     SetSign                                 30855C      4C      76      14   .text       
-     atan2                                   3085A8     B0F    2831     120   .text       
-     acos                                    3090B7     184     388       5   .text       
-     copysignf                               30923B      18      24      12   .text       
-     logbf                                   309253       E      14       4   .text       
-     fabsf                                   309261      10      16       6   .text       
-     is_special                              309271      3C      60      12   .text       
-     sincosf                                 3092AD     1C2     450       7   .text       
-     sinf                                    30946F      62      98       2   .text       
-     cosf                                    3094D1      4C      76       2   .text       
-     sqrtf_r                                 30951D      C8     200       3   .text       
-     sqrtf                                   3095E5      42      66       4   .text       
-     atan2f                                  309627     509    1289      31   .text       
-     acosf                                   309B30      A8     168       2   .text       
-     atanf                                   309BD8       E      14       6   .text       
-     Ten                                     309BE6      F6     246      14   .text       
-     vprintf                                 309CDC     AB4    2740     155   .text       
-     _out                                    30A790       C      12       2   .text       
-     deposit_char                            30A79C       F      15       3   .text       
-     sprintf                                 30A7AB      2F      47       6   .text       
-     convertUnits                            30A7DA      5E      94       2   .text       
-     iicinit                                 30A838      1C      28       2   .text       
-     iic_request_data                        30A854      1B      27       4   .text       
-     iic_read_data                           30A86F      62      98       4   .text       
-     iic_send_data                           30A8D1      2E      46       8   .text       
-     iicresponse                             30A8FF      2E      46       6   .text       
-     iicstart                                30A92D      42      66       4   .text       
-     iicstop                                 30A96F       4       4       8   .text       
-     iicrestart                              30A973       E      14       2   .text       
-     iictransmit                             30A981       B      11       4   .text       
-     iicswrcv                                30A98C       6       6       2   .text       
-     iicreceive                              30A992      27      39       2   .text       
-     iicreceivem1                            30A9B9      2A      42       2   .text       
-     iicreceivelast                          30A9E3      30      48       2   .text       
-     setAlarm                                30AA13      12      18      12   .text       
-     Init_TC7                                30AA25      15      21       2   .text       
-     getRawDataMagnet                        30AA3A      1B      27       2   .text       
-     getRawDataAccel                         30AA55      1B      27       2   .text       
-     iicSensorInit                           30AA70      2A      42       4   .text       
-     accel_init                              30AA9A      10      16       2   .text       
-     gyro_init                               30AAAA      10      16       2   .text       
-     magnet_init                             30AABA      1E      30       2   .text       
-     normaliseMagnet                         30AAD8      93     147       2   .text       
-     findInitOrientation                     30AB6B     1F5     501       5   .text       
-     PLL_Init                                30AD60      15      21       2   .text       
-     SCI1_Init                               30AD75      5A      90       2   .text       
-     SCI1_OutChar                            30ADCF       9       9       2   .text       
-     SCI1_OutString                          30ADD8      10      16       4   .text       
-     timer_config                            30ADE8      1B      27       2   .text       
-     PWMConfig                               30AE03      27      39       2   .text       
-     turnToElevationAzimuth                  30AE2A     14E     334       4   .text       
+     main                                    308000      5E      94       2   .text       
+     panServo                                30805E      8F     143       2   .text       
+     getMeasurements                         3080ED     188     392       7   .text       
+     Init                                    308275      29      41       2   .text       
+     logb                                    30829E      20      32       4   .text       
+     fabs                                    3082BE      2C      44      10   .text       
+     is_special                              3082EA      59      89      10   .text       
+     sqrt_r                                  308343     1F0     496      14   .text       
+     sqrt                                    308533      A2     162       5   .text       
+     SetSign                                 3085D5      4C      76      14   .text       
+     atan2                                   308621     B0F    2831     120   .text       
+     acos                                    309130     184     388       5   .text       
+     copysignf                               3092B4      18      24      12   .text       
+     logbf                                   3092CC       E      14       4   .text       
+     fabsf                                   3092DA      10      16       6   .text       
+     is_special                              3092EA      3C      60      12   .text       
+     sincosf                                 309326     1C2     450       7   .text       
+     sinf                                    3094E8      62      98       4   .text       
+     cosf                                    30954A      4C      76       2   .text       
+     sqrtf_r                                 309596      C8     200       3   .text       
+     sqrtf                                   30965E      42      66       2   .text       
+     atan2f                                  3096A0     509    1289      31   .text       
+     acosf                                   309BA9      A8     168       2   .text       
+     atanf                                   309C51       E      14       6   .text       
+     Ten                                     309C5F      F6     246      14   .text       
+     vprintf                                 309D55     AB4    2740     155   .text       
+     _out                                    30A809       C      12       2   .text       
+     deposit_char                            30A815       F      15       3   .text       
+     sprintf                                 30A824      2F      47       6   .text       
+     convertUnits                            30A853      5E      94       2   .text       
+     iicinit                                 30A8B1      1C      28       2   .text       
+     iic_request_data                        30A8CD      1B      27       4   .text       
+     iic_read_data                           30A8E8      62      98       4   .text       
+     iic_send_data                           30A94A      2E      46       8   .text       
+     iicresponse                             30A978      2E      46       6   .text       
+     iicstart                                30A9A6      42      66       4   .text       
+     iicstop                                 30A9E8       4       4       8   .text       
+     iicrestart                              30A9EC       E      14       2   .text       
+     iictransmit                             30A9FA       B      11       4   .text       
+     iicswrcv                                30AA05       6       6       2   .text       
+     iicreceive                              30AA0B      27      39       2   .text       
+     iicreceivem1                            30AA32      2A      42       2   .text       
+     iicreceivelast                          30AA5C      30      48       2   .text       
+     setAlarm                                30AA8C      12      18      14   .text       
+     delay                                   30AA9E      15      21       6   .text       
+     Init_TC7                                30AAB3      15      21       2   .text       
+     getRawDataMagnet                        30AAC8      1B      27       2   .text       
+     getRawDataAccel                         30AAE3      1B      27       2   .text       
+     iicSensorInit                           30AAFE      2A      42       4   .text       
+     accel_init                              30AB28      10      16       2   .text       
+     gyro_init                               30AB38      10      16       2   .text       
+     magnet_init                             30AB48      1E      30       2   .text       
+     findOrientation                         30AB66     1F5     501       5   .text       
+     PLL_Init                                30AD5B      15      21       2   .text       
+     SCI1_Init                               30AD70      5A      90       2   .text       
+     SCI1_OutChar                            30ADCA       9       9       2   .text       
+     SCI1_OutString                          30ADD3      10      16       6   .text       
+     getGroundDistance                       30ADE3      2D      45       2   .text       
+     timer_config                            30AE10      1B      27       2   .text       
+     PWMConfig                               30AE2B      27      39       2   .text       
+     turnToElevationAzimuth                  30AE52     14E     334       8   .text       
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED PROCEDURES
-main.c.o:
-  panServo 
 MATH.C.o (ansibf.lib):
   copysign isint pow_i exp_r exp log_r log log10 pow sincos tan sin cos asin 
   atan sncsh sinh cosh tanh ceil floor fmod 
@@ -2342,7 +2349,7 @@ DREGS.C.o (ansibf.lib):
 FADD.C.o (ansibf.lib):
   _FINC _FDEC _FABS 
 FCONV.C.o (ansibf.lib):
-  _FUFLOAT _FUTRUNC 
+  _FUFLOAT 
 FREGS.C.o (ansibf.lib):
   F_TKL 
 rtshc12.c.o (ansibf.lib):
@@ -2350,12 +2357,10 @@ rtshc12.c.o (ansibf.lib):
   _LSHRS _LADD _LSUB _LAND _LOR _LXOR _LCMP_PP _LCOM _LDEC _LMUL _LMULU16x32 
   _LMULS16x32 _LMODS _CASE_DIRECT _CASE_SEARCH _CASE_SEARCH_BYTE _FCALL _FPCMP 
 iic.c.o:
-  iicreceiveone delay 
+  iicreceiveone 
 l3g4200d.c.o:
   getRawDataGyro 
 NOT USED VARIABLES
-main.c.o:
-  STRING..d..d..lu..4 STRING..d..d..lu..5 
 MATH.C.o (ansibf.lib):
   small.1 big.2 
 MATHF.C.o (ansibf.lib):
@@ -2366,25 +2371,25 @@ rtshc12.c.o (ansibf.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xCED5 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xCEBE ---- SIZE       4 ---
 Filling bytes inserted
  000A2000
-------- ROM-ADDRESS: 0xCED9 ---- RAM-ADDRESS: 0x2000 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xCEC2 ---- RAM-ADDRESS: 0x2000 ---- SIZE       4 ---
 Name of initialized Object : accelerometer_cfg
  2D083108
-------- ROM-ADDRESS: 0xCEDD ---- RAM-ADDRESS: 0x2004 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xCEC6 ---- RAM-ADDRESS: 0x2004 ---- SIZE       2 ---
 Name of initialized Object : gyro_cfg
  200F
-------- ROM-ADDRESS: 0xCEDF ---- RAM-ADDRESS: 0x2006 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xCEC8 ---- RAM-ADDRESS: 0x2006 ---- SIZE       1 ---
 Name of initialized Object : mag_cfg
  02
-------- ROM-ADDRESS: 0xCEE0 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xCEC9 ---- SIZE       1 ---
 Filling bytes inserted
  00
-------- ROM-ADDRESS: 0xCEE1 ---- RAM-ADDRESS: 0x2008 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xCECA ---- RAM-ADDRESS: 0x2008 ---- SIZE       2 ---
 Name of initialized Object : mag_cfg_b
  01E0
-------- ROM-ADDRESS: 0xCEE3 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xCECC ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -2427,6 +2432,7 @@ RetErrDom                 USES errno infinity _COPY _DSHORT
 ldexpf                    USES F_PULL F_TLK F_LDEXP F_PSHK RetErrDom 
 _FSFLOAT                  USES SL_PULK F_FRLONGK F_PSHK 
 _FSTRUNC                  USES F_PULK F_TOLONGK L_PSHK 
+_FUTRUNC                  USES _FSTRUNC 
 F_DIVKL                   USES F_MAXK F_NORMK 
 F_MULKL                   USES F_CLRK F_NORMK 
 _FMUL                     USES F_PULK F_PULL F_MULKL F_PSHK 
@@ -2445,12 +2451,16 @@ TC1_ISR                   USES _TFLG1 edge_flag _TC1 time_1 _TCTL4 overflow
                                 time_flag _TSCR2 time_2 time_diff _LDIVS distance 
 TOF_ISR                   USES _TFLG2 overflow 
 _vect                     USES UnimplementedISR TOF_ISR TC7_ISR TC1_ISR 
-main                      USES acos _COPY _DSHORT _FDIV PLL_Init SCI1_Init 
-                                iicSensorInit STRING.NO_ERROR..1 sprintf STRING.ERROR..d..2 
-                                SCI1_OutString timer_config PWMConfig turnToElevationAzimuth 
-                                getRawDataMagnet normaliseMagnet main _FMUL _FADD 
-                                getRawDataAccel convertUnits findInitOrientation _DLONG 
-                                STRING.mx....2f.my....2f.mz.3 _ILSEXT _FSFLOAT 
+main                      USES PLL_Init SCI1_Init iicSensorInit 
+                                STRING.NO_ERROR..1 sprintf STRING.ERROR..d..2 SCI1_OutString 
+                                timer_config PWMConfig panServo 
+panServo                  USES turnToElevationAzimuth getMeasurements 
+                                SCI1_OutString delay 
+getMeasurements           USES acos _COPY _DSHORT _FDIV getRawDataMagnet 
+                                getMeasurements _FMUL _FADD getRawDataAccel convertUnits 
+                                findOrientation _FNEG getGroundDistance _LINC delay _TIE 
+                                distance _LCMP_P _FSTRUNC STRING..d..d..lu..lu..3 
+                                sprintf _ILSEXT _FSFLOAT 
 Init                      USES _startupData 
 logb                      USES _COPY frexp 
 is_special                USES _LCMP 
@@ -2504,6 +2514,7 @@ iicreceive                USES setAlarm _IBSR alarmSignaled _IBDR
 iicreceivem1              USES setAlarm _IBSR alarmSignaled _IBCR _IBDR 
 iicreceivelast            USES setAlarm _IBSR alarmSignaled _IBCR _IBDR 
 setAlarm                  USES currentTime alarmTime alarmSet alarmSignaled 
+delay                     USES _TCNT _TC7 setAlarm alarmSignaled 
 Init_TC7                  USES _TSCR1 _TSCR2 _TIOS _TCTL1 _TIE 
 getRawDataMagnet          USES iic_request_data iic_read_data 
 getRawDataAccel           USES iic_request_data iic_read_data 
@@ -2511,14 +2522,14 @@ iicSensorInit             USES iicinit gyro_init accel_init magnet_init
 accel_init                USES accelerometer_cfg iic_send_data 
 gyro_init                 USES gyro_cfg iic_send_data 
 magnet_init               USES mag_cfg iic_send_data mag_cfg_b 
-normaliseMagnet           USES sqrtf _FDIV _FADD _ILSEXT _FSFLOAT _FMUL 
-findInitOrientation       USES acosf _FDIV _FMUL _FADD _DLONG sqrt 
-                                findInitOrientation _DSHORT atanf cosf sinf _FSUB fabs _DCMP _FNEG 
+findOrientation           USES acosf _FDIV _FMUL _FADD _DLONG sqrt 
+                                findOrientation _DSHORT atanf cosf sinf _FSUB fabs _DCMP _FNEG 
                                 _FCMP _COPY 
 PLL_Init                  USES _SYNR _REFDV _CLKSEL _PLLCTL _CRGFLG 
 SCI1_Init                 USES _SCI1BD _CASE_CHECKED_BYTE _SCI1CR1 _SCI1CR2 
 SCI1_OutChar              USES _SCI1SR1 _SCI1DRL 
 SCI1_OutString            USES SCI1_OutChar 
+getGroundDistance         USES sinf _FDIV _FUTRUNC 
 timer_config              USES _TSCR1 _TIOS _TCTL4 _TFLG1 _ICOVW _ICSYS _DLYCT 
 PWMConfig                 USES _PWMCTL _PWMCLK _PWMPOL _PWMCAE _PWMPRCLK 
                                 _PWMSCLA _PWMSCLB _PWMPER45 _PWMPER67 _PWMDTY45 
@@ -2533,200 +2544,12 @@ DEPENDENCY TREE
  | 
  +- main                
  |  | 
- |  +- acos                
- |  |  | 
- |  |  +- is_special          
- |  |  |  | 
- |  |  |  +- _LCMP               
- |  |  |       
- |  |  +- _CASE_CHECKED_BYTE  
- |  |  |    
- |  |  +- fabs                
- |  |  |    
- |  |  +- _COPY               
- |  |  |    
- |  |  +- _DCMP               
- |  |  |    
- |  |  +- _DSUB               
- |  |  |  | 
- |  |  |  +- _DADD               
- |  |  |     | 
- |  |  |     +- D_PULK              
- |  |  |     |    
- |  |  |     +- D_PULL              
- |  |  |     |    
- |  |  |     +- D_ADDKL             
- |  |  |     |  | 
- |  |  |     |  +- D_XGKL              
- |  |  |     |  |    
- |  |  |     |  +- D_NORMK             
- |  |  |     |     | 
- |  |  |     |     +- D_CLRK              
- |  |  |     |     |    
- |  |  |     |     +- D_MAXK              
- |  |  |     |        | 
- |  |  |     |        +- D_CLRK               (see above)
- |  |  |     |           
- |  |  |     +- D_PSHK              
- |  |  |          
- |  |  +- _DADD                (see above)
- |  |  |  
- |  |  +- _DDIV               
- |  |  |  | 
- |  |  |  +- D_PULL               (see above)
- |  |  |  |  
- |  |  |  +- D_PULK               (see above)
- |  |  |  |  
- |  |  |  +- D_DIVKL             
- |  |  |  |  | 
- |  |  |  |  +- D_MAXK               (see above)
- |  |  |  |  |  
- |  |  |  |  +- D_NORMK              (see above)
- |  |  |  |     
- |  |  |  +- D_PSHK               (see above)
- |  |  |     
- |  |  +- sqrt                
- |  |  |  | 
- |  |  |  +- is_special           (see above)
- |  |  |  |  
- |  |  |  +- _CASE_CHECKED_BYTE   (see above)
- |  |  |  |  
- |  |  |  +- sqrt_r              
- |  |  |  |  | 
- |  |  |  |  +- frexp               
- |  |  |  |  |  | 
- |  |  |  |  |  +- D_PULK               (see above)
- |  |  |  |  |  |  
- |  |  |  |  |  +- D_FREXP             
- |  |  |  |  |  |  | 
- |  |  |  |  |  |  +- D_NORMK              (see above)
- |  |  |  |  |  |     
- |  |  |  |  |  +- D_STAL              
- |  |  |  |  |       
- |  |  |  |  +- _DMUL               
- |  |  |  |  |  | 
- |  |  |  |  |  +- D_PULK               (see above)
- |  |  |  |  |  |  
- |  |  |  |  |  +- D_PULL               (see above)
- |  |  |  |  |  |  
- |  |  |  |  |  +- D_MULKL             
- |  |  |  |  |  |  | 
- |  |  |  |  |  |  +- D_CLRK               (see above)
- |  |  |  |  |  |  |  
- |  |  |  |  |  |  +- D_NORMK              (see above)
- |  |  |  |  |  |     
- |  |  |  |  |  +- D_PSHK               (see above)
- |  |  |  |  |     
- |  |  |  |  +- _DADD                (see above)
- |  |  |  |  |  
- |  |  |  |  +- _DDIV                (see above)
- |  |  |  |  |  
- |  |  |  |  +- ldexp               
- |  |  |  |  |  | 
- |  |  |  |  |  +- D_PULK               (see above)
- |  |  |  |  |  |  
- |  |  |  |  |  +- D_LDEXP             
- |  |  |  |  |  |    
- |  |  |  |  |  +- D_STAL               (see above)
- |  |  |  |  |  |  
- |  |  |  |  |  +- RetErrDom           
- |  |  |  |  |       
- |  |  |  |  +- _COPY                (see above)
- |  |  |  |  |  
- |  |  |  |  +- _ILSEXT             
- |  |  |  |       
- |  |  |  +- _COPY                (see above)
- |  |  |     
- |  |  +- atan2               
- |  |     | 
- |  |     +- is_special           (see above)
- |  |     |  
- |  |     +- _CASE_CHECKED_BYTE   (see above)
- |  |     |  
- |  |     +- SetSign             
- |  |     |  | 
- |  |     |  +- fabs                 (see above)
- |  |     |  |  
- |  |     |  +- _DNEG               
- |  |     |  |    
- |  |     |  +- _COPY                (see above)
- |  |     |     
- |  |     +- fabs                 (see above)
- |  |     |  
- |  |     +- logb                
- |  |     |  | 
- |  |     |  +- _COPY                (see above)
- |  |     |  |  
- |  |     |  +- frexp                (see above)
- |  |     |     
- |  |     +- _DDIV                (see above)
- |  |     |  
- |  |     +- ldexp                (see above)
- |  |     |  
- |  |     +- _DCMP                (see above)
- |  |     |  
- |  |     +- _DADD                (see above)
- |  |     |  
- |  |     +- _DMUL                (see above)
- |  |     |  
- |  |     +- _DSTRUNC            
- |  |     |  | 
- |  |     |  +- D_PULL               (see above)
- |  |     |  |  
- |  |     |  +- D_TOLONGK           
- |  |     |  |    
- |  |     |  +- L_PSHK              
- |  |     |     | 
- |  |     |     +- L_NEGK              
- |  |     |        | 
- |  |     |        +- _NEG_P              
- |  |     |             
- |  |     +- _CASE_CHECKED       
- |  |     |    
- |  |     +- _COPY                (see above)
- |  |     |  
- |  |     +- _DSUB                (see above)
- |  |     |  
- |  |     +- _DNEG                (see above)
- |  |        
- |  +- _COPY                (see above)
- |  |  
- |  +- _DSHORT             
- |  |  | 
- |  |  +- D_PULL               (see above)
- |  |  |  
- |  |  +- D_TOFK              
- |  |  |  | 
- |  |  |  +- F_MAXK              
- |  |  |  |  | 
- |  |  |  |  +- F_CLRK              
- |  |  |  |       
- |  |  |  +- F_CLRK               (see above)
- |  |  |     
- |  |  +- F_PSHK              
- |  |       
- |  +- _FDIV               
- |  |  | 
- |  |  +- F_PULL              
- |  |  |    
- |  |  +- F_PULK              
- |  |  |    
- |  |  +- F_DIVKL             
- |  |  |  | 
- |  |  |  +- F_MAXK               (see above)
- |  |  |  |  
- |  |  |  +- F_NORMK             
- |  |  |     | 
- |  |  |     +- F_MAXK               (see above)
- |  |  |        
- |  |  +- F_PSHK               (see above)
- |  |     
  |  +- PLL_Init            
  |  |    
  |  +- SCI1_Init           
  |  |  | 
- |  |  +- _CASE_CHECKED_BYTE   (see above)
- |  |     
+ |  |  +- _CASE_CHECKED_BYTE  
+ |  |       
  |  +- iicSensorInit       
  |  |  | 
  |  |  +- iicinit             
@@ -2773,28 +2596,64 @@ DEPENDENCY TREE
  |  |     |    
  |  |     +- _CASE_SEARCH_8      
  |  |     |    
- |  |     +- _ILSEXT              (see above)
- |  |     |  
+ |  |     +- _ILSEXT             
+ |  |     |    
  |  |     +- _LNEG               
  |  |     |    
  |  |     +- _LCMP_P             
  |  |     |    
- |  |     +- _DNEG                (see above)
- |  |     |  
- |  |     +- frexp                (see above)
- |  |     |  
+ |  |     +- _DNEG               
+ |  |     |    
+ |  |     +- frexp               
+ |  |     |  | 
+ |  |     |  +- D_PULK              
+ |  |     |  |    
+ |  |     |  +- D_FREXP             
+ |  |     |  |  | 
+ |  |     |  |  +- D_NORMK             
+ |  |     |  |     | 
+ |  |     |  |     +- D_CLRK              
+ |  |     |  |     |    
+ |  |     |  |     +- D_MAXK              
+ |  |     |  |        | 
+ |  |     |  |        +- D_CLRK               (see above)
+ |  |     |  |           
+ |  |     |  +- D_STAL              
+ |  |     |       
  |  |     +- Ten                 
  |  |     |  | 
- |  |     |  +- _DMUL                (see above)
- |  |     |  |  
- |  |     |  +- _COPY                (see above)
- |  |     |     
+ |  |     |  +- _DMUL               
+ |  |     |  |  | 
+ |  |     |  |  +- D_PULK               (see above)
+ |  |     |  |  |  
+ |  |     |  |  +- D_PULL              
+ |  |     |  |  |    
+ |  |     |  |  +- D_MULKL             
+ |  |     |  |  |  | 
+ |  |     |  |  |  +- D_CLRK               (see above)
+ |  |     |  |  |  |  
+ |  |     |  |  |  +- D_NORMK              (see above)
+ |  |     |  |  |     
+ |  |     |  |  +- D_PSHK              
+ |  |     |  |       
+ |  |     |  +- _COPY               
+ |  |     |       
  |  |     +- _DMUL                (see above)
  |  |     |  
  |  |     +- _DUTRUNC            
  |  |     |  | 
- |  |     |  +- _DSTRUNC             (see above)
- |  |     |     
+ |  |     |  +- _DSTRUNC            
+ |  |     |     | 
+ |  |     |     +- D_PULL               (see above)
+ |  |     |     |  
+ |  |     |     +- D_TOLONGK           
+ |  |     |     |    
+ |  |     |     +- L_PSHK              
+ |  |     |        | 
+ |  |     |        +- L_NEGK              
+ |  |     |           | 
+ |  |     |           +- _NEG_P              
+ |  |     |                
  |  |     +- _DUFLOAT            
  |  |     |  | 
  |  |     |  +- UL_PULK             
@@ -2811,14 +2670,28 @@ DEPENDENCY TREE
  |  |     |  |           
  |  |     |  +- D_PSHK_UNARY        
  |  |     |       
- |  |     +- _DADD                (see above)
- |  |     |  
+ |  |     +- _DADD               
+ |  |     |  | 
+ |  |     |  +- D_PULK               (see above)
+ |  |     |  |  
+ |  |     |  +- D_PULL               (see above)
+ |  |     |  |  
+ |  |     |  +- D_ADDKL             
+ |  |     |  |  | 
+ |  |     |  |  +- D_XGKL              
+ |  |     |  |  |    
+ |  |     |  |  +- D_NORMK              (see above)
+ |  |     |  |     
+ |  |     |  +- D_PSHK               (see above)
+ |  |     |     
  |  |     +- _COPY                (see above)
  |  |     |  
- |  |     +- _DSUB                (see above)
- |  |     |  
- |  |     +- _DCMP                (see above)
- |  |     |  
+ |  |     +- _DSUB               
+ |  |     |  | 
+ |  |     |  +- _DADD                (see above)
+ |  |     |     
+ |  |     +- _DCMP               
+ |  |     |    
  |  |     +- _LDIVU              
  |  |     |  | 
  |  |     |  +- _lDivMod            
@@ -2837,324 +2710,478 @@ DEPENDENCY TREE
  |  |    
  |  +- PWMConfig           
  |  |    
- |  +- turnToElevationAzimuth
- |  |  | 
- |  |  +- _DSFLOAT            
- |  |  |  | 
- |  |  |  +- SL_PULK             
- |  |  |  |  | 
- |  |  |  |  +- L_NEGK               (see above)
- |  |  |  |     
- |  |  |  +- D_FRLONGK            (see above)
- |  |  |  |  
- |  |  |  +- D_PSHK_UNARY         (see above)
- |  |  |     
- |  |  +- _DDIV                (see above)
- |  |  |  
- |  |  +- _DADD                (see above)
- |  |  |  
- |  |  +- _DMUL                (see above)
- |  |  |  
- |  |  +- _DUTRUNC             (see above)
- |  |  |  
- |  |  +- _COPY                (see above)
- |  |     
- |  +- getRawDataMagnet    
- |  |  | 
- |  |  +- iic_request_data    
- |  |  |  | 
- |  |  |  +- iicstart             (see above)
- |  |  |  |  
- |  |  |  +- iicstop              (see above)
- |  |  |  |  
- |  |  |  +- iictransmit          (see above)
- |  |  |     
- |  |  +- iic_read_data       
- |  |     | 
- |  |     +- iicrestart          
- |  |     |  | 
- |  |     |  +- iicresponse          (see above)
- |  |     |     
- |  |     +- iicswrcv            
- |  |     |    
- |  |     +- iicreceive          
- |  |     |  | 
- |  |     |  +- setAlarm             (see above)
- |  |     |     
- |  |     +- iicreceivem1        
- |  |     |  | 
- |  |     |  +- setAlarm             (see above)
- |  |     |     
- |  |     +- iicreceivelast      
- |  |     |  | 
- |  |     |  +- setAlarm             (see above)
- |  |     |     
- |  |     +- iicSensorInit        (see above)
- |  |        
- |  +- normaliseMagnet     
- |  |  | 
- |  |  +- sqrtf               
- |  |  |  | 
- |  |  |  +- is_special          
- |  |  |  |  | 
- |  |  |  |  +- _LCMP                (see above)
- |  |  |  |     
- |  |  |  +- _CASE_CHECKED_BYTE   (see above)
- |  |  |  |  
- |  |  |  +- sqrtf_r             
- |  |  |     | 
- |  |  |     +- frexpf              
- |  |  |     |  | 
- |  |  |     |  +- F_PULL               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_TLK               
- |  |  |     |  |    
- |  |  |     |  +- F_FREXP             
- |  |  |     |  |  | 
- |  |  |     |  |  +- F_NORMK              (see above)
- |  |  |     |  |     
- |  |  |     |  +- F_PSHK               (see above)
- |  |  |     |     
- |  |  |     +- _FMUL               
- |  |  |     |  | 
- |  |  |     |  +- F_PULK               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_PULL               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_MULKL             
- |  |  |     |  |  | 
- |  |  |     |  |  +- F_CLRK               (see above)
- |  |  |     |  |  |  
- |  |  |     |  |  +- F_NORMK              (see above)
- |  |  |     |  |     
- |  |  |     |  +- F_PSHK               (see above)
- |  |  |     |     
- |  |  |     +- _FADD               
- |  |  |     |  | 
- |  |  |     |  +- F_PULK               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_PULL               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_ADDKL             
- |  |  |     |  |  | 
- |  |  |     |  |  +- F_XGKL              
- |  |  |     |  |  |    
- |  |  |     |  |  +- F_NORMK              (see above)
- |  |  |     |  |     
- |  |  |     |  +- F_PSHK               (see above)
- |  |  |     |     
- |  |  |     +- ldexpf              
- |  |  |     |  | 
- |  |  |     |  +- F_PULL               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_TLK                (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_LDEXP             
- |  |  |     |  |    
- |  |  |     |  +- F_PSHK               (see above)
- |  |  |     |  |  
- |  |  |     |  +- RetErrDom           
- |  |  |     |     | 
- |  |  |     |     +- _COPY                (see above)
- |  |  |     |     |  
- |  |  |     |     +- _DSHORT              (see above)
- |  |  |     |        
- |  |  |     +- _FDIV                (see above)
- |  |  |     |  
- |  |  |     +- _ILSEXT              (see above)
- |  |  |        
- |  |  +- _FDIV                (see above)
- |  |  |  
- |  |  +- _FADD                (see above)
- |  |  |  
- |  |  +- _ILSEXT              (see above)
- |  |  |  
- |  |  +- _FSFLOAT            
- |  |  |  | 
- |  |  |  +- SL_PULK              (see above)
- |  |  |  |  
- |  |  |  +- F_FRLONGK           
- |  |  |  |    
- |  |  |  +- F_PSHK               (see above)
- |  |  |     
- |  |  +- _FMUL                (see above)
- |  |     
- |  +- _FMUL                (see above)
- |  |  
- |  +- _FADD                (see above)
- |  |  
- |  +- getRawDataAccel     
- |  |  | 
- |  |  +- iic_request_data     (see above)
- |  |  |  
- |  |  +- iic_read_data        (see above)
- |  |     
- |  +- convertUnits        
- |  |  | 
- |  |  +- _FDIV                (see above)
- |  |  |  
- |  |  +- _ILSEXT              (see above)
- |  |  |  
- |  |  +- _FSFLOAT             (see above)
- |  |     
- |  +- findInitOrientation 
- |  |  | 
- |  |  +- acosf               
- |  |  |  | 
- |  |  |  +- is_special           (see above)
- |  |  |  |  
- |  |  |  +- _CASE_CHECKED_BYTE   (see above)
- |  |  |  |  
- |  |  |  +- fabsf               
- |  |  |  |    
- |  |  |  +- _FCMP               
- |  |  |  |    
- |  |  |  +- _FSUB               
- |  |  |  |  | 
- |  |  |  |  +- _FADD                (see above)
- |  |  |  |     
- |  |  |  +- _FADD                (see above)
- |  |  |  |  
- |  |  |  +- _FDIV                (see above)
- |  |  |  |  
- |  |  |  +- sqrtf                (see above)
- |  |  |  |  
- |  |  |  +- atan2f              
- |  |  |     | 
- |  |  |     +- copysignf           
- |  |  |     |    
- |  |  |     +- is_special           (see above)
- |  |  |     |  
- |  |  |     +- _CASE_CHECKED_BYTE   (see above)
- |  |  |     |  
- |  |  |     +- logbf               
- |  |  |     |  | 
- |  |  |     |  +- frexpf               (see above)
- |  |  |     |     
- |  |  |     +- ldexpf               (see above)
- |  |  |     |  
- |  |  |     +- _FCMP                (see above)
- |  |  |     |  
- |  |  |     +- _FADD                (see above)
- |  |  |     |  
- |  |  |     +- _FMUL                (see above)
- |  |  |     |  
- |  |  |     +- _FSTRUNC            
- |  |  |     |  | 
- |  |  |     |  +- F_PULK               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_TOLONGK           
- |  |  |     |  |    
- |  |  |     |  +- L_PSHK               (see above)
- |  |  |     |     
- |  |  |     +- _FSUB                (see above)
- |  |  |     |  
- |  |  |     +- _FDIV                (see above)
- |  |  |     |  
- |  |  |     +- _FNEG               
- |  |  |          
- |  |  +- _FDIV                (see above)
- |  |  |  
- |  |  +- _FMUL                (see above)
- |  |  |  
- |  |  +- _FADD                (see above)
- |  |  |  
- |  |  +- _DLONG              
- |  |  |  | 
- |  |  |  +- F_PULK               (see above)
- |  |  |  |  
- |  |  |  +- D_FRFK              
- |  |  |  |  | 
- |  |  |  |  +- D_NORMK_UNARY        (see above)
- |  |  |  |     
- |  |  |  +- D_PSHK_UNARY         (see above)
- |  |  |     
- |  |  +- sqrt                 (see above)
- |  |  |  
- |  |  +- _DSHORT              (see above)
- |  |  |  
- |  |  +- atanf               
- |  |  |  | 
- |  |  |  +- atan2f               (see above)
- |  |  |     
- |  |  +- cosf                
- |  |  |  | 
- |  |  |  +- is_special           (see above)
- |  |  |  |  
- |  |  |  +- _CASE_CHECKED_BYTE   (see above)
- |  |  |  |  
- |  |  |  +- fabsf                (see above)
- |  |  |  |  
- |  |  |  +- sincosf             
- |  |  |     | 
- |  |  |     +- _FADD                (see above)
- |  |  |     |  
- |  |  |     +- _FMUL                (see above)
- |  |  |     |  
- |  |  |     +- modff               
- |  |  |     |  | 
- |  |  |     |  +- F_PULL               (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_TLK                (see above)
- |  |  |     |  |  
- |  |  |     |  +- F_MODF              
- |  |  |     |  |  | 
- |  |  |     |  |  +- F_NORMK              (see above)
- |  |  |     |  |  |  
- |  |  |     |  |  +- F_CLRL              
- |  |  |     |  |  |    
- |  |  |     |  |  +- F_CLRK               (see above)
- |  |  |     |  |     
- |  |  |     |  +- F_STAL              
- |  |  |     |  |    
- |  |  |     |  +- F_PSHK               (see above)
- |  |  |     |     
- |  |  |     +- _FSTRUNC             (see above)
- |  |  |     |  
- |  |  |     +- _FCMP                (see above)
- |  |  |     |  
- |  |  |     +- _LINC               
- |  |  |     |    
- |  |  |     +- _FSFLOAT             (see above)
- |  |  |     |  
- |  |  |     +- _FSUB                (see above)
- |  |  |     |  
- |  |  |     +- fabsf                (see above)
- |  |  |     |  
- |  |  |     +- _DLONG               (see above)
- |  |  |     |  
- |  |  |     +- _DCMP                (see above)
- |  |  |     |  
- |  |  |     +- _FNEG                (see above)
- |  |  |        
- |  |  +- sinf                
- |  |  |  | 
- |  |  |  +- is_special           (see above)
- |  |  |  |  
- |  |  |  +- _CASE_CHECKED_BYTE   (see above)
- |  |  |  |  
- |  |  |  +- _FNEG                (see above)
- |  |  |  |  
- |  |  |  +- sincosf              (see above)
- |  |  |     
- |  |  +- _FSUB                (see above)
- |  |  |  
- |  |  +- fabs                 (see above)
- |  |  |  
- |  |  +- _DCMP                (see above)
- |  |  |  
- |  |  +- _FNEG                (see above)
- |  |  |  
- |  |  +- _FCMP                (see above)
- |  |  |  
- |  |  +- _COPY                (see above)
- |  |     
- |  +- _DLONG               (see above)
- |  |  
- |  +- _ILSEXT              (see above)
- |  |  
- |  +- _FSFLOAT             (see above)
- |     
+ |  +- panServo            
+ |     | 
+ |     +- turnToElevationAzimuth
+ |     |  | 
+ |     |  +- _DSFLOAT            
+ |     |  |  | 
+ |     |  |  +- SL_PULK             
+ |     |  |  |  | 
+ |     |  |  |  +- L_NEGK               (see above)
+ |     |  |  |     
+ |     |  |  +- D_FRLONGK            (see above)
+ |     |  |  |  
+ |     |  |  +- D_PSHK_UNARY         (see above)
+ |     |  |     
+ |     |  +- _DDIV               
+ |     |  |  | 
+ |     |  |  +- D_PULL               (see above)
+ |     |  |  |  
+ |     |  |  +- D_PULK               (see above)
+ |     |  |  |  
+ |     |  |  +- D_DIVKL             
+ |     |  |  |  | 
+ |     |  |  |  +- D_MAXK               (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- D_NORMK              (see above)
+ |     |  |  |     
+ |     |  |  +- D_PSHK               (see above)
+ |     |  |     
+ |     |  +- _DADD                (see above)
+ |     |  |  
+ |     |  +- _DMUL                (see above)
+ |     |  |  
+ |     |  +- _DUTRUNC             (see above)
+ |     |  |  
+ |     |  +- _COPY                (see above)
+ |     |     
+ |     +- getMeasurements     
+ |     |  | 
+ |     |  +- acos                
+ |     |  |  | 
+ |     |  |  +- is_special          
+ |     |  |  |  | 
+ |     |  |  |  +- _LCMP               
+ |     |  |  |       
+ |     |  |  +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |  
+ |     |  |  +- fabs                
+ |     |  |  |    
+ |     |  |  +- _COPY                (see above)
+ |     |  |  |  
+ |     |  |  +- _DCMP                (see above)
+ |     |  |  |  
+ |     |  |  +- _DSUB                (see above)
+ |     |  |  |  
+ |     |  |  +- _DADD                (see above)
+ |     |  |  |  
+ |     |  |  +- _DDIV                (see above)
+ |     |  |  |  
+ |     |  |  +- sqrt                
+ |     |  |  |  | 
+ |     |  |  |  +- is_special           (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- sqrt_r              
+ |     |  |  |  |  | 
+ |     |  |  |  |  +- frexp                (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- _DMUL                (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- _DADD                (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- _DDIV                (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- ldexp               
+ |     |  |  |  |  |  | 
+ |     |  |  |  |  |  +- D_PULK               (see above)
+ |     |  |  |  |  |  |  
+ |     |  |  |  |  |  +- D_LDEXP             
+ |     |  |  |  |  |  |    
+ |     |  |  |  |  |  +- D_STAL               (see above)
+ |     |  |  |  |  |  |  
+ |     |  |  |  |  |  +- RetErrDom           
+ |     |  |  |  |  |       
+ |     |  |  |  |  +- _COPY                (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- _ILSEXT              (see above)
+ |     |  |  |  |     
+ |     |  |  |  +- _COPY                (see above)
+ |     |  |  |     
+ |     |  |  +- atan2               
+ |     |  |     | 
+ |     |  |     +- is_special           (see above)
+ |     |  |     |  
+ |     |  |     +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |     |  
+ |     |  |     +- SetSign             
+ |     |  |     |  | 
+ |     |  |     |  +- fabs                 (see above)
+ |     |  |     |  |  
+ |     |  |     |  +- _DNEG                (see above)
+ |     |  |     |  |  
+ |     |  |     |  +- _COPY                (see above)
+ |     |  |     |     
+ |     |  |     +- fabs                 (see above)
+ |     |  |     |  
+ |     |  |     +- logb                
+ |     |  |     |  | 
+ |     |  |     |  +- _COPY                (see above)
+ |     |  |     |  |  
+ |     |  |     |  +- frexp                (see above)
+ |     |  |     |     
+ |     |  |     +- _DDIV                (see above)
+ |     |  |     |  
+ |     |  |     +- ldexp                (see above)
+ |     |  |     |  
+ |     |  |     +- _DCMP                (see above)
+ |     |  |     |  
+ |     |  |     +- _DADD                (see above)
+ |     |  |     |  
+ |     |  |     +- _DMUL                (see above)
+ |     |  |     |  
+ |     |  |     +- _DSTRUNC             (see above)
+ |     |  |     |  
+ |     |  |     +- _CASE_CHECKED       
+ |     |  |     |    
+ |     |  |     +- _COPY                (see above)
+ |     |  |     |  
+ |     |  |     +- _DSUB                (see above)
+ |     |  |     |  
+ |     |  |     +- _DNEG                (see above)
+ |     |  |        
+ |     |  +- _COPY                (see above)
+ |     |  |  
+ |     |  +- _DSHORT             
+ |     |  |  | 
+ |     |  |  +- D_PULL               (see above)
+ |     |  |  |  
+ |     |  |  +- D_TOFK              
+ |     |  |  |  | 
+ |     |  |  |  +- F_MAXK              
+ |     |  |  |  |  | 
+ |     |  |  |  |  +- F_CLRK              
+ |     |  |  |  |       
+ |     |  |  |  +- F_CLRK               (see above)
+ |     |  |  |     
+ |     |  |  +- F_PSHK              
+ |     |  |       
+ |     |  +- _FDIV               
+ |     |  |  | 
+ |     |  |  +- F_PULL              
+ |     |  |  |    
+ |     |  |  +- F_PULK              
+ |     |  |  |    
+ |     |  |  +- F_DIVKL             
+ |     |  |  |  | 
+ |     |  |  |  +- F_MAXK               (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- F_NORMK             
+ |     |  |  |     | 
+ |     |  |  |     +- F_MAXK               (see above)
+ |     |  |  |        
+ |     |  |  +- F_PSHK               (see above)
+ |     |  |     
+ |     |  +- getRawDataMagnet    
+ |     |  |  | 
+ |     |  |  +- iic_request_data    
+ |     |  |  |  | 
+ |     |  |  |  +- iicstart             (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- iicstop              (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- iictransmit          (see above)
+ |     |  |  |     
+ |     |  |  +- iic_read_data       
+ |     |  |     | 
+ |     |  |     +- iicrestart          
+ |     |  |     |  | 
+ |     |  |     |  +- iicresponse          (see above)
+ |     |  |     |     
+ |     |  |     +- iicswrcv            
+ |     |  |     |    
+ |     |  |     +- iicreceive          
+ |     |  |     |  | 
+ |     |  |     |  +- setAlarm             (see above)
+ |     |  |     |     
+ |     |  |     +- iicreceivem1        
+ |     |  |     |  | 
+ |     |  |     |  +- setAlarm             (see above)
+ |     |  |     |     
+ |     |  |     +- iicreceivelast      
+ |     |  |     |  | 
+ |     |  |     |  +- setAlarm             (see above)
+ |     |  |     |     
+ |     |  |     +- iicSensorInit        (see above)
+ |     |  |        
+ |     |  +- _FMUL               
+ |     |  |  | 
+ |     |  |  +- F_PULK               (see above)
+ |     |  |  |  
+ |     |  |  +- F_PULL               (see above)
+ |     |  |  |  
+ |     |  |  +- F_MULKL             
+ |     |  |  |  | 
+ |     |  |  |  +- F_CLRK               (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- F_NORMK              (see above)
+ |     |  |  |     
+ |     |  |  +- F_PSHK               (see above)
+ |     |  |     
+ |     |  +- _FADD               
+ |     |  |  | 
+ |     |  |  +- F_PULK               (see above)
+ |     |  |  |  
+ |     |  |  +- F_PULL               (see above)
+ |     |  |  |  
+ |     |  |  +- F_ADDKL             
+ |     |  |  |  | 
+ |     |  |  |  +- F_XGKL              
+ |     |  |  |  |    
+ |     |  |  |  +- F_NORMK              (see above)
+ |     |  |  |     
+ |     |  |  +- F_PSHK               (see above)
+ |     |  |     
+ |     |  +- getRawDataAccel     
+ |     |  |  | 
+ |     |  |  +- iic_request_data     (see above)
+ |     |  |  |  
+ |     |  |  +- iic_read_data        (see above)
+ |     |  |     
+ |     |  +- convertUnits        
+ |     |  |  | 
+ |     |  |  +- _FDIV                (see above)
+ |     |  |  |  
+ |     |  |  +- _ILSEXT              (see above)
+ |     |  |  |  
+ |     |  |  +- _FSFLOAT            
+ |     |  |     | 
+ |     |  |     +- SL_PULK              (see above)
+ |     |  |     |  
+ |     |  |     +- F_FRLONGK           
+ |     |  |     |    
+ |     |  |     +- F_PSHK               (see above)
+ |     |  |        
+ |     |  +- findOrientation     
+ |     |  |  | 
+ |     |  |  +- acosf               
+ |     |  |  |  | 
+ |     |  |  |  +- is_special          
+ |     |  |  |  |  | 
+ |     |  |  |  |  +- _LCMP                (see above)
+ |     |  |  |  |     
+ |     |  |  |  +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- fabsf               
+ |     |  |  |  |    
+ |     |  |  |  +- _FCMP               
+ |     |  |  |  |    
+ |     |  |  |  +- _FSUB               
+ |     |  |  |  |  | 
+ |     |  |  |  |  +- _FADD                (see above)
+ |     |  |  |  |     
+ |     |  |  |  +- _FADD                (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- _FDIV                (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- sqrtf               
+ |     |  |  |  |  | 
+ |     |  |  |  |  +- is_special           (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |  |  |  
+ |     |  |  |  |  +- sqrtf_r             
+ |     |  |  |  |     | 
+ |     |  |  |  |     +- frexpf              
+ |     |  |  |  |     |  | 
+ |     |  |  |  |     |  +- F_PULL               (see above)
+ |     |  |  |  |     |  |  
+ |     |  |  |  |     |  +- F_TLK               
+ |     |  |  |  |     |  |    
+ |     |  |  |  |     |  +- F_FREXP             
+ |     |  |  |  |     |  |  | 
+ |     |  |  |  |     |  |  +- F_NORMK              (see above)
+ |     |  |  |  |     |  |     
+ |     |  |  |  |     |  +- F_PSHK               (see above)
+ |     |  |  |  |     |     
+ |     |  |  |  |     +- _FMUL                (see above)
+ |     |  |  |  |     |  
+ |     |  |  |  |     +- _FADD                (see above)
+ |     |  |  |  |     |  
+ |     |  |  |  |     +- ldexpf              
+ |     |  |  |  |     |  | 
+ |     |  |  |  |     |  +- F_PULL               (see above)
+ |     |  |  |  |     |  |  
+ |     |  |  |  |     |  +- F_TLK                (see above)
+ |     |  |  |  |     |  |  
+ |     |  |  |  |     |  +- F_LDEXP             
+ |     |  |  |  |     |  |    
+ |     |  |  |  |     |  +- F_PSHK               (see above)
+ |     |  |  |  |     |  |  
+ |     |  |  |  |     |  +- RetErrDom           
+ |     |  |  |  |     |     | 
+ |     |  |  |  |     |     +- _COPY                (see above)
+ |     |  |  |  |     |     |  
+ |     |  |  |  |     |     +- _DSHORT              (see above)
+ |     |  |  |  |     |        
+ |     |  |  |  |     +- _FDIV                (see above)
+ |     |  |  |  |     |  
+ |     |  |  |  |     +- _ILSEXT              (see above)
+ |     |  |  |  |        
+ |     |  |  |  +- atan2f              
+ |     |  |  |     | 
+ |     |  |  |     +- copysignf           
+ |     |  |  |     |    
+ |     |  |  |     +- is_special           (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- logbf               
+ |     |  |  |     |  | 
+ |     |  |  |     |  +- frexpf               (see above)
+ |     |  |  |     |     
+ |     |  |  |     +- ldexpf               (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FCMP                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FADD                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FMUL                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FSTRUNC            
+ |     |  |  |     |  | 
+ |     |  |  |     |  +- F_PULK               (see above)
+ |     |  |  |     |  |  
+ |     |  |  |     |  +- F_TOLONGK           
+ |     |  |  |     |  |    
+ |     |  |  |     |  +- L_PSHK               (see above)
+ |     |  |  |     |     
+ |     |  |  |     +- _FSUB                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FDIV                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FNEG               
+ |     |  |  |          
+ |     |  |  +- _FDIV                (see above)
+ |     |  |  |  
+ |     |  |  +- _FMUL                (see above)
+ |     |  |  |  
+ |     |  |  +- _FADD                (see above)
+ |     |  |  |  
+ |     |  |  +- _DLONG              
+ |     |  |  |  | 
+ |     |  |  |  +- F_PULK               (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- D_FRFK              
+ |     |  |  |  |  | 
+ |     |  |  |  |  +- D_NORMK_UNARY        (see above)
+ |     |  |  |  |     
+ |     |  |  |  +- D_PSHK_UNARY         (see above)
+ |     |  |  |     
+ |     |  |  +- sqrt                 (see above)
+ |     |  |  |  
+ |     |  |  +- _DSHORT              (see above)
+ |     |  |  |  
+ |     |  |  +- atanf               
+ |     |  |  |  | 
+ |     |  |  |  +- atan2f               (see above)
+ |     |  |  |     
+ |     |  |  +- cosf                
+ |     |  |  |  | 
+ |     |  |  |  +- is_special           (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- fabsf                (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- sincosf             
+ |     |  |  |     | 
+ |     |  |  |     +- _FADD                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FMUL                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- modff               
+ |     |  |  |     |  | 
+ |     |  |  |     |  +- F_PULL               (see above)
+ |     |  |  |     |  |  
+ |     |  |  |     |  +- F_TLK                (see above)
+ |     |  |  |     |  |  
+ |     |  |  |     |  +- F_MODF              
+ |     |  |  |     |  |  | 
+ |     |  |  |     |  |  +- F_NORMK              (see above)
+ |     |  |  |     |  |  |  
+ |     |  |  |     |  |  +- F_CLRL              
+ |     |  |  |     |  |  |    
+ |     |  |  |     |  |  +- F_CLRK               (see above)
+ |     |  |  |     |  |     
+ |     |  |  |     |  +- F_STAL              
+ |     |  |  |     |  |    
+ |     |  |  |     |  +- F_PSHK               (see above)
+ |     |  |  |     |     
+ |     |  |  |     +- _FSTRUNC             (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FCMP                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _LINC               
+ |     |  |  |     |    
+ |     |  |  |     +- _FSFLOAT             (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FSUB                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- fabsf                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _DLONG               (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _DCMP                (see above)
+ |     |  |  |     |  
+ |     |  |  |     +- _FNEG                (see above)
+ |     |  |  |        
+ |     |  |  +- sinf                
+ |     |  |  |  | 
+ |     |  |  |  +- is_special           (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- _CASE_CHECKED_BYTE   (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- _FNEG                (see above)
+ |     |  |  |  |  
+ |     |  |  |  +- sincosf              (see above)
+ |     |  |  |     
+ |     |  |  +- _FSUB                (see above)
+ |     |  |  |  
+ |     |  |  +- fabs                 (see above)
+ |     |  |  |  
+ |     |  |  +- _DCMP                (see above)
+ |     |  |  |  
+ |     |  |  +- _FNEG                (see above)
+ |     |  |  |  
+ |     |  |  +- _FCMP                (see above)
+ |     |  |  |  
+ |     |  |  +- _COPY                (see above)
+ |     |  |     
+ |     |  +- _FNEG                (see above)
+ |     |  |  
+ |     |  +- getGroundDistance   
+ |     |  |  | 
+ |     |  |  +- sinf                 (see above)
+ |     |  |  |  
+ |     |  |  +- _FDIV                (see above)
+ |     |  |  |  
+ |     |  |  +- _FUTRUNC            
+ |     |  |     | 
+ |     |  |     +- _FSTRUNC             (see above)
+ |     |  |        
+ |     |  +- _LINC                (see above)
+ |     |  |  
+ |     |  +- delay               
+ |     |  |  | 
+ |     |  |  +- setAlarm             (see above)
+ |     |  |     
+ |     |  +- _LCMP_P              (see above)
+ |     |  |  
+ |     |  +- _FSTRUNC             (see above)
+ |     |  |  
+ |     |  +- sprintf              (see above)
+ |     |  |  
+ |     |  +- _ILSEXT              (see above)
+ |     |  |  
+ |     |  +- _FSFLOAT             (see above)
+ |     |     
+ |     +- SCI1_OutString       (see above)
+ |     |  
+ |     +- delay                (see above)
+ |        
  +- _Startup            
     | 
     +- Init                
@@ -3183,6 +3210,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 8
-Total size of all blocks to be downloaded: 16093
+Number of blocks to be downloaded: 7
+Total size of all blocks to be downloaded: 16110
 

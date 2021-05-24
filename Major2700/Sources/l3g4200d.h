@@ -56,9 +56,8 @@ IIC_ERRORS getRawDataMagnet(MagRaw *raw_data);
 // Get the raw gyro data from the sensor
 IIC_ERRORS getRawDataGyro(GyroRaw *raw_data);
 
-void normaliseMagnet(MagScaled *norm_mag, MagRaw *raw_mag);
 
 // Calculate elevation from accelerometer reading, yaw from magnetometer
-void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data);
+void findOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data);
 
 #endif

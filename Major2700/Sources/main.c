@@ -11,27 +11,13 @@
 #include "servo.h"
 #include "lidar.h"
 
-void panServo(void);
+void panServo(char *buffer);
+void getMeasurements(char *buffer, char azimuth);
 
 void main(void) {
-
-  AccelRaw read_accel;
-  AccelScaled scaled_accel;
-  
-  GyroRaw read_gyro;
-  
-  MagRaw read_magnet;
-  MagScaled norm_magnet;
-  MagScaled magnet_average;
-  
-  Orientation orientations;
-  
-  unsigned long i;
-  char j;
   
   int error_code = NO_ERROR;
   unsigned char buffer[100];
-  float conversion = 180.0/(float)acos(-1);
   
   // make sure the board is set to 24MHz
   PLL_Init();
@@ -57,24 +43,7 @@ void main(void) {
 	EnableInterrupts;
   
   for(;;) {
-    
-    turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
-    magnet_average.x = 0;
-    magnet_average.y = 0;
-    magnet_average.z = 0;
-    for (j = 0; j < 10; ++j) {
-      getRawDataMagnet(&read_magnet);
-      normaliseMagnet(&norm_magnet, &read_magnet);
-      magnet_average.x += 0.1*(float)read_magnet.x;
-      magnet_average.y += 0.1*(float)read_magnet.y;
-      magnet_average.z += 0.1*(float)read_magnet.z;  
-    }
-    getRawDataAccel(&read_accel);    convertUnits(&read_accel, &scaled_accel);
-    findInitOrientation(&orientations, &scaled_accel, &magnet_average);
-    
-    sprintf(buffer, "mx: %.2f my: %.2f mz:%.2f e:%.2f a:%.2f\n", magnet_average.x, magnet_average.y, magnet_average.z, orientations.e*conversion, orientations.a*conversion);
-    SCI1_OutString(buffer);
-    //panServo();
+    panServo(buffer);
     
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
@@ -83,38 +52,19 @@ void main(void) {
 }
 
 // pans in small increments by increasing elevation then increasing azimuth angle
-void panServo(void) {
+void panServo(char *buffer) {
   char elevation, azimuth; 
-  unsigned char buf[50];
   SERVO_STATE result;
   unsigned char prevDutyE = 0, prevDutyA = 0;
-  long dt;
-  int ovB, ovC;
   
   for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation++) {
     
     // keep increasing elevation angle until the servo actually moves
     result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
     
-    if (result == SUCCESSFUL_TURN) {
-      int i;
-      unsigned long minDist = MAX_RANGE;
-        
-        delay(1000); // give it enough time to move to the left
-        
-        for (i = 0; i < 5; ++i) {
-          TIE |= TIE_C1I_MASK;
-          delay(100);
-          TIE &= ~TIE_C1I_MASK;
-          
-          if (distance < minDist) {
-            minDist = distance;  
-          }
-        }
-        
-        //sprintf(buf, "0,0,%u,%u,%ld,%u,%u,%lu\n", time_1, time_2, dt, ovB, ovC, distance);
-        sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, minDist); 
-        SCI1_OutString(buf); 
+    if (result == SUCCESSFUL_TURN) { 
+        getMeasurements(buffer, MIN_PAN_AZIMUTH);
+        SCI1_OutString(buffer); 
     
     } else if (result == DUPLICATE_CONFIG) {
       continue;
@@ -126,25 +76,8 @@ void panServo(void) {
       result = turnToElevationAzimuth(elevation, azimuth, &prevDutyE, &prevDutyA, AZIMUTH);
       
       if (result == SUCCESSFUL_TURN) {
-        int i;
-        unsigned long minDist = MAX_RANGE;
-        
-        delay(400);
-        
-        for (i = 0; i < 5; ++i) {
-          TIE |= TIE_C1I_MASK;
-          delay(100);
-          TIE &= ~TIE_C1I_MASK;
-          
-          if (distance < minDist) {
-            minDist = distance;  
-          }
-        }
-        
-        //sprintf(buf, "0,0,%u,%u,%ld,%u,%u,%lu\n", time_1, time_2, dt, ovB, ovC, distance);
-        sprintf(buf, "%d,%d,%lu\n", elevation, azimuth, minDist); 
-        SCI1_OutString(buf);
-      
+        getMeasurements(buffer, azimuth);         
+        SCI1_OutString(buffer);     
       } else if (result == DUPLICATE_CONFIG) {
         continue;
       }
@@ -152,8 +85,56 @@ void panServo(void) {
   }
   
   // return to default configuration after done panning
-  //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, &prevDutyE, &prevDutyA, NONE);
-  //delay(1000);
+  turnToElevationAzimuth(0, 0, &prevDutyE, &prevDutyA, NONE);
+  delay(1000);
   
   return;
+}
+
+void getMeasurements(char *buffer, char azimuth) {
+    int i;
+    unsigned long minDist; // taking 5 readings per orientation and recording the minimum
+    unsigned long groundDist; // how far the ground is expected to be at the given elevation
+    AccelRaw read_accel;
+    AccelScaled scaled_accel;
+    MagRaw read_magnet;
+    MagScaled magnet_average;
+    Orientation orientations;
+    float conversion = 180.0/(float)acos(-1);  // conversion factor from rad to deg
+    
+    magnet_average.x = 0;
+    magnet_average.y = 0;
+    magnet_average.z = 0;
+    
+    // take 10 magnetometer readings per orientation and average
+    for (i = 0; i < 10; ++i) {
+      getRawDataMagnet(&read_magnet);
+      magnet_average.x += 0.1*(float)read_magnet.x;
+      magnet_average.y += 0.1*(float)read_magnet.y;
+      magnet_average.z += 0.1*(float)read_magnet.z;  
+    }
+    
+    // find actual elevation and heading using IMU
+    getRawDataAccel(&read_accel);
+    convertUnits(&read_accel, &scaled_accel);
+    findOrientation(&orientations, &scaled_accel, &magnet_average);
+          
+    groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
+    minDist = groundDist + 1; // initialise minimum distance to be greater than expected ground distance
+    delay(400);
+    
+    // take 5 LIDAR readings and record the minimum. If the minimum is still greater than groundDist,
+    // then chances are there are no objects in that direction
+    for (i = 0; i < 5; ++i) {
+      TIE |= TIE_C1I_MASK;
+      delay(100);
+      TIE &= ~TIE_C1I_MASK;
+      
+      if (distance < minDist) {
+        minDist = distance;  
+      }
+    } 
+    
+    sprintf(buffer, "%d,%d,%lu,%lu\n", (int)(orientations.e*conversion), azimuth, minDist, groundDist);
+    return;  
 }

@@ -131,17 +131,9 @@ IIC_ERRORS magnet_init(void)
   return iic_send_data(magnet_wr, (uint8_t*)&mag_cfg_b, sizeof(MAG_CFG_STRUCT));
 }
 
-void normaliseMagnet(MagScaled *norm_mag, MagRaw *raw_mag) {
-  float norm = sqrtf((float)(raw_mag->x)*(float)(raw_mag->x) + (float)(raw_mag->y)*(float)(raw_mag->y) + (float)(raw_mag->z)*(float)(raw_mag->z));
-  norm_mag->x = (float)(raw_mag->x) / norm;
-  norm_mag->y = (float)(raw_mag->y) / norm;
-  norm_mag->z = (float)(raw_mag->z) / norm;
-  
-  return;
-}
 
 // calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
-void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data) {
+void findOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data) {
   float z, y;
   float eps = 0.0001;
   float conversion = acosf(-1) / 180.0;
@@ -151,8 +143,6 @@ void findInitOrientation(Orientation *orientations, AccelScaled *scaled_data, Ma
   
   z = (mag_data->z)*cosf(orientations->e) - (mag_data->x)*sinf(orientations->e);
   y = (mag_data->y);
-  //z = (mag_data->z);
-  //y = (mag_data->y) - (mag_data->x)*sinf(orientations->e);
   orientations->y = y;
   orientations->z = z;
   if (fabs(z) < eps) {

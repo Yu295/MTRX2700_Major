@@ -1,5 +1,6 @@
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
+#include <math.h>
 
 #include "l3g4200d.h"
 #include "lidar.h"
@@ -9,6 +10,16 @@ volatile unsigned int overflow;
 volatile long time_diff;
 volatile char time_flag;
 volatile char edge_flag; // whether to read in a rising or falling edge
+
+unsigned long getGroundDistance(float declination) {
+  
+  // not looking towards the ground if declination is non-positive
+  if (declination <= 0) {
+    return MAX_RANGE;
+  }
+  
+  return (unsigned long)((float)HEIGHT_OFF_GROUND / sinf(declination));
+}
 
 void timer_config(void){
 
@@ -29,8 +40,6 @@ void timer_config(void){
    return; 
 
 }
-
-
 
 /********change it to interrupt, to calculate pulse width  *********/
 
