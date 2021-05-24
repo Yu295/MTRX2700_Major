@@ -24,7 +24,7 @@ void main(void) {
   
   int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
   int DEFAULT_AZIMUTH = 0;
-  float displacement = 0, velocity = 0;
+  float displacement = 0, velocity = 0, accel = 0;
   AccelRaw read_accel;
   AccelScaled scaled_accel;
   
@@ -40,31 +40,33 @@ void main(void) {
   // write the result of the sensor initialisation to the serial
   if (error_code == NO_ERROR) {
     sprintf(buffer, "NO_ERROR\n");
-    // SCI1_OutString(buffer);
+    SCI1_OutString(buffer);
   } else {
     sprintf(buffer, "ERROR %d\n", error_code);
-    // SCI1_OutString(buffer);    
+    SCI1_OutString(buffer);    
   }
   
   timer_config();
   PWMConfig();
   
 	EnableInterrupts;
-  
+  turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
+  delay(1000);
   for(;;) {
-    
+  
     // stay here until an obstacle is detected in front
     // return to default configuration after done panning
     //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
     
-    turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
-    getDisplacement(&displacement, &velocity);
-    sprintf(buffer, "v: %.5f, d: %.5f\n", velocity, displacement);
+    
+    getDisplacement(&displacement, &velocity, &accel);
+    sprintf(buffer, "a: %.5f, v: %.5f, d: %.5f\n", accel, velocity, displacement);
     //getRawDataAccel(&read_accel);
     //convertUnits(&read_accel, &scaled_accel);
     //sprintf(buffer, "ax: %.5f, ay: %.5f, az: %.5f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
+    //sprintf(buffer, "%f\n", accel);
     SCI1_OutString(buffer); 
-    delay(25);
+    delay(10);
   
     //panServo(buffer);
     
