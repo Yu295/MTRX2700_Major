@@ -41,6 +41,22 @@ void timer_config(void){
 
 }
 
+void check_obstacle(void){
+    
+   TIE |= TIE_C1I_MASK;
+   delay(100);
+   
+   
+   if  (distance  < 1930) {  //1.93 metres while the PTU is at an azimuth of 15 degrees by default
+   
+   obstacle = 1;
+    
+   TIE &= ~TIE_C1I_MASK; 
+
+   }
+   return;
+}
+
 /********change it to interrupt, to calculate pulse width  *********/
 
 #pragma CODE_SEG __NEAR_SEG NON_BANKED

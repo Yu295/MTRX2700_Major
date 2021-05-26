@@ -39,17 +39,28 @@ void main(void) {
   
   timer_config();
   PWMConfig();
+  obstacle = 0;
   
 	EnableInterrupts;
   
   for(;;) {
-    panServo(buffer);
+  
+  if (obstacle == 0) {
     
+    check_obstacle();
+    sprintf(buffer, "%d, %lu\n", obstacle, distance);
+    SCI1_OutString(buffer);
+  
+  }else{ 
+  
+    panServo(buffer);
+  }
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
   /* please make sure that you never leave main */
 }
+
 
 // pans in small increments by increasing elevation then increasing azimuth angle
 void panServo(char *buffer) {
