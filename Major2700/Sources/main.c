@@ -15,7 +15,7 @@
 void panServo(char *buffer);
 
 // get IMU and LIDAR data after the PTU has turned to a new position
-void getMeasurements(char *buffer, char azimuth);
+void getMeasurements(char *buffer, char openElevation, char azimuth);
 
 void main(void) {
   
@@ -56,11 +56,11 @@ void main(void) {
   
     // stay here until an obstacle is detected in front
     // return to default configuration after done panning
-    //turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
+    turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
     
     
-    getDisplacement(&displacement, &velocity, &accel);
-    sprintf(buffer, "a: %.5f, v: %.5f, d: %.5f\n", accel, velocity, displacement);
+    //getDisplacement(&displacement, &velocity, &accel);
+    //sprintf(buffer, "a: %.5f, v: %.5f, d: %.5f\n", accel, velocity, displacement);
     //getRawDataAccel(&read_accel);
     //convertUnits(&read_accel, &scaled_accel);
     //sprintf(buffer, "ax: %.5f, ay: %.5f, az: %.5f\n", scaled_accel.x, scaled_accel.y, scaled_accel.z);
@@ -68,7 +68,7 @@ void main(void) {
     SCI1_OutString(buffer); 
     delay(10);
   
-    //panServo(buffer);
+    panServo(buffer);
     
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
@@ -89,7 +89,7 @@ void panServo(char *buffer) {
     
     if (result == SUCCESSFUL_TURN) { 
         delay(1500);
-        getMeasurements(buffer, MIN_PAN_AZIMUTH);
+        getMeasurements(buffer, elevation, MIN_PAN_AZIMUTH);
         SCI1_OutString(buffer); 
     
     } else if (result == DUPLICATE_CONFIG) {
@@ -103,10 +103,8 @@ void panServo(char *buffer) {
       
       if (result == SUCCESSFUL_TURN) {
         delay(400);
-        getMeasurements(buffer, azimuth);         
+        getMeasurements(buffer, elevation, azimuth);         
         SCI1_OutString(buffer);     
-      } else if (result == DUPLICATE_CONFIG) {
-        continue;
       }
     }
   }
@@ -114,34 +112,27 @@ void panServo(char *buffer) {
   return;
 }
 
-void getMeasurements(char *buffer, char azimuth) {
+void getMeasurements(char *buffer, char openElevation, char azimuth) {
     int i;
     unsigned long minDist; // taking 5 readings per orientation and recording the minimum
     unsigned long groundDist; // how far the ground is expected to be at the given elevation
     AccelRaw read_accel;
     AccelScaled scaled_accel;
-    MagRaw read_magnet;
-    MagScaled magnet_average;
     Orientation orientations;
     float conversion = 180.0/(float)acos(-1);  // conversion factor from rad to deg
     
-    // initialise average magnetometer readings
-    magnet_average.x = 0;
-    magnet_average.y = 0;
-    magnet_average.z = 0;
-    
     // take 10 magnetometer readings per orientation and average
-    for (i = 0; i < 10; ++i) {
+    /*for (i = 0; i < 10; ++i) {
       getRawDataMagnet(&read_magnet);
       magnet_average.x += 0.1*(float)read_magnet.x;
       magnet_average.y += 0.1*(float)read_magnet.y;
       magnet_average.z += 0.1*(float)read_magnet.z;  
-    }
+    }*/
     
     // find actual elevation and heading using IMU
     getRawDataAccel(&read_accel);
     convertUnits(&read_accel, &scaled_accel);
-    findOrientation(&orientations, &scaled_accel, &magnet_average);
+    findOrientation(&orientations, &scaled_accel, ELEVATION_ONLY, NULL);
           
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
     minDist = groundDist + 1; // initialise minimum distance to be greater than expected ground distance
@@ -159,7 +150,7 @@ void getMeasurements(char *buffer, char azimuth) {
     } 
     
     // returns string in format <measured elevation>,<set azimuth>,<LIDAR measurement>,<expected ground distance>
-    sprintf(buffer, "%d,%d,%lu,%lu\n", (int)(orientations.e*conversion), azimuth, minDist, groundDist);
+    sprintf(buffer, "%d,%d,%d,%lu,%lu\n", (int)(orientations.e*conversion), openElevation, azimuth, minDist, groundDist);
     
     return;  
 }

@@ -135,7 +135,7 @@ IIC_ERRORS magnet_init(void)
 
 
 // calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
-void findOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data) {
+void findOrientation(Orientation *orientations, AccelScaled *scaled_data, ORIENTATION_MEASUREMENT measurement, MagScaled *mag_data) {
   float z, y;
   float eps = 0.0001; 
   float conversion = acosf(-1) / 180.0; // conversion from deg to rad
@@ -145,6 +145,9 @@ void findOrientation(Orientation *orientations, AccelScaled *scaled_data, MagSca
   // calculate orientation from read accelerometer data
   orientations->e = atanf((scaled_data->z)/(sqrt((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x))));
   
+  if (measurement == ELEVATION_ONLY) {
+    return;
+  }
   // calculate intermediate values from magnetometer data and elevation
   z = (mag_data->z)*cosf(orientations->e) - (mag_data->x)*sinf(orientations->e);
   y = (mag_data->y);

@@ -43,11 +43,11 @@ void check_obstacle(void){
    delay(100);
    
    
-   if  (distance  < 1930) {  //1.93 metres while the PTU is at an azimuth of 15 degrees by default
+   if  (distance  < NOMINAL_LIDAR) {  //1.93 metres while the PTU is at an azimuth of 15 degrees by default
    
-   obstacle = 1;
+      obstacle = 1;
     
-   TIE &= ~TIE_C1I_MASK; 
+      TIE &= ~TIE_C1I_MASK; 
 
    }
    return;
