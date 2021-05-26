@@ -24,30 +24,34 @@ void PWMConfig(void) {
 
 // angles in degrees and assumed to be between +/- 90
 SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate) {
-  unsigned char dutyE, dutyA;
-  double ratioE, ratioA;
+  unsigned char dutyE, dutyA; // value to set PWMDTYx
+  double ratioE, ratioA;      // intermediate value to calculate PWMDTYx
   
   // reject invalid angles
   if (elevation < MIN_PAN_ELEVATION || elevation > MAX_PAN_ELEVATION) {
     return INVALID_ELEVATION;
+  
   } else if (azimuth < MIN_PAN_AZIMUTH || azimuth > MAX_PAN_AZIMUTH) {
     return INVALID_AZIMUTH;
   }
   
-  // angle of -60: 0.9, 0: 1.5, +60: 2.1
+  // Calibration values: angle of -90: 0.62, 0: 1.5, +90: 2.38 
   ratioE = (double)elevation / 102 + 1.5;
-  dutyE = (unsigned char)(ratioE * 12.75);
+  dutyE = (unsigned char)(ratioE * 12.75); // conversion factor of PWMPERx/20
   
   
-  // angle of -90: 0.62 0: 1.5, +90: 2.38 
+  // Calibration values: angle of -90: 0.62 0: 1.5, +90: 2.38 
   ratioA = (double)azimuth / 102 + 1.5;
-  dutyA = (unsigned char)(ratioA * 12.75); // precision lost during cast operation so servo may end up not moving from the previous position
+  dutyA = (unsigned char)(ratioA * 12.75); // conversion factor of PWMPERx/20
   
+  // precision lost during cast operation so servo may end up not moving from the previous position
   // check if the relevant servo will actually end up moving from the previous position
   if ((duplicate == ELEVATION) && (dutyE == *prevDutyE)) {
     return DUPLICATE_CONFIG;
+  
   } else if ((duplicate == AZIMUTH) && (dutyA == *prevDutyA)) {
     return DUPLICATE_CONFIG;
+  
   }
   
   // move the servos

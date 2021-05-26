@@ -11,13 +11,19 @@
 #include "servo.h"
 #include "lidar.h"
 
+// pan servo after the user has been prompted to stop to begin the mapping process
 void panServo(char *buffer);
+
+// get IMU and LIDAR data after the PTU has turned to a new position
 void getMeasurements(char *buffer, char azimuth);
 
 void main(void) {
   
   int error_code = NO_ERROR;
   unsigned char buffer[100];
+  
+  int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
+  int DEFAULT_AZIMUTH = 0;
   
   // make sure the board is set to 24MHz
   PLL_Init();
@@ -31,36 +37,30 @@ void main(void) {
   // write the result of the sensor initialisation to the serial
   if (error_code == NO_ERROR) {
     sprintf(buffer, "NO_ERROR\n");
-    SCI1_OutString(buffer);
+    // SCI1_OutString(buffer);
   } else {
     sprintf(buffer, "ERROR %d\n", error_code);
-    SCI1_OutString(buffer);    
+    // SCI1_OutString(buffer);    
   }
   
   timer_config();
   PWMConfig();
-  obstacle = 0;
   
 	EnableInterrupts;
   
   for(;;) {
-  
-  if (obstacle == 0) {
-    
-    check_obstacle();
-    sprintf(buffer, "%d, %lu\n", obstacle, distance);
-    SCI1_OutString(buffer);
-  
-  }else{ 
+    // stay here until an obstacle is detected in front
+    // return to default configuration after done panning
+    turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
+    delay(3000);
   
     panServo(buffer);
-  }
+    
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
   /* please make sure that you never leave main */
 }
-
 
 // pans in small increments by increasing elevation then increasing azimuth angle
 void panServo(char *buffer) {
@@ -95,10 +95,6 @@ void panServo(char *buffer) {
     }
   }
   
-  // return to default configuration after done panning
-  turnToElevationAzimuth(0, 0, &prevDutyE, &prevDutyA, NONE);
-  delay(1000);
-  
   return;
 }
 
@@ -113,6 +109,7 @@ void getMeasurements(char *buffer, char azimuth) {
     Orientation orientations;
     float conversion = 180.0/(float)acos(-1);  // conversion factor from rad to deg
     
+    // initialise average magnetometer readings
     magnet_average.x = 0;
     magnet_average.y = 0;
     magnet_average.z = 0;
@@ -146,6 +143,8 @@ void getMeasurements(char *buffer, char azimuth) {
       }
     } 
     
+    // returns string in format <measured elevation>,<set azimuth>,<LIDAR measurement>,<expected ground distance>
     sprintf(buffer, "%d,%d,%lu,%lu\n", (int)(orientations.e*conversion), azimuth, minDist, groundDist);
+    
     return;  
 }

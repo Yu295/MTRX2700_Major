@@ -50,7 +50,9 @@ typedef struct MAG_CFG_STRUCT {
 } MAG_CFG_STRUCT;
 
 MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
-MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xE0};  
+
+// change magnetometer gain to allow readings of up to 8.8 Ga to prevent overflow 
+MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xE0};
 
 // initialise functions for each sensor
 IIC_ERRORS accel_init(void);
@@ -135,30 +137,37 @@ IIC_ERRORS magnet_init(void)
 // calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
 void findOrientation(Orientation *orientations, AccelScaled *scaled_data, MagScaled *mag_data) {
   float z, y;
-  float eps = 0.0001;
-  float conversion = acosf(-1) / 180.0;
+  float eps = 0.0001; 
+  float conversion = acosf(-1) / 180.0; // conversion from deg to rad
+  
   //float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x))); 
   
+  // calculate orientation from read accelerometer data
   orientations->e = atanf((scaled_data->z)/(sqrt((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x))));
   
+  // calculate intermediate values from magnetometer data and elevation
   z = (mag_data->z)*cosf(orientations->e) - (mag_data->x)*sinf(orientations->e);
   y = (mag_data->y);
   orientations->y = y;
   orientations->z = z;
+  
+  // similar use to atan2 to compute heading as per the HM5883 datasheet
+  // first handle case where denominator is 0
   if (fabs(z) < eps) {
     if (y > 0) {
-      orientations->a = 270.0 * conversion;
+      orientations->h = 270.0 * conversion;
     } else {
-      orientations->a = 90.0 * conversion;
+      orientations->h = 90.0 * conversion;
     }
   } else if (z < 0) {
-    orientations->a = 180.0 * conversion - atanf(y/z);  
+    orientations->h = 180.0 * conversion - atanf(y/z);  
   } else {
     if (y > 0) {
-      orientations->a = 360.0 * conversion - atanf(y/z);
+      orientations->h = 360.0 * conversion - atanf(y/z);
     } else {
-      orientations->a = -atanf(y/z);
+      orientations->h = -atanf(y/z);
     }
   }
+  
   return;     
 }

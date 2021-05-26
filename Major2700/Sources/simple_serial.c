@@ -3,8 +3,6 @@
 #include "simple_serial.h" 
 #include "derivative.h"        /* derivative information */
 
-
-
 // initialise SCI1
 void SCI1_Init(unsigned short baudRate) {
   
@@ -53,20 +51,16 @@ void SCI1_Init(unsigned short baudRate) {
 	  break;
   }
   
-
   SCI1CR1 = 0;
   SCI1CR2 = 0x0C; 
 }
-    
-        
+          
 // Output single character
 void SCI1_OutChar(char data) {
  
   while((SCI1SR1 & SCI1SR1_TDRE_MASK) == 0){};
   SCI1DRL = data;  
 }
-
-
 
 #define NULL_CHARACTER 0x00
 

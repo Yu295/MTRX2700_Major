@@ -13,31 +13,30 @@
 #include "accelerometer.h"
 
 // data structures containing the raw values
-
 typedef struct GyroRaw {
-  int x;
-  int y;
-  int z;
+  int x;    // x rotational velocity
+  int y;    // y rotational velocity
+  int z;    // z rotational velocity
 } GyroRaw;
 
 typedef struct MagRaw {
-  int x;
-  int y;
-  int z;
+  int x;    // x B field density (Ga)
+  int y;    // y B field density (Ga)
+  int z;    // z B field density (Ga)
 } MagRaw;
 
+// data structure containing magnetometer data stored as floats (for average computation)
 typedef struct MagScaled {
   float x;
   float y;
   float z;
 } MagScaled;
 
-// data structure containing orientation in terms of Euler angles (radians)
-
+// data structure containing orientation values
 typedef struct Orientation {
-  float e;
-  float a;
-  float y;
+  float e;      // elevation (rad) between -pi/2 and pi/2
+  float h;      // heading (rad) between 0 and 2*pi
+  float y;      // y and z are intermediate values stored for debugging
   float z;
 } Orientation;
 

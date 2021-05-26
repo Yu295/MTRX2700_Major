@@ -5,15 +5,13 @@
 #include "l3g4200d.h"
 #include "lidar.h"
 
-
-volatile unsigned int overflow;
-volatile long time_diff;
-volatile char time_flag;
+volatile unsigned int overflow; // number of overflows
+volatile long time_diff;        // pulse width of LIDAR reading (ms)
 volatile char edge_flag; // whether to read in a rising or falling edge
 
 unsigned long getGroundDistance(float declination) {
   
-  // not looking towards the ground if declination is non-positive
+  // not looking towards the ground if declination is non-positive, so set reference distance as the LIDAR's max range
   if (declination <= 0) {
     return MAX_RANGE;
   }
@@ -32,8 +30,6 @@ void timer_config(void){
    ICOVW = 0x02; // prohibit overwriting C1F
    ICSYS = 0;    // disable queueing
    DLYCT = 0x11; // remove initial noise
-   //read_flag = 0;  
-   //DLYCT
    
    _asm CLI;
    
@@ -69,46 +65,33 @@ __interrupt void TC1_ISR(void) {
    if (edge_flag) {
       
       time_1 = TC1; // time captured on rising edge
-      
-      
       TCTL4 = 0x08; // set up next interrupt for falling edge
-      
       overflow = 0;  // overflow count
-      
-      edge_flag = 0; // for next time an interrupt is triggered
-      
-      time_flag = 1;
-      
+      edge_flag = 0; // for next time an interrupt is triggered 
       TSCR2 = 0x80; // turn on the overflow interrupt - start counting
    
    } else {
-      
-      //overflow = 0;
+     
       TSCR2 = 0; // turn off the overflow interrupt - done counting
-      
       time_2 = TC1; // time captured on falling edge
-      
       TCTL4 = 0x04; // set up next interrupt for rising edge
-      
       edge_flag = 1; // for the next LIDAR measurement
-      
-      //time_flag = 0;
       
       if (time_2 < time_1) {
           overflow -= 1;
       }
+      
       time_diff = (long)time_2 - (long)time_1;
-      
-      distance = (unsigned long) (((long)overflow * 65536 + time_diff)/24 - 100);
-     
-      //distance = ((long)time_diff)/24-100;
-      
+      distance = (unsigned long) (((long)overflow * 65536 + time_diff)/24 - 100);    
    }
    
+   return;  
 }
 
 __interrupt void TOF_ISR(void) { 
   
-    TFLG2 = 0x80;
-    overflow++; 
+    TFLG2 = 0x80; // clear TOF flag
+    ++overflow;   // increment overflow count
+    
+    return; 
 }
