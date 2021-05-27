@@ -23,12 +23,12 @@ void PWMConfig(void) {
 }
 
 // angles in degrees and assumed to be between +/- 90
-SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate) {
+SERVO_STATE turnToElevationAzimuth(char elevation, char FLAT_OFFSET, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate) {
   unsigned char dutyE, dutyA; // value to set PWMDTYx
   double ratioE, ratioA;      // intermediate value to calculate PWMDTYx
   
   // reject invalid angles
-  if (elevation < MIN_PAN_ELEVATION || elevation > MAX_PAN_ELEVATION) {
+  if (elevation < (MIN_PAN_ELEVATION - FLAT_OFFSET) || elevation > (MAX_PAN_ELEVATION - FLAT_OFFSET)) {
     return INVALID_ELEVATION;
   
   } else if (azimuth < MIN_PAN_AZIMUTH || azimuth > MAX_PAN_AZIMUTH) {

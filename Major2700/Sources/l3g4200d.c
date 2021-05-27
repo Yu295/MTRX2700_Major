@@ -18,7 +18,6 @@
 
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
-
 #include "l3g4200d_definitions.h"
 #include <math.h>
 
@@ -139,9 +138,8 @@ void findOrientation(Orientation *orientations, AccelScaled *scaled_data, ORIENT
   float z, y;
   float eps = 0.0001; 
   float conversion = acosf(-1) / 180.0; // conversion from deg to rad
-  
-  //float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x))); 
-  
+  unsigned char buff[50];
+  //float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x)));
   // calculate orientation from read accelerometer data
   orientations->e = atanf((scaled_data->z)/(sqrt((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x))));
   
