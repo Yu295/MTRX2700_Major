@@ -18,12 +18,13 @@
 void panServo(char *buffer);
 
 // get IMU and LIDAR data after the PTU has turned to a new position
-void getMeasurements(char *buffer, char openElevation, char azimuth, char panning);
+char getMeasurements(char *buffer, char openElevation, char azimuth, char panning);
 
 void main(void) {
   
   int error_code = NO_ERROR;
   unsigned char buffer[100];
+  unsigned long minDistance;
   
   int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
   int DEFAULT_AZIMUTH = 0;
@@ -31,7 +32,7 @@ void main(void) {
   AccelRaw read_accel;
   AccelScaled scaled_accel;
   
-  // make sure the board is set to 24MHz
+  // make sure the board is set to 24MHz     
   PLL_Init();
   
   // initialise the simple serial
@@ -42,11 +43,11 @@ void main(void) {
   
   // write the result of the sensor initialisation to the serial
   if (error_code == NO_ERROR) {
-    sprintf(buffer, "NO_ERROR\n");
-    SCI1_OutString(buffer);
+    //sprintf(buffer, "NO_ERROR\n");
+    //SCI1_OutString(buffer);
   } else {
-    sprintf(buffer, "ERROR %d\n", error_code);
-    SCI1_OutString(buffer);    
+    //sprintf(buffer, "ERROR %d\n", error_code);
+    //SCI1_OutString(buffer);    
   }
   
   timer_config();
@@ -54,13 +55,20 @@ void main(void) {
   
 	EnableInterrupts;
   turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
-  delay(1000);
   for(;;) {
   
     // stay here until an obstacle is detected in front
     // return to default configuration after done panning
     turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
+    delay(1000);
+    // get the distance to the obstacle  
+    while(getMeasurements(buffer,DEFAULT_ELEVATION,DEFAULT_AZIMUTH,FALSE));
+
+    SCI1_OutString(buffer);
     
+    SCI1_InString(buffer);
+    if (*buffer == '1')  {
+     
     /* Trying to get displacement from accelerometer
     getDisplacement(&displacement, &velocity, &accel);
     sprintf(buffer, "a: %.5f, v: %.5f, d: %.5f\n", accel, velocity, displacement);
@@ -70,11 +78,10 @@ void main(void) {
     sprintf(buffer, "%f\n", accel);
     */
     
-    SCI1_OutString(buffer); 
-    delay(10);
   
     panServo(buffer);
     
+    }
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
@@ -117,7 +124,7 @@ void panServo(char *buffer) {
   return;
 }
 
-void getMeasurements(char *buffer, char openElevation, char azimuth, char panning) {
+char getMeasurements(char *buffer, char openElevation, char azimuth, char panning) {
     int i;
     unsigned long minDist; // taking 5 readings per orientation and recording the minimum
     unsigned long groundDist; // how far the ground is expected to be at the given elevation
@@ -128,6 +135,10 @@ void getMeasurements(char *buffer, char openElevation, char azimuth, char pannin
     
     // take 10 LIDAR readings and record the minimum. If the minimum is still greater than groundDist,
     // then chances are there are no objects in that direction
+    
+    getRawDataAccel(&read_accel);
+    convertUnits(&read_accel, &scaled_accel);
+    findOrientation(&orientations, &scaled_accel, ELEVATION_ONLY, NULL);
     
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
     minDist = groundDist + 1; // initialise minimum distance to be greater than expected ground distance
@@ -144,15 +155,12 @@ void getMeasurements(char *buffer, char openElevation, char azimuth, char pannin
     
     // find actual elevation using IMU
     if (panning) {  
-      getRawDataAccel(&read_accel);
-      convertUnits(&read_accel, &scaled_accel);
-      findOrientation(&orientations, &scaled_accel, ELEVATION_ONLY, NULL);
-      
       // returns string in format <measured elevation>,<set elevation>,<set azimuth>,<LIDAR measurement>,<expected ground distance>
       sprintf(buffer, "%d,%d,%d,%lu,%lu\n", (int)(orientations.e*conversion), openElevation, azimuth, minDist, groundDist);
-    } else {
-      // returns string in format <LIDAR measurement>,<expected ground distance>
-      sprintf(buffer, "%lu,%lu\n", minDist, groundDist);
-    }  
-    return;  
+      return TRUE;
+    }
+    
+    // returns string in format <LIDAR measurement>,<expected ground distance>
+    sprintf(buffer, "%lu,%lu\n", minDist, groundDist);
+    return (minDist > groundDist);
 }

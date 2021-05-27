@@ -12,18 +12,14 @@ function angleMatch = readMagnet (serialPort,idealAngle)
     fprintf(s, '*IDN?');
     
     count = 1;
-    %idealAngle = 0;
+    idealAngle = 0;
     %readAngle = 1;
-    
-    % reading 10 lines for the lidar data
     
     [line, count] = fscanf(s,"%s");
     %disp(line);
     %A = sscanf(line,"%d");
     while line(1) ~= idealAngle
     [line, count] = fscanf(s,"%s");
-    readAngle = sscanf(line,"%d"); 
-    
     end
     
     move_forward = 'Clear to go forward. Please start walking.';
