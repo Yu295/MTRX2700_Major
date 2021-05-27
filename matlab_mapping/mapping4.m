@@ -1,7 +1,7 @@
 clear;
 clc;
 
-width = 10; % sufficient width for person + rollator to pass through gap 9cm)
+width = 20; % sufficient width for person + rollator to pass through gap 9cm)
 r = 5;  % length of rotating arm of PTU (cm)
 
 n = 1;  % initialise index value for loop to store spherical coords
@@ -10,8 +10,8 @@ k = 1;  % initialise index values
 j2 = 1;  % initalise the index value for s gap finding
 k2 = 1;
 
-lidarData = readmatrix('lidarTest3.txt');    % read the sample lidar data4
-sizeData = size(lidarData);    % size of the sample data
+lidarData = readmatrix('lidarTest4.txt');    % read the sample lidar data4
+sizeData = size(lidarData);    %size of the sample data
 
 for i = 1:sizeData(1)
     
@@ -89,21 +89,30 @@ for i= 1:n-2
        if m(i) > width
           
          % front on width is sufficient and user can move through this gap 
-        
+         m2(j) = m(i);  % Every distance that qualifies
+         angle(j) = theta(i); % every theta for every distance
+         
+         xnew(j) = x(i);
+         ynew(j) = y(i);
+         znew(j) = z(i);
          % store the larger angle in the second col
          if a1 > a2
              
-            newx(j) = x(i);
-            newy(j) = y(i);
-            newz(j) = z(i);
+           
             angleRangeM(j,1) = a2; 
             angleRangeM(j,2) = a1;
+            
          else
              angleRangeM(j,1) = a1;
              angleRangeM(j,2) = a2;
+             
          end
             
             elM(j) = intEl(i);      % elevation of each angle range
+            
+             % to find the amount the angle for each gap is larger than minimum
+
+            allowance(j) = theta(i) - 2*atan(width/(2*sqrt(d2^2 - (m2(j)/2)^2)));
             
             j = j+1;  % loop m case
           
@@ -121,13 +130,11 @@ for i= 1:n-2
    
 end
 
-
 % find minimum angle for each elevation
 % from within a gap, directly upwards, is there a minimum of width?
 % if base angle supports 80cm, angle tolerance allows 5 cm either side for
 % next angle test
+ scatter( angleRangeM(:,1), elM,'filled')
 
-for i = 1:size(elM)
-    
-  
-end
+ hold on
+ scatter(angleRangeM(:,2), elM)

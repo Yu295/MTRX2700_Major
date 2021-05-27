@@ -89,21 +89,27 @@ for i= 1:n-2
        if m(i) > width
           
          % front on width is sufficient and user can move through this gap 
-        
+         m2(j) = m(i);  % Every distance that qualifies
+         angle(j) = theta(i); % every theta for every distance
+         
          % store the larger angle in the second col
          if a1 > a2
              
-            newx(j) = x(i);
-            newy(j) = y(i);
-            newz(j) = z(i);
+           
             angleRangeM(j,1) = a2; 
             angleRangeM(j,2) = a1;
+            
          else
              angleRangeM(j,1) = a1;
              angleRangeM(j,2) = a2;
+             
          end
             
             elM(j) = intEl(i);      % elevation of each angle range
+            
+             % to find the amount the angle for each gap is larger than minimum
+
+            allowance(j) = theta(i) - 2*atan(width/(2*sqrt(d2^2 - (m2(j)/2)^2)));
             
             j = j+1;  % loop m case
           
@@ -121,12 +127,8 @@ for i= 1:n-2
    
 end
 
-
 % find minimum angle for each elevation
 % from within a gap, directly upwards, is there a minimum of width?
-% if base angle is 80, then there is
-
-for i = 1:size(elM)
-    
-  
-end
+% if base angle supports 80cm, angle tolerance allows 5 cm either side for
+% next angle test
+scatter(elM, angleRangeM(
