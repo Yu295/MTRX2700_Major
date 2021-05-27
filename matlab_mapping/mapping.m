@@ -1,21 +1,48 @@
 clear;
 clc;
 
+% every time the elevation changes, change the read the gap again??? or
+% double check for every elevation if the angle exists
+% make matrix of available angles for every height? 
+% DONT PLOT IF ITS THE GROUND THING AND LIMIT RANGE????
+% Set actual width to look for
+% Compare turn1 for side on angle with range of available front on angles
+% to see if the path is clear
+% How to give distance instructions (Physical instructions? Clicks as wheel turns? Handle grips to turn the clicks on). 
+% Face forwards again after walking through obstacles
+% weight angles so that they are valued closer to correct intended bearing
+% manual override of intended bearing???
+
 width = 10; % sufficient width for the person to pass through 
-r = 10; % the length of the rotating arm of the PTU (cm) 
+r = 5; % the length of the rotating arm of the PTU (cm) 
+n = 1;  % initialise loop values for data points to plot
 j = 1;	% initialise loop values for s case
 k = 1;  % initialise loop values for m case
 
-lidarData = readmatrix('lidar.txt');    % read the sample lidar data
+lidarData = readmatrix('lidarTest4.txt');    % read the sample lidar data
 
 sizeData = size(lidarData);    % size of the sample data
 
 
 for i = 1:sizeData(1)
-    elevation(i) = deg2rad(lidarData(i,1));    % store the first column of data as elevation (radians)
-    azimuth(i) = deg2rad(lidarData(i,2));      % store the second column of data as azimuth (radians)
-    distance(i) = lidarData(i,3)/10;     % store the thrid col of data as distance (cm)
     
+    dist(i) = lidarData(i,4)/10;     % store the thrid col of data as distance (cm)
+    ground(i) = lidarData(i,5)/10;      % expected distance to the ground (cm)
+    
+    if dist(i) < ground(i) && dist(i) < 273
+        elevation(n) = deg2rad(lidarData(i,1));    % store the first column of data as elevation (radians)
+        azimuth(n) = deg2rad(lidarData(i,3));      % store the second column of data as azimuth (radians)
+        distance(n) = dist(i);
+        
+        n = n+1;
+    
+    end
+    
+ 
+end
+
+for i = 1:(n-1)
+       
     % calculate the cartesian coordinates
     x(i) = distance(i)*cos(elevation(i))*cos(azimuth(i)) + r*sin(azimuth(i));
     y(i) = r*cos(azimuth(i)) - distance(i)*cos(elevation(i))*sin(azimuth(i));
@@ -26,7 +53,9 @@ end
 % plot the cartesian coordinates
 scatter3(x,y,z,'filled');
 
-for i=1:(sizeData(1)-1)
+for i=1:(n-2)
+    
+ 
    % using cartesian coordinates, find the actual distance between two
    % successive points
    s(i) = sqrt((x(i+1)-x(i))^2 + (y(i+1)-y(i))^2); 
@@ -57,56 +86,60 @@ for i=1:(sizeData(1)-1)
    % find the front on distance between two points to decide whether user
    % can successfully navigate
    m(i)= d2 * sqrt(2 - 2*cos(theta(i)));
-     
-   if m(i) > width
-      % front on width is sufficient and user can move through this gap 
-      mcase(k) = i; % store which loops satisfy m case
-      
-      turnAngleM(k) = (a1 + a2)/2;
-      
-      k = k+1;  % loop m case
-      
-   elseif s(i) > width
-      % front on width insufficient but actual width sufficient 
-      % calculate the distance and movements required to move through gap
-      % head on
-     
-      % checking how many loops this occurs
-     scase(j)= i;   % store which loops satisfy s case to check
-     
-     
-     % from trig calcs
-     sigma(j) = asin(d2 * sin(theta(i)) / as(i));
-     c(j) = d1 * sin(sigma(j));
-     a(j) = d1 * cos(sigma(j)) - 0.5 * s(i) ;
-      
-      % instructions
-      if a1> a2
-          turn1S(j) = a2 + sigma(j);   % angle from centre (positive and negative indicate direction)
+        
+   % Only count as a potential angle if the distance is calculated on the
+   % same elevation
+   if elevation(i) == elevation(i+1)
+       
+       if m(i) > width
+          % front on width is sufficient and user can move through this gap 
+          mcase(k) = i; % store which loops satisfy m case
 
-          turn2S(j) = -90;    % turn right 90 deg instruction
+          turnAngleM(k) = (a1 + a2)/2;
 
-      elseif a2>a1
-          turn1S(j) = a2 - sigma(j);
-          
-          turn2S(j) = 90;   % turn left by 90 deg instruction
-          
-      end
-      
-      if turn1S(j) > 0
-          
-          turnAngleS(j) = turn1S(j) - atan(c(j)/a(j));  % net direction turned (used to measure how close the path is to the centre)
-          
-      elseif turn1S(j) < 0 
-          
-          turnAngleS(j) = turn1S(j) + atan(c(j)/a(j));
-          
-      end
-      
-      j = j+1;  % loop s case
-   end
+          k = k+1;  % loop m case
+
+       elseif s(i) > width
+          % front on width insufficient but actual width sufficient 
+          % calculate the distance and movements required to move through gap
+          % head on
+
+          % checking how many loops this occurs
+         scase(j)= i;   % store which loops satisfy s case to check
+
+
+         % from trig calcs
+         sigma(j) = asin(d2 * sin(theta(i)) / as(i));
+         c(j) = d1 * sin(sigma(j));
+         a(j) = d1 * cos(sigma(j)) - 0.5 * s(i) ;
+
+          % instructions
+          if a1> a2
+              turn1S(j) = a2 + sigma(j);   % angle from centre (positive and negative indicate direction)
+
+              turn2S(j) = -90;    % turn right 90 deg instruction
+
+          elseif a2>a1
+              turn1S(j) = a2 - sigma(j);
+
+              turn2S(j) = 90;   % turn left by 90 deg instruction
+
+          end
+
+          if turn1S(j) > 0
+
+              turnAngleS(j) = turn1S(j) - atan(c(j)/a(j));  % net direction turned (used to measure how close the path is to the centre)
+
+          elseif turn1S(j) < 0 
+
+              turnAngleS(j) = turn1S(j) + atan(c(j)/a(j));
+
+          end
+
+          j = j+1;  % loop s case
+       end
     
-   
+   end
 end
 
 % Evaluate angles closest to centre
