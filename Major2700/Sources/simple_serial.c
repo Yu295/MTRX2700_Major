@@ -74,4 +74,21 @@ void SCI1_OutString(char *buffer) {
   }  
 }
 
+void SCI1_InChar(char data){
+
+  while ((SCI1SR1 & SCI1SR1_RDRF_MASK) == 0){};
+  data = SCI1DRL;
+
+}
+
+void SCI1_InString(char *buffer){
+
+  while(*buffer){
+  
+    SCI1_InChar(*buffer);
+    buffer++;
+  }
+}
+
+
 

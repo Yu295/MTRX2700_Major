@@ -36,7 +36,7 @@ void timer_config(void){
    return; 
 
 }
-
+/*
 void check_obstacle(void){
     
    TIE |= TIE_C1I_MASK;
@@ -51,7 +51,7 @@ void check_obstacle(void){
 
    }
    return;
-}
+} */
 
 /********change it to interrupt, to calculate pulse width  *********/
 

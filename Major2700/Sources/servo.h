@@ -24,6 +24,6 @@ typedef enum {
 
 
 void PWMConfig(void);
-SERVO_STATE turnToElevationAzimuth(char elevation, char FLAT_OFFSET, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate);
+SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate);
 
 #endif

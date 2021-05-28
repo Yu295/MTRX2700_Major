@@ -20,23 +20,14 @@ function angleMatch = readMagnet(serialPort, angleToTurn)
     
     %% Angle calculations
     tolerance = 5; % degrees
-    
-    % keep bearings in [0, 360) degrees
-    MIN_BEARING = 0;
-    MAX_BEARING = 360;
+    MAX_BEARING = 360; % bearings returned
     idealAngle = bearing + angleToTurn;
     
-    if idealAngle >= MAX_BEARING
-        idealAngle = idealAngle - MAX_BEARING;
-    elseif idealAngle < MIN_BEARING
-        idealAngle = idealAngle + MIN_BEARING;
-    end
-    
+    if (bearing + angleToTurn) > MAX_BEARING
     %disp(line);
     %A = sscanf(line,"%d");
-    while abs(bearing - idealAngle) > tolerance
-        [line, count] = fscanf(s,"%s");
-        bearing = sscanf(line, "%d");
+    while abs(line(1) - idealAngle) > tolerance
+    [line, count] = fscanf(s,"%s");
     end
     
     move_forward = 'Clear to go forward. Please start walking.';
