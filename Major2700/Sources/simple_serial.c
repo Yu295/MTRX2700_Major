@@ -58,11 +58,12 @@ void SCI1_Init(unsigned short baudRate) {
 // Output single character
 void SCI1_OutChar(char data) {
  
-  while((SCI1SR1 & SCI1SR1_TDRE_MASK) == 0){};
+  while((SCI1SR1 & SCI1SR1_TDRE_MASK) == 0);
   SCI1DRL = data;  
 }
 
 #define NULL_CHARACTER 0x00
+#define LINE_FEED 0x0A
 
 // Output null terminated string 
 void SCI1_OutString(char *buffer) {
@@ -76,7 +77,7 @@ void SCI1_OutString(char *buffer) {
 
 void SCI1_InChar(char data){
 
-  while ((SCI1SR1 & SCI1SR1_RDRF_MASK) == 0){};
+  while ((SCI1SR1 & SCI1SR1_RDRF_MASK) == 0);
   data = SCI1DRL;
 
 }
@@ -88,6 +89,7 @@ void SCI1_InString(char *buffer){
     SCI1_InChar(*buffer);
     buffer++;
   }
+  *buffer = NULL_CHARACTER;
 }
 
 

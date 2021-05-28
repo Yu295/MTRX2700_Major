@@ -1,7 +1,6 @@
 function data = readSerial(serialPort) 
 %% Serial
-    s = serial(serialPort);
-    set(s,'BaudRate',9600);
+    s = serial(serialPort, 'BaudRate', 9600);
     fopen(s);
     fprintf(s, '*IDN?');
 

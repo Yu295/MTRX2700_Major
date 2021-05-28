@@ -7,8 +7,7 @@ function data = readLidar(serialPort)
     stand_still = 'Start scanning. Please stand still.';
 
 %% Serial
-    s = serial(serialPort);
-    set(s,'BaudRate',9600);
+    s = serial(serialPort, 'BaudRate', 9599);
     fopen(s);
     fprintf(s, '*IDN?');
     

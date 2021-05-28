@@ -13,7 +13,7 @@
 #include "accelerometer.h"
 
 typedef enum {
-  BOTH,
+  BEARING,
   ELEVATION_ONLY
 } ORIENTATION_MEASUREMENT;
 

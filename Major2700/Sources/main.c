@@ -65,17 +65,42 @@ void main(void) {
     // keep reading distances until an obstacle is detected 
     while(getMeasurements(buffer,DEFAULT_ELEVATION,DEFAULT_AZIMUTH,FALSE));
     SCI1_OutString(buffer); // send through to serial to indicate to MATLAB to play voice prompts  
-    SCI1_InString(buffer); // wait until MATLAB is done playing voice prompts
+    SCI1_InString((char *)buffer); // wait until MATLAB is done playing voice prompts
     
     if (*buffer == '1') {
       Orientation orientations;
-      MagScaled mag_data;
-      
+      MagRaw read_magnet;
+      MagScaled avg_magnet;
       panServo(buffer); // start panning and sending data to MATLAB mapping/guidance module
+      SCI1_InString((char *)buffer); // wait until MATLAB is done with mapping
       
-      getRawDataAccel(&read_accel);
-      convertUnits(&read_accel, &scaled_accel);
-      findOrientation(&orientations, &scaled_accel, BEARING, &mag_data);   
+      /************** GUIDANCE ****************/      
+      
+      while(*buffer != '3') {
+        int i;
+        avg_magnet.x = 0;
+        avg_magnet.y = 0;
+        avg_magnet.z = 0;
+        
+        /*
+        for (i = 0; i < 5; ++i) {
+          getRawDataMagnet(&read_magnet);          avg_magnet.x += 0.2 * (float)read_magnet.x;
+          avg_magnet.y += 0.2 * (float)read_magnet.y;
+          avg_magnet.z += 0.2 * (float)read_magnet.z;
+        }*/
+        
+        getRawDataMagnet(&read_magnet);
+        avg_magnet.x = (float)read_magnet.x;
+        avg_magnet.y = (float)read_magnet.y;
+        avg_magnet.z = (float)read_magnet.z;
+        
+        getRawDataAccel(&read_accel); // get accelerometer reading
+        convertUnits(&read_accel, &scaled_accel); // scale accelerometer reading
+        findOrientation(&orientations, &scaled_accel, BEARING, &avg_magnet); // get current bearing
+        sprintf(buffer, "%d\n", orientations.h * 180.0/acosf(-1));
+        SCI1_OutString(buffer); // send current bearing through serial to MATLAB
+        SCI1_InString((char *)buffer);  // wait for signal to determine if user is facing the right way
+      }
     }
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */

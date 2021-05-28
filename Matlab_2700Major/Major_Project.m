@@ -22,16 +22,15 @@ SerialPort = 'COM4'; % Jason
 dist_to_obstacle = readLidar(SerialPort);
 
 % send through a flag indicating task finished, can now start panning.
-s = serialport(SerialPort, 9600);
-%s1 = fopen(s);
 start_panning = "1\0";
-write(s, start_panning, "char");
-%fclose(s1);
-delete(s);
-clear s;
+sendSerial(SerialPort, start_panning);
 
 % read from serial the elevation, azimuth, distance and ground distance
 dataMatrix = readSerial(SerialPort);
+
+% send through a flag to start sending magnetometer data
+start_turning = "2\0";
+sendSerial(SerialPort, start_turning);
 
 % Mapping/Guiding module here
 angleToTurn = 45; % degrees
@@ -46,10 +45,5 @@ end
 angleMatch = readMagnet(SerialPort, angleToTurn);
 
 % send through a flag indicating user is facing the right way.
-s = serialport(SerialPort, 9600);
-%s1 = fopen(s);
-finished_turning = "2\0";
-write(s, finished_turning, "char");
-%fclose(s1);
-delete(s);
-clear s;
+finished_turning = "3\0";
+sendSerial(SerialPort, finished_turning);

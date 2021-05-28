@@ -6,8 +6,7 @@ function angleMatch = readMagnet(serialPort, angleToTurn)
     obj.Volume = 100;
     
 %% Serial
-    s = serial(serialPort);
-    set(s,'BaudRate',9600);
+    s = serial(serialPort, 'BaudRate', 9600);
     fopen(s);
     fprintf(s, '*IDN?');
     
@@ -18,6 +17,9 @@ function angleMatch = readMagnet(serialPort, angleToTurn)
     [line, count] = fscanf(s,"%s");
     bearing = sscanf(line, "%d");
     
+    fclose(s);
+    delete(s);
+    clear s;
     %% Angle calculations
     tolerance = 5; % degrees
     
@@ -32,20 +34,28 @@ function angleMatch = readMagnet(serialPort, angleToTurn)
         idealAngle = idealAngle + MIN_BEARING;
     end
     
-    %disp(line);
-    %A = sscanf(line,"%d");
     while abs(bearing - idealAngle) > tolerance
+        
+        % send flag to tell C program to send a bearing
+        s = serialport(SerialPort, 9600);
+        write(s, "2\0", "char");
+        delete(s);
+        clear s;
+        
+        % read in the bearing
+        s = serial(serialPort, 'BaudRate', 9600);
+        fopen(s);
+        fprintf(s, '*IDN?');
         [line, count] = fscanf(s,"%s");
         bearing = sscanf(line, "%d");
+        disp(bearing);
+        
+        fclose(s);
+        delete(s);
+        clear s;
     end
-    
+  
     move_forward = 'Clear to go forward. Please start walking.';
     Speak(obj,move_forward);
-    angleMatch = 1;
-    
-    fclose(s);
-    delete(s);
-    clear s;
-    
-    
+    angleMatch = 1; 
 end
