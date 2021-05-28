@@ -23,16 +23,19 @@ void getDisplacement(float *prevDisp, float *prevVel, float *accel) {
   convertUnits(&raw_accel, &scaled_accel);
   elevation = atanf((scaled_accel.z)/(sqrt((scaled_accel.y)*(scaled_accel.y)+(scaled_accel.x)*(scaled_accel.x))));
   
-  scaled_accel.z *= g*1000; // change to m/s^2, then mm/s^2
+  // change to m/s^2, then mm/s^2
+  scaled_accel.z *= g*1000; 
   scaled_accel.x *= g*1000;
   
-  scaled_accel.z -= g*sinf(elevation)*1000; // remove component due to gravity
+  // remove component due to gravity
+  scaled_accel.z -= g*sinf(elevation)*1000; 
   scaled_accel.x -= g*cosf(elevation)*1000;
   
-  
+  // change readings from body to world frame
   scaled_accel.z *= cosf(elevation);
   scaled_accel.x *= sinf(elevation);
   
+  // resolve readings to world Z axes
   *accel = scaled_accel.z - scaled_accel.x - accel_noise;
   if (fabs(*accel) < accel_noise) {
     if ((*accel)*(*prevVel) > 0) {
@@ -40,13 +43,13 @@ void getDisplacement(float *prevDisp, float *prevVel, float *accel) {
     }
   }
   
-  newVel = (*accel) * dt + (*prevVel); // get component in world Z axis
+  // perform Euler integration twice
+  newVel = (*accel) * dt + (*prevVel); 
   newDisp = newVel*dt + (*prevDisp);
   
+  // return new values for next Euler integration
   *prevVel = newVel;
   *prevDisp = newDisp;
-  
-  
   
   return;   
 }

@@ -1,20 +1,29 @@
 clear;
 clc;
 
-width = 10; % sufficient width for the person to pass through 
+% DONT PLOT IF ITS THE GROUND THING AND LIMIT RANGE????
+% Set actual width to look for
+% Compare turn1 for side on angle with range of available front on angles
+% to see if the path is clear
+% How to give distance instructions (Physical instructions? Clicks as wheel turns? Handle grips to turn the clicks on). 
+% Face forwards again after walking through obstacles
+% weight angles so that they are valued closer to correct intended bearing
+% manual override of intended bearing???
+
+width = 70; % sufficient width for the person to pass through 
 r = 10; % the length of the rotating arm of the PTU (cm) 
 j = 1;	% initialise loop values for s case
 k = 1;  % initialise loop values for m case
 
-lidarData = readmatrix('lidar.txt');    % read the sample lidar data
+lidarData = readmatrix('lidarTest5.txt');    % read the sample lidar data
 
 sizeData = size(lidarData);    % size of the sample data
 
 
 for i = 1:sizeData(1)
     elevation(i) = deg2rad(lidarData(i,1));    % store the first column of data as elevation (radians)
-    azimuth(i) = deg2rad(lidarData(i,2));      % store the second column of data as azimuth (radians)
-    distance(i) = lidarData(i,3)/10;     % store the thrid col of data as distance (cm)
+    azimuth(i) = deg2rad(lidarData(i,3));      % store the second column of data as azimuth (radians)
+    distance(i) = lidarData(i,4)/10;     % store the thrid col of data as distance (cm)
     
     % calculate the cartesian coordinates
     x(i) = distance(i)*cos(elevation(i))*cos(azimuth(i)) + r*sin(azimuth(i));
