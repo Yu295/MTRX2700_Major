@@ -1,9 +1,24 @@
 # MTRX2700 Major Project 
-## Obstacle Detection and Guidance for Elderly Blind People 
+# Audio-Based Guided Navigation for Elderly Blind People 
 
-### Jason Lai
-### Reihanna Tsao
-### Yujiao Cao
+## Jason Lai, Reihana Tsao, Yujiao Cao
 
-**Introduction**
+### Introduction
+This design is an ausio-based guidance system for elderly blind people, which performs obstcle detection, path tracing and voice instructions for them in daily uses.
+
+### Modular Deisgn
+
+**PTU Module**
+
+**Lidar Module**
+
+**Serial Module**
+
+**IIC Module**
+
+**Servo Motor Module**
+
+**MATLAB Module**
+
+
 
