@@ -16,7 +16,7 @@ The developed software is designed to interface with the 68HCS12 Microcontroller
 **Servomotor Module**
 
 The PTU is fitted with two HiTec HS-422 Standard Deluxe Servos, providing two degrees of freedom as shown in ?.
-Thus, the PTU's orientation in the body frame can be completely specified by its elevation angle $\theta \in [-45,\,45]$ and azimuth angle $\phi \in [-90, 90]$.
+Thus, the PTU's orientation in the body frame can be completely specified by its elevation angle $$\theta \in [-45,\,45]$$ and azimuth angle $\phi \in [-90, 90]$.
 
 Specifying the PTU to achieve a given orientation can be achieved by controlling the respective servos to turn to these angles. Pulse-width modulation (PWM) from the 68HCS12 PWM block is used to provide actuation to the servos. The following functions in the module ```servo.h``` have been implemented to facilitate such control:
 
@@ -24,16 +24,19 @@ Specifying the PTU to achieve a given orientation can be achieved by controlling
 // comment goes here
 void PWMConfig(void);
 ```
-Before use, the 68HCS12 PWM block must be configured. The servos to control elevation and azimuth are configured to use 8-bit PWM channels 5 and 7 respectively. A period $T=20$ms is typically required for servo operation. Since the 68HCS12 E-clock timer is configured to operate at 24 MHz (with no pre-scaling taking place), this implies the total scaling required is:
+Before use, the 68HCS12 PWM block must be configured. The servos to control elevation and azimuth are configured to use 8-bit PWM channels 5 and 7 respectively. A period ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20T%3D20) is typically required for servo operation. Since the 68HCS12 E-clock timer is configured to operate at 24 MHz (with no pre-scaling taking place), this implies the total scaling required is:
 
-$$\text{prescaler} \times (\text{PWMPER} + 1) = \frac{20\times 10^{-3}}{\frac{1}{24\times 10^6}} = 480,000 $$
+![equation](https://latex.codecogs.com/gif.latex?%5Ctext%7Bprescaler%7D%5Ctimes%28%5Ctext%7BPWMPER%7D&plus;1%29%3D%5Cfrac%7B20%5Ctimes10%5E%7B-3%7D%7D%7B%5Cfrac%7B1%7D%7B24%5Ctimes10%5E6%7D%7D%3D480%2C000)
 
-The 68HCS12 PWM block offers the capability to set PWMCTL to concatenate channels 4-5 and 6-7. This way, two 16-bit channels are formed, allowing ```PWMPER``` to take values from 0 to $2^{16}-1$. However, doing so will deactivate PWM outputs to channels 5 and 7, thus this approach was not implemented.
+The 68HCS12 PWM block offers the capability to set PWMCTL to concatenate channels 4-5 and 6-7. This way, two 16-bit channels are formed, allowing ```PWMPER``` to take values from 0 to ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%202%5E%7B16%7D-1). However, doing so will deactivate PWM outputs to channels 5 and 7, thus this approach was not implemented.
 
 To maximise the servos' resolution, ```PWMPER``` should be large, hence:
-$$\text{PWMPER} = 255$$
+![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Ctext%7BPWMPER%7D%3D255)
+
 If a period $T=20.48$ms is used instead, this implies
-$$\text{prescaler} = 491520 \implies \text{prescaler} = 1920$$
+
+![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Ctext%7Bprescaler%7D%5Ctimes%28%5Ctext%7BPWMPER%7D%20&plus;%201%29%3D%5Cfrac%7B20.48%5Ctimes%2010%5E%7B-3%7D%7D%7B%5Cfrac%7B1%7D%7B24%5Ctimes10%5E6%7D%7D%5Cimplies%5Ctext%7Bprescaler%7D%3D1920)
+
 This prescaling can be achieved by the following:
 1. Prescaling Clocks A/B by a factor of 64 through setting ```PWMPRCLK```.
 2. Opting to use the scaled clocks SA/SB by setting ```PWMCLK```, further prescaling the PWM clocks by a factor of 2.
