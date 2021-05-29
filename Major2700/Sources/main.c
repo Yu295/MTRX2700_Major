@@ -23,7 +23,7 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, char pannin
 void main(void) {
   
   int error_code = NO_ERROR;
-  unsigned char buffer[100];
+  char buffer[100];
   unsigned long minDistance;
   
   int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
@@ -63,17 +63,21 @@ void main(void) {
     delay(1000);
     
     // keep reading distances until an obstacle is detected 
+    
     while(getMeasurements(buffer,DEFAULT_ELEVATION,DEFAULT_AZIMUTH,FALSE));
     SCI1_OutString(buffer); // send through to serial to indicate to MATLAB to play voice prompts  
-    SCI1_InString((char *)buffer); // wait until MATLAB is done playing voice prompts
+    flushBuffer(buffer);
+    SCI1_InString(buffer); // wait until MATLAB is done playing voice prompts
     
     if (*buffer == '1') {
       Orientation orientations;
       MagRaw read_magnet;
       MagScaled avg_magnet;
       panServo(buffer); // start panning and sending data to MATLAB mapping/guidance module
-      SCI1_InString((char *)buffer); // wait until MATLAB is done with mapping
-      
+      turnToElevationAzimuth(0, 0, NULL, NULL, NONE); // set PTU to flat orientation to get magnetometer readings
+      flushBuffer(buffer); 
+      SCI1_InString(buffer); // wait until MATLAB is done with mapping
+
       /************** GUIDANCE ****************/      
       
       while(*buffer != '3') {
@@ -82,26 +86,32 @@ void main(void) {
         avg_magnet.y = 0;
         avg_magnet.z = 0;
         
-        /*
-        for (i = 0; i < 5; ++i) {
-          getRawDataMagnet(&read_magnet);          avg_magnet.x += 0.2 * (float)read_magnet.x;
-          avg_magnet.y += 0.2 * (float)read_magnet.y;
-          avg_magnet.z += 0.2 * (float)read_magnet.z;
-        }*/
         
-        getRawDataMagnet(&read_magnet);
+        for (i = 0; i < 10; ++i) {
+          getRawDataMagnet(&read_magnet);
+          avg_magnet.x += 0.1 * (float)read_magnet.x;
+          avg_magnet.y += 0.1 * (float)read_magnet.y;
+          avg_magnet.z += 0.1 * (float)read_magnet.z;
+        }
+        
+        /*getRawDataMagnet(&read_magnet);
         avg_magnet.x = (float)read_magnet.x;
         avg_magnet.y = (float)read_magnet.y;
-        avg_magnet.z = (float)read_magnet.z;
+        avg_magnet.z = (float)read_magnet.z;*/
         
         getRawDataAccel(&read_accel); // get accelerometer reading
         convertUnits(&read_accel, &scaled_accel); // scale accelerometer reading
         findOrientation(&orientations, &scaled_accel, BEARING, &avg_magnet); // get current bearing
-        sprintf(buffer, "%d\n", orientations.h * 180.0/acosf(-1));
+        sprintf(buffer, "%d\n", (int)(orientations.h * 180.0/acosf(-1)));
+        delay(500);
         SCI1_OutString(buffer); // send current bearing through serial to MATLAB
-        SCI1_InString((char *)buffer);  // wait for signal to determine if user is facing the right way
+        flushBuffer(buffer);
+        SCI1_InString(buffer);  // wait for signal to determine if user is facing the right way
       }
     }
+    
+    /*SCI1_InString(buffer);
+    SCI1_OutString(buffer);*/
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
@@ -114,7 +124,7 @@ void panServo(char *buffer) {
   SERVO_STATE result;
   unsigned char prevDutyE = 0, prevDutyA = 0;
   
-  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation++) {
+  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation +=20) {
     
     // keep increasing elevation angle until the servo actually moves
     result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
@@ -129,7 +139,7 @@ void panServo(char *buffer) {
     }
     
     // pan across the range of azimuth angles at a fixed elevation
-    for (azimuth = MIN_PAN_AZIMUTH; azimuth <= MAX_PAN_AZIMUTH; azimuth++) {
+    for (azimuth = MIN_PAN_AZIMUTH; azimuth <= MAX_PAN_AZIMUTH; azimuth+= 20) {
       
       result = turnToElevationAzimuth(elevation, azimuth, &prevDutyE, &prevDutyA, AZIMUTH);
       
@@ -141,6 +151,8 @@ void panServo(char *buffer) {
     }
   }
   
+  sprintf(buffer, "5\n");
+  SCI1_OutString(buffer);
   return;
 }
 

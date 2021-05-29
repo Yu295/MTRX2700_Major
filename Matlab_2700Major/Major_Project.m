@@ -17,23 +17,21 @@ turn_around = 'No walkway in front. Please turn around.';
 %% Serial
 %SerialPort = 'COM5'; % Yujiao
 SerialPort = 'COM4'; % Jason
+start_panning = sprintf("1\n");
+finished_turning = sprintf("3\n");
 
 % read from serial port to check if there is obstacle detected in front
 dist_to_obstacle = readLidar(SerialPort);
 
 % send through a flag indicating task finished, can now start panning.
-start_panning = "1\0";
 sendSerial(SerialPort, start_panning);
 
 % read from serial the elevation, azimuth, distance and ground distance
 dataMatrix = readSerial(SerialPort);
+disp(dataMatrix);
 
-% send through a flag to start sending magnetometer data
-start_turning = "2\0";
-sendSerial(SerialPort, start_turning);
-
-% Mapping/Guiding module here
-angleToTurn = 45; % degrees
+%% Mapping/Guiding module here
+angleToTurn = 45; % degrees, measured CCW from current position
 
 % tell user which way to turn
 if (angleToTurn > 0)
@@ -42,8 +40,9 @@ else
     Speak(obj, turn_left);
 end
 
+% send through a flag to start sending magnetometer data
 angleMatch = readMagnet(SerialPort, angleToTurn);
 
+%% Serial Contd.
 % send through a flag indicating user is facing the right way.
-finished_turning = "3\0";
 sendSerial(SerialPort, finished_turning);

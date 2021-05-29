@@ -1,20 +1,20 @@
-function angleMatch = readMagnet(serialPort, angleToTurn)
+function angleMatch = readMagnet(SerialPort, angleToTurn)
 %% Voice Instructions
 
     NET.addAssembly('System.Speech');
     obj = System.Speech.Synthesis.SpeechSynthesizer;
     obj.Volume = 100;
     
-%% Serial
-    s = serial(serialPort, 'BaudRate', 9600);
+%% Serial   
+    send_mag = sprintf("2\n");
+    % send signal to C program to send data
+    disp('Sending flag');
+    sendSerial(SerialPort, send_mag);
+    
+    % read in data
+    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
     fopen(s);
-    fprintf(s, '*IDN?');
-    
-    count = 1;
-    %readAngle = 1;
-    
-    % read in current orientation
-    [line, count] = fscanf(s,"%s");
+    [line, ~] = fscanf(s, "%s");
     bearing = sscanf(line, "%d");
     
     fclose(s);
@@ -31,24 +31,23 @@ function angleMatch = readMagnet(serialPort, angleToTurn)
     if idealAngle >= MAX_BEARING
         idealAngle = idealAngle - MAX_BEARING;
     elseif idealAngle < MIN_BEARING
-        idealAngle = idealAngle + MIN_BEARING;
+        idealAngle = idealAngle + MAX_BEARING;
     end
     
     while abs(bearing - idealAngle) > tolerance
         
         % send flag to tell C program to send a bearing
         s = serialport(SerialPort, 9600);
-        write(s, "2\0", "char");
+        write(s, send_mag, "char");
         delete(s);
         clear s;
         
         % read in the bearing
-        s = serial(serialPort, 'BaudRate', 9600);
+        s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
         fopen(s);
-        fprintf(s, '*IDN?');
-        [line, count] = fscanf(s,"%s");
+        [line, ~] = fscanf(s,"%s");
         bearing = sscanf(line, "%d");
-        disp(bearing);
+        disp([bearing, idealAngle]);
         
         fclose(s);
         delete(s);

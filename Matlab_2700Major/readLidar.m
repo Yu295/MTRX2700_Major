@@ -1,4 +1,4 @@
-function data = readLidar(serialPort)
+function data = readLidar(SerialPort)
 %% Voice Instructions
     NET.addAssembly('System.Speech');
     obj = System.Speech.Synthesis.SpeechSynthesizer;
@@ -7,9 +7,8 @@ function data = readLidar(serialPort)
     stand_still = 'Start scanning. Please stand still.';
 
 %% Serial
-    s = serial(serialPort, 'BaudRate', 9599);
+    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
     fopen(s);
-    fprintf(s, '*IDN?');
     
     count = 1;
     

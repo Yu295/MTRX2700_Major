@@ -24,10 +24,8 @@ void SCI1_OutChar(char);
 // Output null terminated string 
 void SCI1_OutString(char *buffer);
 
-
-void SCI1_InChar(char data);
-
 void SCI1_InString(char *buffer); 
 
+void flushBuffer(char *buffer);
 
 #endif
