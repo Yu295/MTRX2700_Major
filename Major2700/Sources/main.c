@@ -124,7 +124,7 @@ void panServo(char *buffer) {
   SERVO_STATE result;
   unsigned char prevDutyE = 0, prevDutyA = 0;
   
-  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation +=20) {
+  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation ++) {
     
     // keep increasing elevation angle until the servo actually moves
     result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
@@ -139,7 +139,7 @@ void panServo(char *buffer) {
     }
     
     // pan across the range of azimuth angles at a fixed elevation
-    for (azimuth = MIN_PAN_AZIMUTH; azimuth <= MAX_PAN_AZIMUTH; azimuth+= 20) {
+    for (azimuth = MIN_PAN_AZIMUTH; azimuth <= MAX_PAN_AZIMUTH; azimuth++) {
       
       result = turnToElevationAzimuth(elevation, azimuth, &prevDutyE, &prevDutyA, AZIMUTH);
       
