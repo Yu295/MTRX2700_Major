@@ -1,7 +1,7 @@
 clear;
 clc;
 
-width = 70;   % sufficient width for person + rollator to pass through gap (cm)
+width = 300;   % sufficient width for person + rollator to pass through gap (cm)
 r = 5;  % length of rotating arm of PTU (cm)
 tolerance = 5;  % range of distance that should not be within gap values
 maxDist = 200;
