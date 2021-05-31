@@ -1,28 +1,19 @@
 function data = readLidar(SerialPort)
-%% Voice Instructions
-    NET.addAssembly('System.Speech');
-    obj = System.Speech.Synthesis.SpeechSynthesizer;
-    obj.Volume = 100;
-    obstacle_detected = 'Obstacle detected in your way. Please stop.';
-    stand_still = 'Start scanning. Please stand still.';
-
 %% Serial
-    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
+    % assume an obstacle will be detected within 2 minutes
+    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 120);
     fopen(s);
     
-    count = 1;
-    
-    % reading for the lidar data
-    [line, count] = fscanf(s,"%s");
+    % reading the lidar data
+    [line, ~] = fscanf(s,"%s");
     disp(line);
     data = line;
-    Speak(obj,obstacle_detected);
+    playPrompt('Obstacle detected in your way. Please stop.');
     
     % delay for 10 seconds to allow the user to stop
-    i = 3;
-    pause(i);
+    pause(3);
     
-    Speak(obj,stand_still);
+    playPrompt('Start scanning. Please stand still.');
     
     fclose(s);
     delete(s);

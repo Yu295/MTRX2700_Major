@@ -36,22 +36,6 @@ void timer_config(void){
    return; 
 
 }
-/*
-void check_obstacle(void){
-    
-   TIE |= TIE_C1I_MASK;
-   delay(100);
-   
-   
-   if  (distance  < NOMINAL_LIDAR) {  //1.93 metres while the PTU is at an azimuth of 15 degrees by default
-   
-      obstacle = 1;
-    
-      TIE &= ~TIE_C1I_MASK; 
-
-   }
-   return;
-} */
 
 /********change it to interrupt, to calculate pulse width  *********/
 

@@ -184,7 +184,7 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING 
       delay(20);
       TIE &= ~TIE_C1I_MASK;
       
-      if (distance < minDist) {
+      if (distance < minDist && distance > MIN_RANGE) {
         minDist = distance;  
       }
     } 

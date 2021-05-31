@@ -1,21 +1,11 @@
 function angleMatch = readMagnet(SerialPort, angleToTurn)
-%% Voice Instructions
 
-    NET.addAssembly('System.Speech');
-    obj = System.Speech.Synthesis.SpeechSynthesizer;
-    obj.Volume = 100;
-    turn_right = 'Please turn right slowly.';
-    turn_left = 'Please turn left slowly.';
-    overturn_left = 'Turned too much. Please turn left.';
-    overturn_right = 'Turned too much. Please turn right.';
-    move_forward = 'Clear to go forward. Please start walking.';
-    
     % tell the user which way to turn
     if (angleToTurn < 0)
-        Speak(obj, turn_right);
+        playPrompt('Please turn right slowly');
         overshoot_left = 0;
     else
-        Speak(obj, turn_left);
+        playPrompt('Please turn left slowly');
         overshoot_left = 1;
     end
     
@@ -36,7 +26,7 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
     delete(s);
     clear s;
     %% Angle calculations
-    tolerance = 5; % degrees
+    tolerance = 2; % degrees
     
     % keep bearings in [0, 360) degrees
     MIN_BEARING = 0;
@@ -64,7 +54,6 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
         [line, ~] = fscanf(s,"%s");
         bearing = sscanf(line, "%d");
         
-        
         angleDiff = bearing - idealAngle;
         if angleDiff > 180
             angleDiff = angleDiff - MAX_BEARING;
@@ -74,21 +63,21 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
         
         disp([bearing, idealAngle, angleDiff]);
     
-        if angleDiff * prevAngleDiff < -25 && overshoot_left
+        if angleDiff * prevAngleDiff < -4 && overshoot_left
            overshoot_left = 0; 
-           Speak(obj, overturn_right);
+           playPrompt('You turned too much. Please turn right.');
            
-        elseif angleDiff * prevAngleDiff < -25 && ~overshoot_left
+        elseif angleDiff * prevAngleDiff < -4 && ~overshoot_left
            overshoot_left = 1;
-           Speak(obj, overturn_left);
-           
+           playPrompt('You turned too much. Please turn left.');      
         end
+        
         prevAngleDiff = angleDiff;     
         fclose(s);
         delete(s);
         clear s;
     end
     
-    Speak(obj,move_forward); 
+    playPrompt('Clear to go forward. Please start walking.');
     angleMatch = 1; 
 end

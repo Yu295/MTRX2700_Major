@@ -1,30 +1,30 @@
-    function angleToTurn = mapAndGuide(dataMatrix)
-
-    width = 50;   % sufficient width for person + rollator to pass through gap (cm)
+function turnInstruct = mapAndGuide(lidarData)
+    width = 70;   % sufficient width for person + rollator to pass through gap (cm)
     r = 5;  % length of rotating arm of PTU (cm)
-    tolerance = 2;  % range of distance that should not be within gap values
+    tolerance = 5;  % range of distance that should not be within gap values
     maxDist = 200;
     minDist = 90;
     n = 1;  % loop index for reading values
     k = 1;  % loop index for base gap
     m = 1;  % loop invalid gap index
     turns = 1; % loop valid turn angles
-    sizeData = size(dataMatrix);    % size of the sample data
+    turnFlag = 0;
+    sizeData = size(lidarData);    %size of the sample data
 
-    %% mapping
-    for i = 1:sizeData(1)
+    %% mapping calculations
+    for i=1:sizeData(1)
 
         % read the distance values and the ground values
-        dist(i) = dataMatrix(i,4)/10;   % store the 4th column of data as distance readings (cm)
-        ground(i) = dataMatrix(i,5)/10; % store the 5th col of data as estimated ground value
+        dist(i) = lidarData(i,4)/10;   % store the 4th column of data as distance readings (cm)
+        ground(i) = lidarData(i,5)/10; % store the 5th col of data as estimated ground value
 
         %if the point is less than ground value and less than expected lidar range, take the point
         if  dist(i) < ground(i) && dist(i) < maxDist && minDist < dist(i)
-            elevation(n) = deg2rad(dataMatrix(i,1));     % take 1st col as actual elevation in rads
-            intEl(n) = deg2rad(dataMatrix(i,2));     % take 2nd col as intended elevation in rads
-            azimuth(n) = deg2rad(dataMatrix(i,3));   % take 3rd col as azimuth in rads
+            elevation(n) = deg2rad(lidarData(i,1));     % take 1st col as actual elevation in rads
+            intEl(n) = deg2rad(lidarData(i,2));     % take 2nd col as intended elevation in rads
+            azimuth(n) = deg2rad(lidarData(i,3));   % take 3rd col as azimuth in rads
             distance(n) = dist(i);      % store 4th col of data as distance
-            n = n + 1;        % increase index
+            n = n+1;        % increase index
         end
     end
 
@@ -36,7 +36,6 @@
     end
 
     %% figure setup
-
     % plot the points on a scatter graph
     map = scatter3(x,y,z,'filled');
 
@@ -49,7 +48,7 @@
     %% guidance calculations
     for i = 1:n-2
 
-        % Cartesian distance between points used to compare to spherical calcs
+       % Cartesian distance between points used to compare to spherical calcs
        cartDist(i) = sqrt((x(i+1)-x(i))^2 + (y(i+1)-y(i))^2);
 
        % using the spherical coordinates, find the actual distance between two
@@ -78,11 +77,11 @@
        % can successfully navigate
        frontDist(i)= d2 * sqrt(2 - 2*cos(theta(i)));
 
-       % define the base elevation as the first elevation in the intended
-       % el array
+       % define the base elevation as the first elevation in the intended el
+       % array
        baseEl = intEl(1);
 
-       if intEl(2) ~= baseEl    
+       if intEl(2) ~= baseEl
            baseEl = intEl(2);
        end
 
@@ -110,9 +109,9 @@
                 distHigh(k) = d2 + tolerance;
 
                 % increase loop index
-                k = k + 1;         
-            end      
-        end  
+                k = k + 1;
+            end
+        end
     end
 
     % cycle through other elevations
@@ -128,31 +127,35 @@
               obstacleDist2 = sqrt((x(j+1) - x(i))^2 + (y(j+1) - y(i))^2);
 
               % The obstacle leaves enough width between point j and point i
-              if obstacleDist1 > width            
+              if obstacleDist1 > width
                    angleRange(j,1) = azimuth(i);
                    angleRange(j,2) = azimuth(j);
 
               % the obstacle leaves enough width between point i and point j+1
-              elseif obstacleDist2 > width          
+              elseif obstacleDist2 > width
                   angleRange(j,1) = azimuth(i);
                   angleRange(j,2) = azimuth(j+1);
-              else      
-                gapIndex(j) = 0;         
+              else
+                gapIndex(j) = 0;
               end
-          end  
-       end  
-    end
-
-    for i = 1:(k-1)
-
-        % Go through each viable gap and calculate turn angle needed for it
-       if gapIndex(i) ~= 0 
-           viableGap = gapIndex(i);   
-           turnAngle(turns) = rad2deg(angleRange(i,1) + angleRange(i,2)/2);
-           turns = turns + 1;      
+          end
        end
     end
 
-    [angle, index] = min(abs(turnAngle));
-    angleToTurn = turnAngle(index);
- end
+    for i=1:(k-1)
+        % Go through each viable gap and calculate turn angle needed for it
+       if gapIndex(i) ~= 0
+           turnFlag = 1;
+           viableGap = gapIndex(i);
+           turnAngle(turns) = rad2deg(angleRange(i,1) + angleRange(i,2)/2);
+           turns = turns + 1;
+       end
+    end
+
+    if turnFlag == 0
+        turnInstruct = 180;     % if no viable gaps, turn around
+    elseif turnFlag == 1
+        [angle,index] = min(abs(turnAngle));
+        turnInstruct = turnAngle(index);
+    end
+end
