@@ -127,7 +127,7 @@ void panServo(char *buffer) {
   SERVO_STATE result;
   unsigned char prevDutyE = 0, prevDutyA = 0;
   
-  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation ++) {
+  for (elevation = MIN_PAN_ELEVATION; elevation <= MAX_PAN_ELEVATION; elevation++) {
     
     // keep increasing elevation angle until the servo actually moves
     result = turnToElevationAzimuth(elevation, MIN_PAN_AZIMUTH, &prevDutyE, &prevDutyA, ELEVATION);
@@ -154,7 +154,7 @@ void panServo(char *buffer) {
     }
   }
   
-  sprintf(buffer, "5\n");
+  sprintf(buffer, DONE_PANNING_FLAG); // send flag to indicate no more mapping data is to be read in
   SCI1_OutString(buffer);
   return;
 }

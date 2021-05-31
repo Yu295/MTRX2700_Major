@@ -14,7 +14,7 @@
 
 #define START_MAPPING_FLAG '1'
 #define DONE_TURNING_FLAG '3'
-
+#define DONE_PANNING_FLAG "5\n"
 
 // initialise SCI1
 void SCI1_Init(unsigned short baudRate);

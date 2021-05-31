@@ -66,12 +66,8 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
         
         
         angleDiff = bearing - idealAngle;
-        if angleDiff > 180
-            angleDiff = angleDiff - MAX_BEARING;
-        elseif angleDiff < -180
-            angleDiff = angleDiff + MAX_BEARING;
-        end
-        
+        if angleDiff 
+
         disp([bearing, idealAngle, angleDiff]);
     
         if angleDiff * prevAngleDiff < -25 && overshoot_left
