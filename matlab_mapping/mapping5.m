@@ -3,15 +3,16 @@ clc;
 
 width = 50;   % sufficient width for person + rollator to pass through gap (cm)
 r = 5;  % length of rotating arm of PTU (cm)
-tolerance = 2;  % range of distance that should not be within gap values
+tolerance = 5;  % range of distance that should not be within gap values
 maxDist = 200;
 minDist = 90;
 n = 1;  % loop index for reading values
 k = 1;  % loop index for base gap
 m = 1;  % loop invalid gap index
 turns = 1; % loop valid turn angles
+turnFlag = 0;
 
-lidarData = readmatrix('lidarTestWithGap.txt');    % read the sample lidar data4
+lidarData = readmatrix('lidarTestDoorway.txt');    % read the sample lidar data4
 sizeData = size(lidarData);    %size of the sample data
 
 for i=1:sizeData(1)
@@ -170,6 +171,8 @@ for i=1:(k-1)
     % Go through each viable gap and calculate turn angle needed for it
    if gapIndex(i) ~= 0
       
+       turnFlag = 1;
+       
        viableGap = gapIndex(i);
        
        turnAngle(turns) = rad2deg(angleRange(i,1) + angleRange(i,2)/2);
@@ -180,6 +183,14 @@ for i=1:(k-1)
    end
 end
 
-[angle,index] = min(abs(turnAngle));
+if turnFlag == 0
+    
+    turnInstruct = 180;     % if no viable gaps, turn around
+    
+elseif turnFlag == 1
 
-turnInstruct = turnAngle(index);
+    [angle,index] = min(abs(turnAngle));
+
+    turnInstruct = turnAngle(index);
+
+end

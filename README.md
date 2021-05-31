@@ -61,7 +61,7 @@ which provides the rate of rotation, direction of Earth's magnetic field and abs
 
 **Lidar Module**
 
-The Lidar-Lite Sensor version 2 provides the distance to the first object being detected. The lidar interacts with the 68HCS12 Dragon Board through pin PT1, by capturing the pulse width of the PWM signal being send to PT1, the measured distance to the obstacle can be calculated by a 1msec/metre realationship. Thus, the following functions are implemented to measure the distance.
+The Lidar-Lite Sensor version 2 provides the distance to the first object being detected. The lidar interacts with the 68HCS12 Dragon Board through pin PT1, by capturing the pulse width of the PWM signal being send to PT1, the measured distance to the obstacle can be calculated by a 1msec/metre realationship. Thus, the following functions in ```lidar.h``` are implemented to measure the distance.
 ```c
 void timer_config(void);
 ```
@@ -74,14 +74,44 @@ The capturing of the PWM signal is interpreatated as an interrupt. To filter the
 
 **Serial Module**
 
-The serial module is designated to transmit real-time orientations of the system, distance to the object, and the program flow indication between CodeWarrior and MATLAB. Other than the serial functions being provided, 
+The serial module is designated to transmit real-time orientations of the system, distance to the object, and the program flow indication between CodeWarrior and MATLAB. Other than the serial functions being provided, two functions is facilitated to read from serial.
+```c
+void SCI1_InString(char *buffer);
+```
+This function polls the ```RDRF``` bit in the register ```SCI1SR1```, and reads until a new line character indicating the end of the string, and stores the information in buffer. And to keep consistency of the C strings, a terminating character ```\0``` has been generated.
+```c
+void flushBuffer(char *buffer);
+```
+This function clears the content in side ```buffer```, ensuring that oly the required information is being stored in to it.
 
-
-**MATLAB Module**
+**MATLAB Serial Module**
 
 The MATLAB module has two portions, serial data receiving and transmitting, and mapping of the environment. 
 The serial portion will be polling until the distance to the object is transmitted from CodeWarrior to MATLAB, then a voice instruction will be played through PC to inform the user that there are obstacles in the walkway and then asks the user to stop. Afterwards, the PTU will be triggered to start panning through . During the scanning procedure, the serial port transmits the real-time orientations of the system along with the distance to the object, and stores the information into a matrix that can be used for environement mapping. 
+The following functions are created to interact between MATLAB and CodeWarrior through the serial port.
 
+```matlab
+readLidar.m
+```
+This function is implemented such that it will be polling until a reading of the distance is sent by CodeWarrior through the serial port. Then the voice instruction is played to stop the user.
 
+```matlab
+sendSerial.m
+```
+This function is used to send information to the serial port, which is the most important function in the interaction of the two programmes. 
+
+ ```matlab
+ readSerial.m
+ ```
+ After stopping the user, the ```panServo``` function will be implemented in the C Portion, afterwards, the readings of the distance, elevation and azimuth will come through to MATLAB. This function also stores the data into a matrix for the mapping later on.
+ 
+ ```matlab
+ readMagnet.m
+ ```
+ When the mapping of the environment is successfully accomplished, the user is instructed to turn to the correct elevation that has been caculated in the mapping function. In this function, the magenetometer reading is transmitted through from CodeWarior so that when the correct elevation is achieved, the voice instruction will guide the user to go forwards.
+ 
+ **Matlab Mapping and Guidance Module**
+ 
+Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial.m``` function and translates them to the Cartesian coordinates x,y,z, which are then plotted in a 3D scatter plot. The conversions are calculated using 3D trigonometry. 
 
 
