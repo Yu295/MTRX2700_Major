@@ -1,7 +1,7 @@
 clear;
 clc;
 
-width = 70;   % sufficient width for person + rollator to pass through gap (cm)
+width = 50;   % sufficient width for person + rollator to pass through gap (cm)
 r = 5;  % length of rotating arm of PTU (cm)
 tolerance = 5;  % range of distance that should not be within gap values
 maxDist = 200;
@@ -12,7 +12,7 @@ m = 1;  % loop invalid gap index
 turns = 1; % loop valid turn angles
 turnFlag = 0;
 
-lidarData = readmatrix('lidarTestWithGap.txt');    % read the sample lidar data4
+lidarData = readmatrix('lidarTestDoorway.txt');    % read the sample lidar data4
 sizeData = size(lidarData);    %size of the sample data
 
 for i=1:sizeData(1)
