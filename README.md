@@ -81,7 +81,26 @@ The serial module is designated to transmit real-time orientations of the system
 
 The MATLAB module has two portions, serial data receiving and transmitting, and mapping of the environment. 
 The serial portion will be polling until the distance to the object is transmitted from CodeWarrior to MATLAB, then a voice instruction will be played through PC to inform the user that there are obstacles in the walkway and then asks the user to stop. Afterwards, the PTU will be triggered to start panning through . During the scanning procedure, the serial port transmits the real-time orientations of the system along with the distance to the object, and stores the information into a matrix that can be used for environement mapping. 
+The follwing functions are created to interact between MATLAB and CodeWarrior through the serial port.
 
+```matlab
+readLidar.m
+```
+This function is implemented such that it will be polling until a reading of the distance is sent by CodeWarrior through the serial port. Then the voice instruction is played to stop the user.
 
+```matlab
+sendSerial.m
+```
+This function is used to send information to the serial port, which is the most important portion in the interaction of the two programmes. Since the serial function in the C portion requires the string to end with a NULL character, the string being transmitted must end with a NULL in MATLAB.
+
+ ```matlab
+ readSerial.m
+ ```
+ After stopping the user, the panning of the servo will be triggered, afterwards, the readings of the distance, elevation and azimuth will come through serial to MATLAB. This function also stores the data into a matrix for the mapping later on.
+ 
+ ```matlab
+ readMagnet.m
+ ```
+ When the mapping of the environment is successfully accomplished, the user is instructed to turn to the correct elevation that has been caculated in the mapping function. In this function, the magenetometer reading is transmitted through from CodeWarior so that when the correct elevation is achieved, the voice instruction will guide the user to go forwards.
 
 
