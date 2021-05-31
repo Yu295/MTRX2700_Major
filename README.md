@@ -114,4 +114,5 @@ This function is used to send information to the serial port, which is the most 
  
 Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial.m``` function and translates them to the Cartesian coordinates x,y,z, which are then plotted in a 3D scatter plot. The conversions are calculated using 3D trigonometry. 
 
+![Image of Trig Calcs](https://github.com/Yu295/MTRX2700_Major/blob/main/2700calcs.jpg)
 
