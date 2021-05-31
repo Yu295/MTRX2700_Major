@@ -61,11 +61,20 @@ which provides the rate of rotation, direction of Earth's magnetic field and abs
 
 **Lidar Module**
 
-The Lidar-Lite Sensor version 2 provides the distance to the first object being detected. The lidar interacts with the HCS12 Dragon Board through pin PT1, by capturing the pulse width of the PWM signal being send to PT1, the measured distance to the obstacle can be calculated by a 1msec/metre realationship.
+The Lidar-Lite Sensor version 2 provides the distance to the first object being detected. The lidar interacts with the 68HCS12 Dragon Board through pin PT1, by capturing the pulse width of the PWM signal being send to PT1, the measured distance to the obstacle can be calculated by a 1msec/metre realationship. Thus, the following functions are implemented to measure the distance.
+```c
+void timer_config(void);
+```
+The timer block of the HCS12 board is intended to measure the duration of a pulse, the timer is enabled with a prescaler of 1, since the input capture register is 16-bit, the maximum pulse width that can be captured is 2.73 msec. 
+The register ```TIOS``` is in control of either implementing the input cpature or the output compare function, since the PWM signal is generted at PT1, the input capture function at channel 1 must be enabled. As the PWM signal came with a measurement period, the edge configuration is initialized as rising edge, and configured as falling edge after the firts edge detection to ensure the accuracy of the measurement.
+```c
+__interrupt void TC1_ISR(void);
+```
+To filter the noise in the measuremnet, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the risting edge, and subtracted by the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance at some point, it is usually funtional and accurate. 
 
 **Serial Module**
 
-The serial module is designated to transmit real-time orientations of the system, distance to the object, and the program flow indication between CodeWarrior and MATLAB.
+The serial module is designated to transmit real-time orientations of the system, distance to the object, and the program flow indication between CodeWarrior and MATLAB. Other than the serial functions being provided, 
 
 
 **MATLAB Module**
