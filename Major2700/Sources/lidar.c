@@ -37,7 +37,7 @@ void timer_config(void){
 
 }
 
-/********change it to interrupt, to calculate pulse width  *********/
+/******** interrupt to calculate the pulse width at PT1 *********/
 
 #pragma CODE_SEG __NEAR_SEG NON_BANKED
 
@@ -61,12 +61,16 @@ __interrupt void TC1_ISR(void) {
       TCTL4 = 0x04; // set up next interrupt for rising edge
       edge_flag = 1; // for the next LIDAR measurement
       
-      if (time_2 < time_1) {
+      if (time_2 < time_1) { // take into account the overflow for once
           overflow -= 1;
       }
       
       time_diff = (long)time_2 - (long)time_1;
-      distance = (unsigned long) (((long)overflow * 65536 + time_diff)/24 - 100);    
+      
+      //the distance is calculated by the time difference divided by E-Clock frequency (in MHz)
+      //if the timer overflows, the time difference will be the number of overflows multiply by 65536 plus the time_diff
+      //the LIDAR has an offset of 100mm when calibrating  
+      distance = (unsigned long) (((long)overflow * OVERFLOW_FACTOR + time_diff)/E_CLOCK - LIDAR_OFFSET);    
    }
    
    return;  

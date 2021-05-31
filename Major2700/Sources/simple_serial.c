@@ -79,6 +79,7 @@ void SCI1_OutString(char *buffer) {
   }  
 }
 
+// Read a string ends in a new line character
 void SCI1_InString(char *buffer) {
   unsigned char count = 0;                  // keep track of where to insert char into buffer
   volatile char c = 0;                      // current char
@@ -98,6 +99,7 @@ void SCI1_InString(char *buffer) {
   return;
 }
 
+// Clears the content of buffer
 void flushBuffer(char *buffer) {
   while (*buffer) {
     *buffer = 0;

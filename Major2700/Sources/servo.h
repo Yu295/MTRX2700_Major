@@ -21,6 +21,10 @@ typedef enum {
 #define MAX_PAN_ELEVATION 45
 #define MIN_PAN_AZIMUTH -90
 #define MAX_PAN_AZIMUTH 90
+#define CALIBRATION_NIGHTY 102   // calibration factor at -90 and 90 degrees
+#define CALIBRATION_ZERO 1.5     // calibration factor at 0 dergees
+#define PWMPER_CONVERSION 12.75  //PWMPERx/20 convertion factor
+
 
 
 void PWMConfig(void);

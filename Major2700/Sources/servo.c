@@ -36,13 +36,13 @@ SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *
   }
   
   // Calibration values: angle of -90: 0.62, 0: 1.5, +90: 2.38 
-  ratioE = (double)elevation / 102 + 1.5;
-  dutyE = (unsigned char)(ratioE * 12.75); // conversion factor of PWMPERx/20
+  ratioE = (double)elevation / CALIBRATION_NIGHTY + CALIBRATION_ZERO;
+  dutyE = (unsigned char)(ratioE * PWMPER_CONVERSION); // conversion factor of PWMPERx/20
   
   
   // Calibration values: angle of -90: 0.62 0: 1.5, +90: 2.38 
-  ratioA = (double)azimuth / 102 + 1.5;
-  dutyA = (unsigned char)(ratioA * 12.75); // conversion factor of PWMPERx/20
+  ratioA = (double)azimuth / CALIBRATION_NIGHTY + CALIBRATION_ZERO;
+  dutyA = (unsigned char)(ratioA * PWMPER_CONVERSION); // conversion factor of PWMPERx/20
   
   // precision lost during cast operation so servo may end up not moving from the previous position
   // check if the relevant servo will actually end up moving from the previous position

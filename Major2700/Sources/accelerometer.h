@@ -17,6 +17,8 @@ typedef struct AccelScaled {
   float z;
 } AccelScaled;
 
+#define M_TO_MM 1000
+
 void convertUnits(AccelRaw *raw_data, AccelScaled *scaled_data);
 void getDisplacement(float *prevVel, float *prevDisp, float *accel);
 

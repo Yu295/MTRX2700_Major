@@ -24,12 +24,12 @@ void getDisplacement(float *prevDisp, float *prevVel, float *accel) {
   elevation = atanf((scaled_accel.z)/(sqrt((scaled_accel.y)*(scaled_accel.y)+(scaled_accel.x)*(scaled_accel.x))));
   
   // change to m/s^2, then mm/s^2
-  scaled_accel.z *= g*1000; 
-  scaled_accel.x *= g*1000;
+  scaled_accel.z *= g*M_TO_MM; 
+  scaled_accel.x *= g*M_TO_MM;
   
   // remove component due to gravity
-  scaled_accel.z -= g*sinf(elevation)*1000; 
-  scaled_accel.x -= g*cosf(elevation)*1000;
+  scaled_accel.z -= g*sinf(elevation)*M_TO_MM; 
+  scaled_accel.x -= g*cosf(elevation)*M_TO_MM;
   
   // change readings from body to world frame
   scaled_accel.z *= cosf(elevation);

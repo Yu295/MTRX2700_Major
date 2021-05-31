@@ -10,6 +10,9 @@ extern volatile unsigned int obstacle;
 #define MAX_RANGE 2730 // maximum lidar range in mm. Beyond this, readings are unreliable.
 #define NOMINAL_LIDAR 2000 // to calculate the default elevation angle
 #define HEIGHT_OFF_GROUND 1050 // rollator seat height (mm)
+#define LIDAR_OFFSET 100
+#define OVERFLOW_FACTOR 65536
+#define E_CLOCK 24
 
 // configure TC1 for input capture
 void timer_config(void);

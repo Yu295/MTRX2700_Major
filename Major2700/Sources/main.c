@@ -1,3 +1,13 @@
+/************************** Major Project 2021 **
+*************************
+*                                                                        *
+*       Audiso-Based Guided Navigation for Elderly Blind People          *
+*                                                                        *
+* Authors: Jason Lai, Reihana Tsao, Yujiao Cao                           *
+*                                                                        *
+* Date: 06/05/2021                                                       *
+**************************************************************************/
+
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 
@@ -148,7 +158,7 @@ void panServo(char *buffer) {
       
       if (result == SUCCESSFUL_TURN) {
         delay(400);
-        getMeasurements(buffer, elevation, azimuth, PANNING);         
+        getMeasurements(buffer, elevation, azimuth, PANNING);  // get the distance, elevation and azimuth measurements       
         SCI1_OutString(buffer);     
       }
     }
