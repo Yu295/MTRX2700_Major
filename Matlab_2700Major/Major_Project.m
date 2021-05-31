@@ -17,7 +17,6 @@ while (1)
     %disp(dataMatrix);
 
     %% Mapping and Guiding module
-
     % degrees, measured CCW from current position
     angleToTurn = mapAndGuide(dataMatrix);
 

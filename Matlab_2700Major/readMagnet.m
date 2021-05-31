@@ -2,11 +2,11 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
 
     % tell the user which way to turn
     if (angleToTurn < 0)
-        playPrompt('Please turn right slowly');
-        overshoot_left = 0;
-    else
         playPrompt('Please turn left slowly');
         overshoot_left = 1;
+    else
+        playPrompt('Please turn right slowly');
+        overshoot_left = 0;
     end
     
 %% Serial   
@@ -61,7 +61,7 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
             angleDiff = angleDiff + MAX_BEARING;
         end
         
-        disp([bearing, idealAngle, angleDiff]);
+        disp([angleToTurn, bearing, idealAngle, angleDiff]);
     
         if angleDiff * prevAngleDiff < -4 && overshoot_left
            overshoot_left = 0; 
