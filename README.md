@@ -112,7 +112,16 @@ This function is used to send information to the serial port, which is the most 
  
  **Matlab Mapping and Guidance Module**
  
-Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial.m``` function and translates them to the Cartesian coordinates x,y,z, which are then plotted in a 3D scatter plot. The conversions are calculated using 3D trigonometry. 
+Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial.m``` function and translates them to the Cartesian coordinates x,y,z, which are then plotted in a 3D scatter plot. The serial provides intended elevation, actual elevation, azimuth, LiDAR distance, and estimated ground distance. The conversions are calculated using 3D trigonometry shown below. The values taken to be converted are filtered to remove noise and eliminate ground readings using estimated ground distance. 
 
 ![Image of Trig Calcs](https://github.com/Yu295/MTRX2700_Major/blob/main/2700calcs.jpg)
+
+Once the Cartesian coordinates are found, the actual distance between two successive scanned points are found. This is done by first finding the horizontal distance from the origin to two successive points. These distances are labelled d1 and d2, where d1<d2. The angle subtending the two points is labelled theta. The calculations below then give the front on gap width available for the user to walk through.
+
+![Image of Trig Calcs 2](https://github.com/Yu295/MTRX2700_Major/blob/main/2700calcs2.jpg)
+
+However, these gaps occur at different elevations. Therefore, only the base elevation gaps are taken. The elevation used to reference this is the intended elevation provided, rather than actual elevation, as there is variance in actual data. A gap index is established which corresponds to the available gaps, and the width of these gaps are saved in a baseGap array. The angle range of the gap is also saved in a matrix. Then, the data points (obstacles) scanned in from other elevations are looped through. Gap indexes are removed from valid gaps when obstacles are detected which do not leave enough width for the user to move through.
+
+If there is more than one gap available, the gap closest to the forwards (positive x) direction is selected. The turn instruction angle is then output through serial. If there is no valid gap, then the turn instruction angle is output as 180 in order to turn the user around. Voice instructions are provided to navigate the user around obstacles.
+
 
