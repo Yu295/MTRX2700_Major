@@ -84,11 +84,11 @@ void flushBuffer(char *buffer);
 ```
 This function clears the content in side ```buffer```, ensuring that oly the required information is being stored in to it.
 
-**MATLAB Module**
+**MATLAB Serial Module**
 
 The MATLAB module has two portions, serial data receiving and transmitting, and mapping of the environment. 
 The serial portion will be polling until the distance to the object is transmitted from CodeWarrior to MATLAB, then a voice instruction will be played through PC to inform the user that there are obstacles in the walkway and then asks the user to stop. Afterwards, the PTU will be triggered to start panning through . During the scanning procedure, the serial port transmits the real-time orientations of the system along with the distance to the object, and stores the information into a matrix that can be used for environement mapping. 
-The follwing functions are created to interact between MATLAB and CodeWarrior through the serial port.
+The following functions are created to interact between MATLAB and CodeWarrior through the serial port.
 
 ```matlab
 readLidar.m
@@ -109,5 +109,9 @@ This function is used to send information to the serial port, which is the most 
  readMagnet.m
  ```
  When the mapping of the environment is successfully accomplished, the user is instructed to turn to the correct elevation that has been caculated in the mapping function. In this function, the magenetometer reading is transmitted through from CodeWarior so that when the correct elevation is achieved, the voice instruction will guide the user to go forwards.
+ 
+ **Matlab Mapping and Guidance Module**
+ 
+Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```matlab readSerial.m``` function and translates them to the Cartesian coordinates x,y,z, which are then plotted in a 3D scatter plot. 
 
 
