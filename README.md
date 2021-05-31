@@ -70,7 +70,7 @@ The register ```TIOS``` is in control of either implementing the input cpature o
 ```c
 __interrupt void TC1_ISR(void);
 ```
-To filter the noise in the measuremnet, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the risting edge, and subtracted by the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance at some point, it is usually funtional and accurate. 
+The capturing of the PWM signal is interpreatated as an interrupt. To filter the noise in the measuremnet, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the risting edge, and subtracted by the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance at some point, it is usually funtional and accurate. 
 
 **Serial Module**
 
