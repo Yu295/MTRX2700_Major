@@ -19,7 +19,7 @@ function data = readLidar(SerialPort)
     Speak(obj,obstacle_detected);
     
     % delay for 10 seconds to allow the user to stop
-    i = 5;
+    i = 3;
     pause(i);
     
     Speak(obj,stand_still);
