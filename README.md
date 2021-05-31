@@ -103,7 +103,7 @@ This function is used to send information to the serial port, which is the most 
  ```matlab
  readSerial.m
  ```
- After stopping the user, the ```c panServo``` will be triggered, afterwards, the readings of the distance, elevation and azimuth will come through to MATLAB. This function also stores the data into a matrix for the mapping later on.
+ After stopping the user, the ```panServo``` function will be implemented in the C Portion, afterwards, the readings of the distance, elevation and azimuth will come through to MATLAB. This function also stores the data into a matrix for the mapping later on.
  
  ```matlab
  readMagnet.m
