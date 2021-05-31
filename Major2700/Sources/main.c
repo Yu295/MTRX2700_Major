@@ -14,21 +14,30 @@
 #define TRUE 1
 #define FALSE 0
 
+// whether or not to pan
+typedef enum {
+  NOT_PANNING = 0,
+  PANNING
+} IS_PANNING;
+
 // pan servo after the user has been prompted to stop to begin the mapping process
 void panServo(char *buffer);
 
 // get IMU and LIDAR data after the PTU has turned to a new position
-char getMeasurements(char *buffer, char openElevation, char azimuth, char panning);
+char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING panning);
 
 void main(void) {
   
   int error_code = NO_ERROR;
-  char buffer[100];
-  unsigned long minDistance;
+  char buffer[100];            // buffer to store strings sent through SCI1
+  unsigned long minDistance;   // LIDAR distance reading
   
+  // set the default elevation to be such that the ground will return
+  // a reading of approximately NOMINAL_LIDAR if no obstacles are detected
   int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
-  int DEFAULT_AZIMUTH = 0;
-  float displacement = 0, velocity = 0, accel = 0;
+  
+  // look forward by default
+  int DEFAULT_AZIMUTH = 0; 
   AccelRaw read_accel;
   AccelScaled scaled_accel;
   
@@ -50,68 +59,62 @@ void main(void) {
     //SCI1_OutString(buffer);    
   }
   
-  timer_config();
-  PWMConfig();
+  timer_config(); // configure E-Clock timer for use by LIDAR and PWM block
+  PWMConfig();    // configure individual clocks for PWM block
   
 	EnableInterrupts;
-  turnToElevationAzimuth(0, 0, NULL, NULL, NONE);
+
   for(;;) {
   
-    // stay here until an obstacle is detected in front
-    // return to default configuration after done panning
+    // turn to the default configuration
     turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
+    
+    // make sure the PTU stops moving before beginning to take measurements
     delay(1000);
     
-    // keep reading distances until an obstacle is detected 
+    // keep reading distances until an obstacle is detected  
+    while(getMeasurements(buffer, DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NOT_PANNING));
     
-    while(getMeasurements(buffer,DEFAULT_ELEVATION,DEFAULT_AZIMUTH,FALSE));
-    SCI1_OutString(buffer); // send through to serial to indicate to MATLAB to play voice prompts  
+    /**************** VOICE PROMPTS ***********/
+    SCI1_OutString(buffer);                                                 // send data to serial to indicate to MATLAB to play prompts  
     flushBuffer(buffer);
-    SCI1_InString(buffer); // wait until MATLAB is done playing voice prompts
+    SCI1_InString(buffer);                                                  // wait until MATLAB is done playing voice prompts
     
-    if (*buffer == '1') {
+    /**************** MAPPING ***************/
+    if (*buffer == START_MAPPING_FLAG) {
       Orientation orientations;
       MagRaw read_magnet;
       MagScaled avg_magnet;
-      panServo(buffer); // start panning and sending data to MATLAB mapping/guidance module
+      panServo(buffer);                               // start panning and sending data to MATLAB mapping/guidance module
       turnToElevationAzimuth(0, 0, NULL, NULL, NONE); // set PTU to flat orientation to get magnetometer readings
-      flushBuffer(buffer); 
-      SCI1_InString(buffer); // wait until MATLAB is done with mapping
+      SCI1_InString(buffer);                          // wait until MATLAB is done with mapping
 
       /************** GUIDANCE ****************/      
       
-      while(*buffer != '3') {
+      while(*buffer != DONE_TURNING_FLAG) {
         int i;
         avg_magnet.x = 0;
         avg_magnet.y = 0;
         avg_magnet.z = 0;
         
-        
+        // taking 10 magnetometer readings per orientation and averaging
         for (i = 0; i < 10; ++i) {
           getRawDataMagnet(&read_magnet);
           avg_magnet.x += 0.1 * (float)read_magnet.x;
           avg_magnet.y += 0.1 * (float)read_magnet.y;
           avg_magnet.z += 0.1 * (float)read_magnet.z;
         }
-        
-        /*getRawDataMagnet(&read_magnet);
-        avg_magnet.x = (float)read_magnet.x;
-        avg_magnet.y = (float)read_magnet.y;
-        avg_magnet.z = (float)read_magnet.z;*/
-        
-        getRawDataAccel(&read_accel); // get accelerometer reading
-        convertUnits(&read_accel, &scaled_accel); // scale accelerometer reading
-        findOrientation(&orientations, &scaled_accel, BEARING, &avg_magnet); // get current bearing
+           
+        getRawDataAccel(&read_accel);                                         // get accelerometer reading
+        convertUnits(&read_accel, &scaled_accel);                             // scale accelerometer reading
+        findOrientation(&orientations, &scaled_accel, BEARING, &avg_magnet);  // get current bearing
         sprintf(buffer, "%d\n", (int)(orientations.h * 180.0/acosf(-1)));
-        delay(500);
-        SCI1_OutString(buffer); // send current bearing through serial to MATLAB
-        flushBuffer(buffer);
-        SCI1_InString(buffer);  // wait for signal to determine if user is facing the right way
+        delay(500);                                                           // make sure MATLAB is ready to receive serial data before sending
+        SCI1_OutString(buffer);                                               // send current bearing through serial to MATLAB      
+        SCI1_InString(buffer);                                                // wait for signal to determine if user is facing the right way
       }
     }
     
-    /*SCI1_InString(buffer);
-    SCI1_OutString(buffer);*/
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
@@ -131,7 +134,7 @@ void panServo(char *buffer) {
     
     if (result == SUCCESSFUL_TURN) { 
         delay(1500);
-        getMeasurements(buffer, elevation, MIN_PAN_AZIMUTH, TRUE);;
+        getMeasurements(buffer, elevation, MIN_PAN_AZIMUTH, PANNING);
         SCI1_OutString(buffer); 
     
     } else if (result == DUPLICATE_CONFIG) {
@@ -145,7 +148,7 @@ void panServo(char *buffer) {
       
       if (result == SUCCESSFUL_TURN) {
         delay(400);
-        getMeasurements(buffer, elevation, azimuth, TRUE);         
+        getMeasurements(buffer, elevation, azimuth, PANNING);         
         SCI1_OutString(buffer);     
       }
     }
@@ -157,10 +160,10 @@ void panServo(char *buffer) {
 }
 
 // returns TRUE if an obstacle is detected and FALSE otherwise
-char getMeasurements(char *buffer, char openElevation, char azimuth, char panning) {
+char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING panning) {
     int i;
-    unsigned long minDist; // taking 5 readings per orientation and recording the minimum
-    unsigned long groundDist; // how far the ground is expected to be at the given elevation
+    unsigned long minDist;                     // taking 10 readings per orientation and recording the minimum
+    unsigned long groundDist;                  // how far the ground is expected to be at the given elevation
     AccelRaw read_accel;
     AccelScaled scaled_accel;
     Orientation orientations;
@@ -174,7 +177,7 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, char pannin
     findOrientation(&orientations, &scaled_accel, ELEVATION_ONLY, NULL);
     
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
-    minDist = groundDist + 1; // initialise minimum distance to be greater than expected ground distance
+    minDist = groundDist + 1;                        // initialise minimum distance to be greater than expected ground distance
     
     for (i = 0; i < 10; ++i) {
       TIE |= TIE_C1I_MASK;
@@ -187,7 +190,8 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, char pannin
     } 
     
     // find actual elevation using IMU
-    if (panning) {  
+    if (panning == PANNING) {  
+      
       // writes to buffer string in format <measured elevation>,<set elevation>,<set azimuth>,<LIDAR measurement>,<expected ground distance>
       sprintf(buffer, "%d,%d,%d,%lu,%lu\n", (int)(orientations.e*conversion), openElevation, azimuth, minDist, groundDist);
       return TRUE;

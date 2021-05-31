@@ -12,20 +12,20 @@
 #define BAUD_57600    8
 #define BAUD_115200   9
 
+#define START_MAPPING_FLAG '1'
+#define DONE_TURNING_FLAG '3'
+
 
 // initialise SCI1
 void SCI1_Init(unsigned short baudRate);
- 
 
 // Output single character
 void SCI1_OutChar(char);  
- 
 
 // Output null terminated string 
 void SCI1_OutString(char *buffer);
 
+// Read newline terminated string from SCI1 and store a null-terminated version into buffer
 void SCI1_InString(char *buffer); 
-
-void flushBuffer(char *buffer);
 
 #endif

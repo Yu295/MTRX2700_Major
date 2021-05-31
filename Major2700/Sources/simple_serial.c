@@ -3,6 +3,8 @@
 #include "simple_serial.h" 
 #include "derivative.h"        /* derivative information */
 
+// empties null-terminated buffer before reading in a new string
+void flushBuffer(char *buffer);
 
 // initialise SCI1
 void SCI1_Init(unsigned short baudRate) {
@@ -78,20 +80,21 @@ void SCI1_OutString(char *buffer) {
 }
 
 void SCI1_InString(char *buffer) {
-  unsigned char buffInCount = 0; // keep track of where to insert char into buffer
-  volatile char c = 0;                    // current char
+  unsigned char count = 0;                  // keep track of where to insert char into buffer
+  volatile char c = 0;                      // current char
   
-  // read until a carriage return
-  //while (~((c == CARRIAGE_RETURN) || (c == NULL_CHARACTER) || (c == LINE_FEED))) { 
+  flushBuffer(buffer);                      // empty the buffer if not already empty
+  
+  // read until a newline character
   while (c != LINE_FEED) {
     
-    while(!(SCI1SR1 & SCI1SR1_RDRF_MASK)); // poll the RDRF bit until a char is ready to be read
-    c = (char)SCI1DRL;                           // read the char
-    buffer[buffInCount] = c;                // store char correctly in buffer
-    ++buffInCount; 
+    while(!(SCI1SR1 & SCI1SR1_RDRF_MASK));  // poll the RDRF bit until a char is ready to be read
+    c = (char)SCI1DRL;                      // read the char
+    buffer[count] = c;                      // store char correctly in buffer
+    ++count; 
   }
   
-  buffer[buffInCount] = 0;                  // add terminating NULL char for consistency with C strings
+  buffer[count] = 0;                        // add terminating NULL char for consistency with C strings
   return;
 }
 
