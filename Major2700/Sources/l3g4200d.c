@@ -50,7 +50,7 @@ typedef struct MAG_CFG_STRUCT {
 
 MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
 
-// change magnetometer gain to allow readings of up to 8.8 Ga to prevent overflow 
+// change magnetometer gain to allow readings of up to 8.1 Ga to prevent overflow 
 MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xE0};
 
 // initialise functions for each sensor
@@ -133,42 +133,30 @@ IIC_ERRORS magnet_init(void)
 }
 
 
-// calculate elevation and azimuth angles from initial accelerometer and magnetometer readings taken while stationary
-void findOrientation(Orientation *orientations, AccelScaled *scaled_data, ORIENTATION_MEASUREMENT measurement, MagScaled *mag_data) {
-  float z, y;
-  float eps = 0.0001; 
+// calculate bearing from set elevation and magnetometer reading
+float findBearing (char elevation, MagScaled *mag_data) {
+  float y, z;
+  float eps = 0.0001;
   float conversion = acosf(-1) / 180.0; // conversion from deg to rad
-  unsigned char buff[50];
-  //float a_rolling = atanf((scaled_data->y)/((scaled_data->z)*(scaled_data->z)+(scaled_data->x)*(scaled_data->x)));
-  // calculate orientation from read accelerometer data
-  orientations->e = atanf((scaled_data->z)/(sqrt((scaled_data->y)*(scaled_data->y)+(scaled_data->x)*(scaled_data->x))));
-  
-  if (measurement == ELEVATION_ONLY) {
-    return;
-  }
+
   // calculate intermediate values from magnetometer data and elevation
-  z = (mag_data->z)*cosf(orientations->e) - (mag_data->x)*sinf(orientations->e);
+  z = (mag_data->z)*cosf((float)elevation) - (mag_data->x)*sinf((float)elevation);
   y = (mag_data->y);
-  orientations->y = y;
-  orientations->z = z;
   
-  // similar use to atan2 to compute heading as per the HM5883 datasheet
+  // similar use to atan2 to compute bearing as per the HM5883 datasheet
   // first handle case where denominator is 0
   if (fabs(z) < eps) {
     if (y > 0) {
-      orientations->h = 270.0 * conversion;
+      return (270.0 * conversion);
     } else {
-      orientations->h = 90.0 * conversion;
+      return (90.0 * conversion);
     }
   } else if (z < 0) {
-    orientations->h = 180.0 * conversion - atanf(y/z);  
+    return (180.0 * conversion - atanf(y/z));  
   } else {
     if (y > 0) {
-      orientations->h = 360.0 * conversion - atanf(y/z);
-    } else {
-      orientations->h = -atanf(y/z);
+      return (360.0 * conversion - atanf(y/z));
     }
   }
-  
-  return;     
+  return -atanf(y/z);    
 }

@@ -12,11 +12,6 @@
 #include "iic.h"
 #include "accelerometer.h"
 
-typedef enum {
-  BEARING,
-  ELEVATION_ONLY
-} ORIENTATION_MEASUREMENT;
-
 // data structures containing the raw values
 typedef struct GyroRaw {
   int x;    // x rotational velocity
@@ -40,9 +35,7 @@ typedef struct MagScaled {
 // data structure containing orientation values
 typedef struct Orientation {
   float e;      // elevation (rad) between -pi/2 and pi/2
-  float h;      // heading (rad) between 0 and 2*pi
-  float y;      // y and z are intermediate values stored for debugging
-  float z;
+  float b;      // bearing (rad) between 0 and 2*pi
 } Orientation;
 
 // Initialise each sensor
@@ -60,7 +53,7 @@ IIC_ERRORS getRawDataMagnet(MagRaw *raw_data);
 IIC_ERRORS getRawDataGyro(GyroRaw *raw_data);
 
 
-// Calculate elevation from accelerometer reading, yaw from magnetometer
-void findOrientation(Orientation *orientations, AccelScaled *scaled_data, ORIENTATION_MEASUREMENT measurement, MagScaled *mag_data);
+// Calculate bearing from elevation and magnetometer reading
+float findBearing (char elevation, MagScaled *mag_data);
 
 #endif

@@ -18,7 +18,7 @@ while (1)
 
     %% Mapping and Guiding module
     % degrees, measured CCW from current position
-    angleToTurn = mapAndGuide(dataMatrix);
+    angleToTurn = -mapAndGuide(dataMatrix);
 
     % send through a flag to start sending magnetometer data
     angleMatch = readMagnet(SerialPort, angleToTurn);

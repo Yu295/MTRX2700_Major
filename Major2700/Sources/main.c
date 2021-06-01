@@ -1,7 +1,6 @@
-/************************** Major Project 2021 **
-*************************
+/************************** Major Project 2021 ***************************
 *                                                                        *
-*       Audiso-Based Guided Navigation for Elderly Blind People          *
+* Audio-Based Guided Navigation for Elderly/Visually Impaired People     *
 *                                                                        *
 * Authors: Jason Lai, Reihana Tsao, Yujiao Cao                           *
 *                                                                        *
@@ -42,8 +41,7 @@ void main(void) {
   char buffer[100];            // buffer to store strings sent through SCI1
   unsigned long minDistance;   // LIDAR distance reading
   
-  // set the default elevation to be such that the ground will return
-  // a reading of approximately NOMINAL_LIDAR if no obstacles are detected
+  // set the default elevation to be s.t. the ground returns a reading of approx NOMINAL_LIDAR if no obstacles are detected
   int DEFAULT_ELEVATION = (int)(-asinf((float)HEIGHT_OFF_GROUND/(float)NOMINAL_LIDAR)*180.0/acosf(-1));
   
   // look forward by default
@@ -97,6 +95,11 @@ void main(void) {
       MagScaled avg_magnet;
       panServo(buffer);                               // start panning and sending data to MATLAB mapping/guidance module
       turnToElevationAzimuth(0, 0, NULL, NULL, NONE); // set PTU to flat orientation to get magnetometer readings
+      delay(400);                                     // short pause to give the PTU enough time to move
+      
+      getRawDataAccel(&read_accel);                   // get accelerometer reading and scale it
+      convertUnits(&read_accel, &scaled_accel);       
+      orientations.e = findElevation(&scaled_accel);  // find current elevation for use in bearing calculation
       SCI1_InString(buffer);                          // wait until MATLAB is done with mapping
 
       /************** GUIDANCE ****************/      
@@ -114,11 +117,14 @@ void main(void) {
           avg_magnet.y += 0.1 * (float)read_magnet.y;
           avg_magnet.z += 0.1 * (float)read_magnet.z;
         }
+        
+        // comment out next 3 lines if using the initial elevation only
+        /*getRawDataAccel(&read_accel);     
+        convertUnits(&read_accel, &scaled_accel);
+        orientations.e = findElevation(&scaled_accel);*/
            
-        getRawDataAccel(&read_accel);                                         // get accelerometer reading
-        convertUnits(&read_accel, &scaled_accel);                             // scale accelerometer reading
-        findOrientation(&orientations, &scaled_accel, BEARING, &avg_magnet);  // get current bearing
-        sprintf(buffer, "%d\n", (int)(orientations.h * 180.0/acosf(-1)));
+        orientations.b = findBearing(orientations.e, &avg_magnet);            // get current bearing
+        sprintf(buffer, "%d\n", (int)(orientations.b * 180.0/acosf(-1)));
         delay(500);                                                           // make sure MATLAB is ready to receive serial data before sending
         SCI1_OutString(buffer);                                               // send current bearing through serial to MATLAB      
         SCI1_InString(buffer);                                                // wait for signal to determine if user is facing the right way
@@ -177,6 +183,7 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING 
     AccelRaw read_accel;
     AccelScaled scaled_accel;
     Orientation orientations;
+    float measuredElevation;
     float conversion = 180.0/(float)acos(-1);  // conversion factor from rad to deg
     
     // take 10 LIDAR readings and record the minimum. If the minimum is still greater than groundDist,
@@ -184,7 +191,7 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING 
     
     getRawDataAccel(&read_accel);
     convertUnits(&read_accel, &scaled_accel);
-    findOrientation(&orientations, &scaled_accel, ELEVATION_ONLY, NULL);
+    measuredElevation = findElevation(&scaled_accel);
     
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
     minDist = groundDist + 1;                        // initialise minimum distance to be greater than expected ground distance
