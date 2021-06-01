@@ -1,6 +1,6 @@
-function data = readSerial(serialPort) 
+function data = readSerial(SerialPort) 
 %% Serial
-    s = serial(serialPort, 'BaudRate', 9600, 'Timeout', 30);
+    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
     fopen(s);
 
     data = [];
