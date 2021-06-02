@@ -18,7 +18,7 @@ typedef enum {
 
 // desired ranges of motion of the PTU (measured with respect to the board) 
 #define MIN_PAN_ELEVATION -45
-#define MAX_PAN_ELEVATION 45
+#define MAX_PAN_ELEVATION 30
 #define MIN_PAN_AZIMUTH -90
 #define MAX_PAN_AZIMUTH 90
 #define CALIBRATION_SLOPE_INV 102   // inverse of calibration slope

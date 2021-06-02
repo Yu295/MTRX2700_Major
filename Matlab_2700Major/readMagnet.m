@@ -1,4 +1,10 @@
-function angleMatch = readMagnet(SerialPort, angleToTurn)  
+% Guides user to turn to the right extent via audio prompts based on their
+% bearing as measured by the magnetometer
+% - SerialPort: serialport object corresponding to SCI1
+% - angleToTurn: desired angle measured CCW in degrees 
+function readMagnet(SerialPort, angleToTurn)  
+    
+    % flag indicating user has finished turning
     finished_turning = sprintf("3\n");
     
     % tell the user which way to turn
@@ -82,7 +88,9 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
         prevAngleDiff = angleDiff;     
     end
     
+    % send flag to stop further magnetometer data
     write(SerialPort, finished_turning, "char");
+    
+    % play audio instruction to indicate it's safe to proceed
     playPrompt('Clear to go forward. Please start walking.');
-    angleMatch = 1; 
 end

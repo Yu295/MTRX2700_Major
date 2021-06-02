@@ -83,7 +83,7 @@ void main(void) {
     // keep reading distances until an obstacle is detected
     *buffer = '2';
      
-    while (*buffer != STOP_LIDAR_FLAG){
+    while (*buffer != STOP_LIDAR_FLAG) {
       getMeasurements(buffer, DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NOT_PANNING);
       delay(1000);
       SCI1_OutString(buffer);

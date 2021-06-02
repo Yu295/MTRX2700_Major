@@ -51,7 +51,7 @@ typedef struct MAG_CFG_STRUCT {
 MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
 
 // change magnetometer gain to allow readings of up to 8.1 Ga to prevent overflow 
-MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xE0};
+MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xC0};
 
 // initialise functions for each sensor
 IIC_ERRORS accel_init(void);
