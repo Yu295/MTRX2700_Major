@@ -203,4 +203,5 @@ However, these gaps occur at different elevations. Therefore, only the base elev
 
 If there is more than one gap available, the gap closest to the forwards (positive x) direction is selected. The turn instruction angle is then output through serial. If there is no valid gap, then the turn instruction angle is output as 180 in order to turn the user around. Voice instructions are provided to navigate the user around obstacles.
 
+The system was tested with sample LiDAR data taken from preliminary scans, with known obstacles scanned.
 
