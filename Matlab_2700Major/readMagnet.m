@@ -1,5 +1,6 @@
-function angleMatch = readMagnet(SerialPort, angleToTurn)
-
+function angleMatch = readMagnet(SerialPort, angleToTurn)  
+    finished_turning = sprintf("3\n");
+    
     % tell the user which way to turn
     % overshoot_left indicates which way the user could overshoot
     % i.e. if they are turning CCW (i.e. left) they can turn too far left
@@ -16,17 +17,12 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
     
     % send signal to C program to send data
     disp('Sending flag');
-    sendSerial(SerialPort, send_mag);
+    write(SerialPort, send_mag, "char");
     
     % read in data
-    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
-    fopen(s);
-    [line, ~] = fscanf(s, "%s");
+    line = readline(SerialPort);
     bearing = sscanf(line, "%d");
-    
-    fclose(s);
-    delete(s);
-    clear s;
+
     %% Angle calculations
     tolerance = 2; % degrees
     
@@ -51,16 +47,9 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
     
     while abs(angleDiff) > tolerance
         
-        % send flag to tell C program to send a bearing
-        s = serialport(SerialPort, 9600);
-        write(s, send_mag, "char");
-        delete(s);
-        clear s;
-        
         % read in the bearing
-        s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
-        fopen(s);
-        [line, ~] = fscanf(s,"%s");
+        write(SerialPort, send_mag, "char");
+        line = readline(SerialPort);
         bearing = sscanf(line, "%d");
         
         % calculate current deviation from ideal bearing
@@ -89,14 +78,11 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
                 overshoot_left = 1;
                 playPrompt('You turned too much. Please turn left.');  
             end
-        end
-        
+        end   
         prevAngleDiff = angleDiff;     
-        fclose(s);
-        delete(s);
-        clear s;
     end
     
+    write(SerialPort, finished_turning, "char");
     playPrompt('Clear to go forward. Please start walking.');
     angleMatch = 1; 
 end

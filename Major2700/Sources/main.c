@@ -73,26 +73,32 @@ void main(void) {
 	EnableInterrupts;
 
   for(;;) {
-  
+    
     // turn to the default configuration
     turnToElevationAzimuth(DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NULL, NULL, NONE);
     
     // make sure the PTU stops moving before beginning to take measurements
     delay(1000);
     
-    // keep reading distances until an obstacle is detected  
-    while(getMeasurements(buffer, DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NOT_PANNING));
+    // keep reading distances until an obstacle is detected
+    *buffer = '2';
+     
+    while (*buffer != STOP_LIDAR_FLAG){
+      getMeasurements(buffer, DEFAULT_ELEVATION, DEFAULT_AZIMUTH, NOT_PANNING);
+      delay(1000);
+      SCI1_OutString(buffer);
+      SCI1_InString(buffer);
+    } 
     
     /**************** VOICE PROMPTS ***********/
-    SCI1_OutString(buffer);                                                 // send data to serial to indicate to MATLAB to play prompts  
-    flushBuffer(buffer);
-    SCI1_InString(buffer);                                                  // wait until MATLAB is done playing voice prompts
+    SCI1_InString(buffer); // wait for voice prompts to finish
     
-    /**************** MAPPING ***************/
     if (*buffer == START_MAPPING_FLAG) {
       Orientation orientations;
       MagRaw read_magnet;
-      MagScaled avg_magnet;
+      MagScaled avg_magnet;  
+    
+      /**************** MAPPING ***************/
       panServo(buffer);                               // start panning and sending data to MATLAB mapping/guidance module
       turnToElevationAzimuth(0, 0, NULL, NULL, NONE); // set PTU to flat orientation to get magnetometer readings
       delay(400);                                     // short pause to give the PTU enough time to move
@@ -119,18 +125,20 @@ void main(void) {
         }
         
         // comment out next 3 lines if using the initial elevation only
-        /*getRawDataAccel(&read_accel);     
+        getRawDataAccel(&read_accel);     
         convertUnits(&read_accel, &scaled_accel);
-        orientations.e = findElevation(&scaled_accel);*/
+        orientations.e = findElevation(&scaled_accel);
            
         orientations.b = findBearing(orientations.e, &avg_magnet);            // get current bearing
         sprintf(buffer, "%d\n", (int)(orientations.b * 180.0/acosf(-1)));
-        delay(500);                                                           // make sure MATLAB is ready to receive serial data before sending
+        delay(1000);                                                          // make sure MATLAB is ready to receive serial data before sending
         SCI1_OutString(buffer);                                               // send current bearing through serial to MATLAB      
         SCI1_InString(buffer);                                                // wait for signal to determine if user is facing the right way
       }
-    }
+      
+      delay(3000);  // make sure MATLAB is ready to receive serial data before sending
     
+    }
     _FEED_COP(); /* feeds the dog */
   } /* loop forever */
   
@@ -178,7 +186,8 @@ void panServo(char *buffer) {
 // returns TRUE if an obstacle is detected and FALSE otherwise
 char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING panning) {
     int i;
-    unsigned long minDist;                     // taking 10 readings per orientation and recording the minimum
+    unsigned long count = 0;                       // number of valid readings
+    unsigned long minDist;                     // taking 10 readings per orientation and records the average (after filtering bad data)
     unsigned long groundDist;                  // how far the ground is expected to be at the given elevation
     AccelRaw read_accel;
     AccelScaled scaled_accel;
@@ -193,17 +202,24 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING 
     orientations.e = findElevation(&scaled_accel);
     
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
-    minDist = groundDist + 1;                        // initialise minimum distance to be greater than expected ground distance
+    minDist = 0;                        // initialise minimum distance to be greater than expected ground distance
     
     for (i = 0; i < 10; ++i) {
       TIE |= TIE_C1I_MASK;
       delay(20);
       TIE &= ~TIE_C1I_MASK;
       
-      if (distance < minDist && distance > MIN_RANGE) {
-        minDist = distance;  
+      if (distance < groundDist && distance > MIN_RANGE) {
+        minDist += distance;
+        count += 1;
       }
-    } 
+    }
+    
+    if (count == 0) {
+      minDist = groundDist + 1;
+    } else {
+      minDist = (unsigned long)((float)minDist / (float)count);
+    }
     
     // find actual elevation using IMU
     if (panning == PANNING) {  

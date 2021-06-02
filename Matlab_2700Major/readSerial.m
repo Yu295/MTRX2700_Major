@@ -1,25 +1,17 @@
 function data = readSerial(SerialPort) 
 %% Serial
-    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 30);
-    fopen(s);
-
+    start_panning = sprintf("1\n");
+    write(SerialPort, start_panning, "char");
     data = [];
     A = [];    
- 
-    %this for loop is for testing:
-    %for mapCount = 1:5
-    %line = fscanf(s,"%d");
+    
     while (1)
-        [line,~] = fscanf(s,"%s");
+        line = readline(SerialPort);
         if (strlength(line) < 3)
             break;
         end
-        A = sscanf(line,"%d,%d,%d,%d,%d");
+        A = sscanf(line, "%d,%d,%d,%d,%d");
         disp(A');
         data = [data; A'];
     end
-    
-    fclose(s);
-    delete(s);
-    clear s;
 end

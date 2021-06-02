@@ -12,6 +12,7 @@
 #define BAUD_57600    8
 #define BAUD_115200   9
 
+#define STOP_LIDAR_FLAG '0'
 #define START_MAPPING_FLAG '1'
 #define DONE_TURNING_FLAG '3'
 #define DONE_PANNING_FLAG "5\n"

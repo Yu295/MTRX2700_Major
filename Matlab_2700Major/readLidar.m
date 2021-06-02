@@ -1,20 +1,30 @@
-function data = readLidar(SerialPort)
+function readLidar(SerialPort)
 %% Serial
-    % assume an obstacle will be detected within 2 minutes
-    s = serial(SerialPort, 'BaudRate', 9600, 'Timeout', 120);
-    fopen(s);
+    send_lidar = sprintf("2\n");
+    stop_lidar = sprintf("0\n");
     
-    % reading the lidar data
-    [line, ~] = fscanf(s,"%s");
-    disp(line);
-    data = line;
+    groundDist = 0;
+    actualDist = 1;
+    
+    while groundDist < actualDist
+        
+        % send flag to tell C program to send a LiDAR reading
+        write(SerialPort, send_lidar, "char");
+        
+        % read in the distances 
+        line = readline(SerialPort);
+        data = sscanf(line, "%d,%d");
+        actualDist = data(1);
+        groundDist = data(2);
+        disp(data');
+    end
+    
+    write(SerialPort, stop_lidar, "char");
+    
     playPrompt('Obstacle detected in your way. Please stop.');
     
     % delay for 10 seconds to allow the user to stop
     pause(3);
     
     playPrompt('Start scanning. Please stand still.');
-    
-    fclose(s);
-    delete(s);
-    clear s;
+end
