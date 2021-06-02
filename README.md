@@ -120,9 +120,9 @@ This function accepts scaled acceleration readings (i.e. accelerations in terms 
 ### Gyroscope
 The final implementation does not use measurements from the gyroscope. In theory, such measurements would have helped with providing closed-loop control over the PTU's rotation. However, as discussed previously, the data was deemed too noisy to provide reliable orientations. **This is exacerbated by the fact that the gyroscope data must be integrated to obtain orientation, magnifying even the smallest errors.** 
 
-## LIDAR Module (C)
+## LiDAR Module (C)
 
-The LIDAR-Lite Sensor version 2 provides the distance to the first object being detected. The LIDAR interacts with the 68HCS12 Dragon Board through pin ```PT1```. By capturing the pulse width of the PWM signal sent to ```PT1```, the measured distance to the obstacle can be calculated by a 1msec/metre relationship. Thus, the following functions in ```lidar.h``` are implemented to measure the distance:
+The LiDAR-Lite Sensor version 2 provides the distance to the first object being detected. The LiDAR interacts with the 68HCS12 Dragon Board through pin ```PT1```. By capturing the pulse width of the PWM signal sent to ```PT1```, the measured distance to the obstacle can be calculated by a 1msec/metre relationship. Thus, the following functions in ```lidar.h``` are implemented to measure the distance:
 ```c
 void timer_config(void);
 ```

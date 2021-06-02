@@ -9,7 +9,7 @@ extern volatile unsigned int obstacle;
 #define MIN_RANGE 100 // minimum lidar range in mm. Readings any closer are likely to be noise or the PTU's platform
 #define MAX_RANGE 2730 // maximum lidar range in mm. Beyond this, readings are unreliable.
 #define NOMINAL_LIDAR 2000 // to calculate the default elevation angle
-#define HEIGHT_OFF_GROUND 600 // rollator seat height (mm)
+#define HEIGHT_OFF_GROUND 850 // rollator seat height (mm)
 #define LIDAR_OFFSET 100
 #define OVERFLOW_FACTOR 65536
 #define E_CLOCK 24

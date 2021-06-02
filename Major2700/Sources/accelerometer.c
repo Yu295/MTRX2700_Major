@@ -1,4 +1,5 @@
 #include "accelerometer.h"
+#include <math.h>
 
 void convertUnits(AccelRaw *raw_data, AccelScaled *scaled_data){
     

@@ -183,7 +183,6 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING 
     AccelRaw read_accel;
     AccelScaled scaled_accel;
     Orientation orientations;
-    float measuredElevation;
     float conversion = 180.0/(float)acos(-1);  // conversion factor from rad to deg
     
     // take 10 LIDAR readings and record the minimum. If the minimum is still greater than groundDist,
@@ -191,7 +190,7 @@ char getMeasurements(char *buffer, char openElevation, char azimuth, IS_PANNING 
     
     getRawDataAccel(&read_accel);
     convertUnits(&read_accel, &scaled_accel);
-    measuredElevation = findElevation(&scaled_accel);
+    orientations.e = findElevation(&scaled_accel);
     
     groundDist = getGroundDistance(-orientations.e); // compute how far the ground should be 
     minDist = groundDist + 1;                        // initialise minimum distance to be greater than expected ground distance

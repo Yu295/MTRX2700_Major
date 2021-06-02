@@ -10,11 +10,12 @@ function data = readSerial(SerialPort)
     %for mapCount = 1:5
     %line = fscanf(s,"%d");
     while (1)
-        [line,count] = fscanf(s,"%s");
+        [line,~] = fscanf(s,"%s");
         if (strlength(line) < 3)
             break;
         end
         A = sscanf(line,"%d,%d,%d,%d,%d");
+        disp(A');
         data = [data; A'];
     end
     
