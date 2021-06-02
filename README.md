@@ -66,7 +66,7 @@ To address this, the extra arguments ```prevDutyE```, ```prevDutyA``` and ```dup
 
 Successful actuation to a new configuration leads to ```SUCCESSFUL_TURN``` being returned whereas angle arguments outside the defined range will lead to the ```INVALID``` flags being returned.
 
-### Module Flow Chart
+**Servomotor Module Flow Chart**
 ![Servomotor Module](https://user-images.githubusercontent.com/80010004/120487907-b2dc7f00-c3f9-11eb-9fc8-b07465b2e530.png)
 
 
@@ -125,7 +125,7 @@ This function accepts scaled acceleration readings (i.e. accelerations in terms 
 ### Gyroscope
 The final implementation does not use measurements from the gyroscope. In theory, such measurements would have helped with providing closed-loop control over the PTU's rotation. However, as discussed previously, the data was deemed too noisy to provide reliable orientations. **This is exacerbated by the fact that the gyroscope data must be integrated to obtain orientation, magnifying even the smallest errors.** 
 
-### Module Flow Chart
+**IMU Module Flow Chart**
 ![IMU Module](https://user-images.githubusercontent.com/80010004/120488072-cee02080-c3f9-11eb-9bc6-c26015e4147c.png)
 
 ## LiDAR Module (C)
@@ -143,6 +143,9 @@ __interrupt void TC1_ISR(void);
 The capturing of the PWM signal is interpreted as an interrupt. To filter measurement noise, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value (above a pre-determined noise threshold) is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the rising edge, and subtracting this from the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance sometimes, it is usually functional with an accuracy of.
 The captured distance is based on the time elapsed for the laser to travel between the object and the sensor, there is a limitation for this methodology:
 - **The dected obstacles are assumed to be non-black objects.** This is because that black absorbs more light than other colours, thus if the object is black, the laser cannot recognize it.
+
+**LiDAR Module Flow Chart**
+![LiDAR Module](https://user-images.githubusercontent.com/80010004/120489625-1fa44900-c3fb-11eb-9964-a57c5527ccb4.png)
 
 ## Serial Module (C)
 
@@ -212,4 +215,7 @@ However, these gaps occur at different elevations. Therefore, only the base elev
 If there is more than one gap available, the gap closest to the forwards (positive x) direction is selected. The turn instruction angle is then output through serial. If there is no valid gap, then the turn instruction angle is output as 180 in order to turn the user around. Voice instructions are provided to navigate the user around obstacles.
 
 The system was tested with sample LiDAR data taken from preliminary scans, with known obstacles scanned, and then data set was compared. 
+
+**Mapping Module Flow Chart**
+![Map and Guidance Module](https://user-images.githubusercontent.com/80010004/120490140-845fa380-c3fb-11eb-921c-7272a28153c2.png)
 
