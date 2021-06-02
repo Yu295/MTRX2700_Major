@@ -50,7 +50,7 @@ typedef struct MAG_CFG_STRUCT {
 
 MAG_CFG_STRUCT mag_cfg = {HM5883_MODE_REG, 0x00};
 
-// change magnetometer gain to allow readings of up to 8.1 Ga to prevent overflow 
+// change magnetometer gain to allow readings of up to 5.7 Ga to prevent overflow 
 MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xC0};
 
 // initialise functions for each sensor
@@ -134,13 +134,13 @@ IIC_ERRORS magnet_init(void)
 
 
 // calculate bearing from set elevation and magnetometer reading
-float findBearing (char elevation, MagScaled *mag_data) {
+float findBearing (float elevation, MagScaled *mag_data) {
   float y, z;
   float eps = 0.0001;
   float conversion = acosf(-1) / 180.0; // conversion from deg to rad
 
   // calculate intermediate values from magnetometer data and elevation
-  z = (mag_data->z)*cosf((float)elevation) - (mag_data->x)*sinf((float)elevation);
+  z = (mag_data->z)*cosf(elevation) - (mag_data->x)*sinf(elevation);
   y = (mag_data->y);
   
   // similar use to atan2 to compute bearing as per the HM5883 datasheet

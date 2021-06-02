@@ -54,6 +54,6 @@ IIC_ERRORS getRawDataGyro(GyroRaw *raw_data);
 
 
 // Calculate bearing from elevation and magnetometer reading
-float findBearing (char elevation, MagScaled *mag_data);
+float findBearing (float elevation, MagScaled *mag_data);
 
 #endif

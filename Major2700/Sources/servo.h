@@ -25,9 +25,12 @@ typedef enum {
 #define CALIBRATION_ZERO 1.5     // calibration constant at 0 dergees
 #define PWMPER_CONVERSION 12.75  //PWMPERx/20 conversion factor
 
-
-
+// configures the channels PWM7 and PWM5 (connected to PTU) for servo control
 void PWMConfig(void);
+
+// turns the PTU to an orientation specified by elevation and azimuth angles
+// accounts for duplicate configurations due to rounding by accepting the previous duty ratios calculated and angle type
+// to check for duplication
 SERVO_STATE turnToElevationAzimuth(char elevation, char azimuth, unsigned char *prevDutyE, unsigned char *prevDutyA, ANGLE duplicate);
 
 #endif
