@@ -67,6 +67,7 @@ To address this, the extra arguments ```prevDutyE```, ```prevDutyA``` and ```dup
 Successful actuation to a new configuration leads to ```SUCCESSFUL_TURN``` being returned whereas angle arguments outside the defined range will lead to the ```INVALID``` flags being returned.
 
 **Servomotor Module Flow Chart**
+
 ![Servomotor Module](https://user-images.githubusercontent.com/80010004/120487907-b2dc7f00-c3f9-11eb-9fc8-b07465b2e530.png)
 
 
@@ -126,6 +127,7 @@ This function accepts scaled acceleration readings (i.e. accelerations in terms 
 The final implementation does not use measurements from the gyroscope. In theory, such measurements would have helped with providing closed-loop control over the PTU's rotation. However, as discussed previously, the data was deemed too noisy to provide reliable orientations. **This is exacerbated by the fact that the gyroscope data must be integrated to obtain orientation, magnifying even the smallest errors.** 
 
 **IMU Module Flow Chart**
+
 ![IMU Module](https://user-images.githubusercontent.com/80010004/120488072-cee02080-c3f9-11eb-9bc6-c26015e4147c.png)
 
 ## LiDAR Module (C)
@@ -145,6 +147,7 @@ The captured distance is based on the time elapsed for the laser to travel betwe
 - **The dected obstacles are assumed to be non-black objects.** This is because that black absorbs more light than other colours, thus if the object is black, the laser cannot recognize it.
 
 **LiDAR Module Flow Chart**
+
 ![LiDAR Module](https://user-images.githubusercontent.com/80010004/120489625-1fa44900-c3fb-11eb-9964-a57c5527ccb4.png)
 
 ## Serial Module (C)
@@ -217,5 +220,6 @@ If there is more than one gap available, the gap closest to the forwards (positi
 The system was tested with sample LiDAR data taken from preliminary scans, with known obstacles scanned, and then data set was compared. 
 
 **Mapping Module Flow Chart**
+
 ![Map and Guidance Module](https://user-images.githubusercontent.com/80010004/120490140-845fa380-c3fb-11eb-921c-7272a28153c2.png)
 
