@@ -9,6 +9,7 @@ This design is for an audio-based guidance system for elderly and/or visually-im
 The developed software is designed to interface with the 68HCS12 Microcontroller and provided pan-and-tilt unit (PTU). This harwdware will require connection via SCI to an external device (e.g. laptop) that will execute the associated MATLAB program. As such, **it is highly recommended that the setup is mounted on a flat surface, with the PTU facing forwards.**
 
 ## System Flow Chart
+![MTRX2700 (2)](https://user-images.githubusercontent.com/80010004/120487624-7a3ca580-c3f9-11eb-8d58-29c23df209b5.png)
 
 
 ## Servomotor Module (C)
@@ -65,6 +66,10 @@ To address this, the extra arguments ```prevDutyE```, ```prevDutyA``` and ```dup
 
 Successful actuation to a new configuration leads to ```SUCCESSFUL_TURN``` being returned whereas angle arguments outside the defined range will lead to the ```INVALID``` flags being returned.
 
+### Module Flow Chart
+![Servomotor Module](https://user-images.githubusercontent.com/80010004/120487907-b2dc7f00-c3f9-11eb-9fc8-b07465b2e530.png)
+
+
 ## IMU Module (C)
 
 The PTU is fitted with a 10 Degree of Freedom Inertial Measurement Unit (IMU) Module that comes with the following sensor suite:
@@ -119,6 +124,9 @@ This function accepts scaled acceleration readings (i.e. accelerations in terms 
 
 ### Gyroscope
 The final implementation does not use measurements from the gyroscope. In theory, such measurements would have helped with providing closed-loop control over the PTU's rotation. However, as discussed previously, the data was deemed too noisy to provide reliable orientations. **This is exacerbated by the fact that the gyroscope data must be integrated to obtain orientation, magnifying even the smallest errors.** 
+
+### Module Flow Chart
+![IMU Module](https://user-images.githubusercontent.com/80010004/120488072-cee02080-c3f9-11eb-9bc6-c26015e4147c.png)
 
 ## LiDAR Module (C)
 
