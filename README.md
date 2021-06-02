@@ -191,7 +191,7 @@ e called with the message required as an parameter in other functions. For guida
 
  ## Mapping and Guidance Module (MATLAB)
  
-Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial``` function and translates them to the Cartesian coordinates ```x```, ```y``` and ```z```, which are then plotted in a 3D scatter plot. The serial provides intended elevation, actual elevation, azimuth, LiDAR distance, and estimated ground distance. The conversions are calculated using 3D trigonometry shown below. The values taken to be converted are filtered to remove noise and eliminate ground readings using estimated ground distance. 
+Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial``` function and translates them to the Cartesian coordinates ```x```, ```y``` and ```z```, which are then plotted in a 3D scatter plot. The serial provides intended elevation, actual elevation, azimuth, LiDAR distance, and estimated ground distance. The conversions are calculated using 3D trigonometry shown below. The values taken to be converted are filtered to remove noise and eliminate ground readings using estimated ground distance. Within a 50 - 90 cm distance range, the readings of the LiDAR compared to the area being scanned displayed too much noise. This was the same for values larger than 200cm. Therefore, these values were filtered out to leave behind the narrower, more accurate range. 
 
 ![Image of Trig Calcs](https://github.com/Yu295/MTRX2700_Major/blob/main/2700calcs.jpg)
 
