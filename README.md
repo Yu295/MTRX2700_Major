@@ -91,7 +91,10 @@ This equation assumes the following:
 - **Roll of the PTU in the body frame is 0.** This is reasonable to assume as there is no degree-of-freedom along this axis.
 - **Elevation and roll of the PTU in the world frame is 0.** This assumes that the user is not on an incline/decline (otherwise elevation would be non-zero) and that the PTU is mounted on a horizontal surface (otherwise roll would be non-zero). This is reasonable to assume as the target application is in an indoor environment.
 
-This calculation is implemented in ```findOrientations``` which shall be discussed in further detail in the next section.
+This calculation is implemented in the function ```findElevation```, which accepts a pointer to a struct ```scaled_data``` containing acceleration readings in terms of g:
+```c
+float findElevation (AccelScaled *scaled_data);
+```
 
 ### Magnetometer
 The magnetometer can be used to calculate the current bearing in the world frame. Before doing so, the HML5883 needs to be configured to provide reasonable readings. In particular, the default sensor field range in the provided I2C and L3G4200D modules was ![equation](https://latex.codecogs.com/gif.latex?%5Cinline%20%5Cpm%200.88%5C%2C%5Ctext%7BGa%7D). 
@@ -101,8 +104,8 @@ However, it was observed during testing that frequent overflows of the magnetome
 ```c
 #define HM5883_CFG_REG_B 0x01
 
-// change magnetometer gain to allow readings of up to 8.1 Ga to prevent overflow 
-MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xE0};
+// change magnetometer gain to allow readings of up to 5.6 Ga to prevent overflow 
+MAG_CFG_STRUCT mag_cfg_b = {HM5883_CFG_REG_B, 0xC0};
 
 // initialise the magnetometers
 IIC_ERRORS magnet_init(void) {
@@ -119,9 +122,9 @@ As these equations rely on the previously measured elevation, similar assumption
 - **The user is isolated from strong magnetic fields.** This includes compasses embedded in laptop/mobile devices and other sources of electromagnetic interference. This way, the magnetometer reading will only be reflective of the strength of Earth's magnetic field.
 - **The PTU azimuth angle is zero i.e. it is facing forwards.** This ensures the bearing is reflective of the direction in which the user intends to head towards. 
 ```c
-void findOrientation(Orientation *orientations, AccelScaled *scaled_data, ORIENTATION_MEASUREMENT measurement, MagScaled *mag_data);
+float findBearing (float elevation, MagScaled *mag_data);
 ```
-This function accepts scaled acceleration readings (i.e. accelerations in terms of g) in ```scaled_data``` and magnetometer readings in ```mag_data```. The resulting orientations determined by the equations above are returned in the ```orientations``` struct. The additional argument ```measurement``` can be set to ```BEARING``` or ```ELEVATION_ONLY``` to toggle the calculation of bearing. 
+This function accepts an elevation angle and pointer to a struct containing averaged magnetometer readings ```mag_data```. It implements the calculations discussed above and returns a bearing angle between 0 and 360. 
 
 ### Gyroscope
 The final implementation does not use measurements from the gyroscope. In theory, such measurements would have helped with providing closed-loop control over the PTU's rotation. However, as discussed previously, the data was deemed too noisy to provide reliable orientations. **This is exacerbated by the fact that the gyroscope data must be integrated to obtain orientation, magnifying even the smallest errors.** 
@@ -144,7 +147,7 @@ __interrupt void TC1_ISR(void);
 ```
 The capturing of the PWM signal is interpreted as an interrupt. To filter measurement noise, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value (above a pre-determined noise threshold) is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the rising edge, and subtracting this from the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance sometimes, it is usually functional with an accuracy of.
 The captured distance is based on the time elapsed for the laser to travel between the object and the sensor, there is a limitation for this methodology:
-- **The dected obstacles are assumed to be non-black objects.** This is because that black absorbs more light than other colours, thus if the object is black, the laser cannot recognize it.
+- **The dected obstacles are assumed to be non-black objects.** This is because black absorbs more light than other colours, thus if the object is black, the laser cannot recognise it.
 
 **LiDAR Module Flow Chart**
 
@@ -172,28 +175,37 @@ The Serial module in MATLAB can be split as follows:
 - receiving magnetometer data for guidance
 - transmitting relevant flags to synchronise program flow.
 
-The respective functions below have been implemented to facilitate these interactions between the C and MATLAB portions of the program via ```SCI1```.
+The respective functions below have been implemented to facilitate the first 3 interactions between the C and MATLAB portions of the program via ```SCI1```.
 
 ```matlab
-function data = readLidar(SerialPort)
+% Reads LiDAR distances until an obstacle is detected in front of the user
+% expected format: measured dist,ground dist
+% - SerialPort: serialport object corresponding to SCI1
+function readLidar(SerialPort)
 ```
-This function is implemented such that it will be polling until a reading of the distance is sent by CodeWarrior through ```SCI1```. This will only occur if an obstacle has been detected.A voice instruction is then played through the laptop to inform the user there are obstacles in the walkway before asking them to stop.
-
-```matlab
-function sendSerial(SerialPort, str)
-```
-This function is important for synchronising the two portions of the program, via transmission of relevant flags. As aforementioned, these flags are sent as strings terminated by newline characters. These flags act as indicators of what the C portion should execute next.  For example, this function is called to trigger the PTU to start panning the environment. 
+This function is implemented such that readings will be continuously received through ```SCI1``` until the measured distance is less than the estimated distance from the ground. When this occurs, a flag is transmitted to signal the 68HCS12 to stop broadcasting LiDAR data. A voice instruction is then played through the laptop to inform the user there are obstacles in the walkway before asking them to stop.
 
  ```matlab
-function data = readSerial(SerialPort)
+ % Parses comma-separated values transmitted by the C program through SCI1
+% expected format: measured elev,set elev,set az,measured dist,ground dist
+% - SerialPort: serialport object corresponding to SCI1
+% - data: output matrix
+function data = readSerial(SerialPort) 
  ```
  After stopping the user, the ```panServo``` function will be implemented in the C Portion. During the scanning procedure, the serial port transmits the real-time orientations of the system along with the distance to the object, and stores the information into a matrix that can be used for environment mapping.
  
  ```matlab
-function angleMatch = readMagnet(SerialPort, angleToTurn)
+% Guides user to turn to the right extent via audio prompts based on their
+% bearing as measured by the magnetometer
+% - SerialPort: serialport object corresponding to SCI1
+% - angleToTurn: desired angle measured CCW in degrees 
+function readMagnet(SerialPort, angleToTurn)
  ```
  When the mapping of the environment is successfully accomplished, the user is instructed to turn to the correct bearing that has been calculated in the mapping function. In this function, the magnetometer reading is transmitted through from CodeWarior so that when the correct elevation is achieved, the voice instruction will guide the user to go forwards.
- 
+
+### Synchronising Program Flow
+Synchronisation of the C and MATLAB programs is achieved via transmission of relevant flags. These flags are sent as strings terminated by newline characters, and act as indicators of what the C portion should execute next. In particular, flags are transmitted to CodeWarrior to signal the start of the panning process and transmission of bearing data. A flag is also transmitted by CodeWarrior to signal the end of the broadcasted data in ```readSerial```. 
+
 ## Audio Module (MATLAB)
 ```matlab
 function playPrompt(message)
