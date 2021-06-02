@@ -199,9 +199,9 @@ Once the Cartesian coordinates are found, the actual distance between two succes
 
 ![Image of Trig Calcs 2](https://github.com/Yu295/MTRX2700_Major/blob/main/2700calcs2.jpg)
 
-However, these gaps occur at different elevations. Therefore, only the base elevation gaps are taken. The elevation used to reference this is the intended elevation provided, rather than actual elevation, as there is variance in actual data. A gap index is established which corresponds to the available gaps, and the width of these gaps are saved in a ```baseGap``` array. The angle range of the gap is also saved in a matrix. Then, the data points (obstacles) scanned in from other elevations are looped through. Gap indexes are removed from valid gaps when obstacles are detected which do not leave enough width for the user to move through.
+However, these gaps occur at different elevations. Therefore, only the base elevation gaps are taken. The elevation used to reference this is the intended elevation provided, rather than actual elevation, as the actual elevation varies due to the machine not accurately and reliably reaching the values defined. A gap index is established which corresponds to the available gaps, and the width of these gaps are saved in a ```baseGap``` array. The angle range of the gap is also saved in a matrix. Then, the data points (obstacles) scanned in from other elevations are looped through. Gap indexes are removed from valid gaps when obstacles are detected which do not leave enough width for the user to move through.
 
 If there is more than one gap available, the gap closest to the forwards (positive x) direction is selected. The turn instruction angle is then output through serial. If there is no valid gap, then the turn instruction angle is output as 180 in order to turn the user around. Voice instructions are provided to navigate the user around obstacles.
 
-The system was tested with sample LiDAR data taken from preliminary scans, with known obstacles scanned.
+The system was tested with sample LiDAR data taken from preliminary scans, with known obstacles scanned, and then data set was compared. 
 
