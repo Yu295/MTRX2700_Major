@@ -132,7 +132,9 @@ The register ```TIOS``` is in control of either implementing the input capture o
 ```c
 __interrupt void TC1_ISR(void);
 ```
-The capturing of the PWM signal is interpreted as an interrupt. To filter measurement noise, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value (above a pre-determined noise threshold) is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the rising edge, and subtracting this from the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance sometimes, it is usually functional with an accuracy of. 
+The capturing of the PWM signal is interpreted as an interrupt. To filter measurement noise, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value (above a pre-determined noise threshold) is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the rising edge, and subtracting this from the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance sometimes, it is usually functional with an accuracy of.
+The captured distance is based on the time elapsed for the laser to travel between the object and the sensor, there is a limitation:
+- **The dected obstacles are assumed to be non-black objects.** This is because that black absorbs more light than other colours, thus if the object is black, the laser cannot recognize it.
 
 ## Serial Module (C)
 
@@ -182,6 +184,8 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
 ```matlab
 function playPrompt(message)
 ```
+The audio module is in control of guidance and navigation. This function initializes the system speaker in the PC and can be called with the message required as an parameter in other functions. For guidance purpose, there are three voice instructions to guide the user; for navigation, there are
+- **The user is sensible to diretional left and right.** Since the prompts direct the user to turn to left or right, it is assumed that the user starts turning in the right direction.
 
  ## Mapping and Guidance Module (MATLAB)
  
