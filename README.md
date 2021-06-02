@@ -132,7 +132,9 @@ The register ```TIOS``` is in control of either implementing the input capture o
 ```c
 __interrupt void TC1_ISR(void);
 ```
-The capturing of the PWM signal is interpreted as an interrupt. To filter measurement noise, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value (above a pre-determined noise threshold) is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the rising edge, and subtracting this from the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance sometimes, it is usually functional with an accuracy of. 
+The capturing of the PWM signal is interpreted as an interrupt. To filter measurement noise, the ```TIE``` register is only enabled for 10 readings at each position, and the minimal value (above a pre-determined noise threshold) is the designated distance. The pulse width is measured by capturing the ```TC1``` value at the rising edge, and subtracting this from the ```TC1``` value at the next falling edge. Despite the limitation of underestimating the distance sometimes, it is usually functional with an accuracy of.
+The captured distance is based on the time elapsed for the laser to travel between the object and the sensor, there is a limitation for this methodology:
+- **The dected obstacles are assumed to be non-black objects.** This is because that black absorbs more light than other colours, thus if the object is black, the laser cannot recognize it.
 
 ## Serial Module (C)
 
@@ -182,10 +184,14 @@ function angleMatch = readMagnet(SerialPort, angleToTurn)
 ```matlab
 function playPrompt(message)
 ```
+The audio module is in control of guidance and navigation. This function initializes the system speaker in the PC and can b
+either
+e called with the message required as an parameter in other functions. For guidance purpose, there are three voice instructions to the user; for navigation, instructions are made to navigate the user to turn to the correct direction as well as inform the overshoot while the user is turinng. The following assumption is made in this function.
+- **The user is sensible to diretional left and right.** Since the prompts direct the user to turn to left or right, it is assumed that the user starts turning in the right direction.
 
  ## Mapping and Guidance Module (MATLAB)
  
-Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial``` function and translates them to the Cartesian coordinates ```x```, ```y``` and ```z```, which are then plotted in a 3D scatter plot. The serial provides intended elevation, actual elevation, azimuth, LiDAR distance, and estimated ground distance. The conversions are calculated using 3D trigonometry shown below. The values taken to be converted are filtered to remove noise and eliminate ground readings using estimated ground distance. 
+Mapping of the environment takes the serial readings of distance, elevation and azimuth from the ```readSerial``` function and translates them to the Cartesian coordinates ```x```, ```y``` and ```z```, which are then plotted in a 3D scatter plot. The serial provides intended elevation, actual elevation, azimuth, LiDAR distance, and estimated ground distance. The conversions are calculated using 3D trigonometry shown below. The values taken to be converted are filtered to remove noise and eliminate ground readings using estimated ground distance. Within a 50 - 90 cm distance range, the readings of the LiDAR compared to the area being scanned displayed too much noise. This was the same for values larger than 200cm. Therefore, these values were filtered out to leave behind the narrower, more accurate range. 
 
 ![Image of Trig Calcs](https://github.com/Yu295/MTRX2700_Major/blob/main/2700calcs.jpg)
 
@@ -197,4 +203,5 @@ However, these gaps occur at different elevations. Therefore, only the base elev
 
 If there is more than one gap available, the gap closest to the forwards (positive x) direction is selected. The turn instruction angle is then output through serial. If there is no valid gap, then the turn instruction angle is output as 180 in order to turn the user around. Voice instructions are provided to navigate the user around obstacles.
 
+The system was tested with sample LiDAR data taken from preliminary scans, with known obstacles scanned.
 
